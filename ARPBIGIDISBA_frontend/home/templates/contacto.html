@@ -1,0 +1,67 @@
+{% extends "home_template.html" %}
+{% load static %}
+
+    {% block title %}
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+      <span>Base de datos ARPBIG</span>
+    </header>
+
+    {% endblock %}
+
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+      <!-- Header -->
+      <div class="w3-container" style="margin-top:80px" id="showcase">
+        <h1 class="w3-jumbo"><b>Contacto</b></h1>
+      </div>
+
+      <!-- Formulario -->
+      <div class="w3-container" id="contact" style="margin-top:75px">
+        <h1 class="w3-xxxlarge w3-text-red"><b>Formulario</b></h1>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+        <p>Para cualquier duda o comentario ponte en contacto con nosotros, te responderemos en breve:</p>
+        <form action="/action_page.php" target="_blank">
+          <div class="w3-section">
+            <label>Nombre</label>
+            <input class="w3-input w3-border" type="text" name="Name" required>
+          </div>
+          <div class="w3-section">
+            <label>Email</label>
+            <input class="w3-input w3-border" type="text" name="Email" required>
+          </div>
+          <div class="w3-section">
+            <label>Mensaje</label>
+            <input class="w3-input w3-border" type="text" name="Message" required>
+          </div>
+          <button type="submit" class="w3-button w3-block w3-padding-large w3-red w3-margin-bottom">Enviar</button>
+        </form>
+      </div>
+
+      <!-- RRSS -->
+      <div class="w3-container" style="margin-top:75px">
+        <h1 class="w3-xxxlarge w3-text-red"><b>Redes sociales</b></h1>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+        <p>Puedes seguir nuestra actividad en:</p>
+
+      </div>
+
+      <!-- Datos de contacto -->
+      <div class="w3-container" style="margin-top:75px">
+        <h1 class="w3-xxxlarge w3-text-red"><b>Datos de contacto</b></h1>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+        <p>Dirección:</p>
+        <p>MAPA</p>
+        <p>Email:</p>
+        <p>Teléfono:</p>
+
+      </div>
+
+    <!-- End page content -->
+    </div>
+
+    {% endblock %}

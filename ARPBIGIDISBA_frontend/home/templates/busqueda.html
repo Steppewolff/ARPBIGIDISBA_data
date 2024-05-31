@@ -1,0 +1,105 @@
+{% extends "home_template.html" %}
+
+{% load django_tables2 %}
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+
+{% load crispy_forms_tags %}
+{% bootstrap_messages %}
+
+    {% block head %}
+    {% endblock %}
+
+    {% block title %}
+
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+      <span>Base de datos ARPBIG</span>
+    </header>
+
+    {% endblock %}
+
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+          <!-- Header -->
+          <div class="w3-container" style="margin-top:80px" id="showcase">
+            <h1 class="w3-jumbo"><b>Búsqueda avanzada</b></h1>
+            <h3 class="w3-xxxlarge w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
+            <hr style="width:50px;border:5px solid red" class="w3-round">
+          </div>
+
+        <!-- Query Filters -->
+        <form action="{% url 'resultados' %}" method="GET" id="filtros_busqueda">
+            {% csrf_token %}
+            <div class="accordion" id="accordion_form">
+              <div class="card accordion-group">
+                <div class="card-header accordion-heading" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" data-parent="#accordion_form" href="#collapseOne">
+                      Datos del aislado
+                    </button>
+                  </h5>
+                </div>
+
+                <div id="collapseOne" class="accordion-body collapse" aria-labelledby="headingOne" data-parent="#accordion_form">
+                  <div class="card-body">
+                    {% crispy metadatageneral_form %}
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingTwo">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Datos geográficos
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion_form">
+                  <div class="card-body">
+                    {% crispy hospital_form %}
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingThree">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Valores MIC
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion_form">
+                  <div class="card-body">
+                    {% crispy mic_form %}
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingFour">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                      Fenotipo
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion_form">
+                  <div class="card-body">
+                    {% crispy fenotipo_form %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input type="submit" value="BUSCAR"/>
+            <button type="submit" form="filtros_busqueda" value="BUSCAR">BUSCAR</button>
+        </form>
+
+
+    <!-- End page content -->
+    </div>
+
+    {% endblock %}
