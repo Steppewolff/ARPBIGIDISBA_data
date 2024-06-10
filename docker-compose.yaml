@@ -20,14 +20,17 @@ services:
       test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}", "-e", "SELECT 1"]
       timeout: 40s
       retries: 2
+    networks:
+      - mynetwork
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ARPBIG_frontend
-#    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py migrate --noinput && python3 ./ARPBIGIDISBA_frontend/manage.py collectstatic --noinput && python ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
-#    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
+    command: sh -c "./wait-for-it.sh arpbig_psdb -- python manage.py runserver 0.0.0.0:8000"
+    #    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py migrate --noinput && python3 ./ARPBIGIDISBA_frontend/manage.py collectstatic --noinput && python ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
+    #    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
     restart: always
     volumes:
       - .:/app
@@ -44,4 +47,8 @@ services:
       DB_PORT: ${DB_PORT}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     depends_on:
-      - arpbig_psdb
+      - db
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
