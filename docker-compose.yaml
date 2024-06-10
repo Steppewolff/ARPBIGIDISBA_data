@@ -44,4 +44,4 @@ services:
       DB_PORT: ${DB_PORT}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     depends_on:
-      - db
+      - arpbig_psdb
