@@ -21,6 +21,9 @@ COPY . $DockerHOME
 # Install dependencies
 RUN pip install -r requirements.txt
 
+# Exposing interface port
+EXPOSE 8000
+
 ## Configurando migraciones
 #CMD ["python3", "./ARPBIGIDISBA_frontend/manage.py", "makemigrations"]
 
