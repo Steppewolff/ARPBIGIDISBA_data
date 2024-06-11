@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  db:
+  arpbig_psdb:
     image: mysql
-    container_name: mysql_psdb
+    container_name: arpbig_psdb
     restart: always
     volumes:
       - ./psdb_dump.sql:/docker-entrypoint-initdb.d/dump.sql
@@ -17,7 +17,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}", "-e", "SELECT 1"]
+      test: ["CMD", "mysql", "-h", "${DB_HOST}", "-u", "root", "-p${DB_ROOT_PASSWORD}", "-e", "SELECT 1"]
       timeout: 40s
       retries: 2
     networks:
@@ -47,7 +47,7 @@ services:
       DB_PORT: ${DB_PORT}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     depends_on:
-      - db
+      - arpbig_psdb
     networks:
       - mynetwork
 networks:
