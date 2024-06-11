@@ -2,7 +2,7 @@ version: '3.8'
 services:
   db:
     image: mysql
-    container_name: arpbig_psdb
+    container_name: mysql_psdb
     restart: always
     volumes:
       - ./psdb_dump.sql:/docker-entrypoint-initdb.d/dump.sql
@@ -28,7 +28,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ARPBIG_frontend
-    command: sh -c "./wait-for-it.sh arpbig_psdb -- python manage.py runserver 0.0.0.0:8000"
+    #    command: sh -c "./wait-for-it.sh arpbig_psdb -- python manage.py runserver 0.0.0.0:8000"
     #    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py migrate --noinput && python3 ./ARPBIGIDISBA_frontend/manage.py collectstatic --noinput && python ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
     #    command: sh -c "python3 ./ARPBIGIDISBA_frontend/manage.py runserver 0.0.0.0:8000"
     restart: always
