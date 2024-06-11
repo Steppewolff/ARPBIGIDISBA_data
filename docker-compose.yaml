@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  arpbig_psdb:
+  db:
     image: mysql
     container_name: arpbig_psdb
     restart: always
@@ -47,7 +47,7 @@ services:
       DB_PORT: ${DB_PORT}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     depends_on:
-      - arpbig_psdb
+      - db
     networks:
       - mynetwork
 networks:

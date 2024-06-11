@@ -119,7 +119,7 @@ DATABASES = {
         'PASSWORD': 'password',  # 'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
-        'HOST': 'arpbig_psdb', # '127.0.0.1',
+        'HOST': 'db', # '127.0.0.1', arpbig_ps
         'PORT': '', # 3306
     }
 }
