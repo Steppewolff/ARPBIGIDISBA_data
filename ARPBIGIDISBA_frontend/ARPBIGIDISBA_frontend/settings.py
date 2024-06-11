@@ -120,6 +120,7 @@ DATABASES = {
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
         'HOST': 'db', # '127.0.0.1', arpbig_ps
+        "connect_timeout": 180,
         'PORT': '', # 3306
     }
 }
