@@ -119,7 +119,7 @@ DATABASES = {
         'PASSWORD': 'password',  # 'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
-        'HOST': 'db', # '127.0.0.1', arpbig_ps
+        'HOST': os.environ.get('DB_HOST'),  # 'db','127.0.0.1', arpbig_ps
         "connect_timeout": 180,
         'PORT': '', # 3306
     }
