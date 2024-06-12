@@ -92,14 +92,15 @@ WSGI_APPLICATION = 'ARPBIGIDISBA_frontend.wsgi.application'
 
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': os.environ.get('DB_NAME'),
-    #     'USER': os.environ.get('DB_USER'),
-    #     'PASSWORD': os.environ.get('DB_PASSWORD'),
-    #     'HOST': os.environ.get('DB_HOST'),
-    #     'PORT': '',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': '',
+        "connect_timeout": 180,
+    }
 
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -112,17 +113,17 @@ DATABASES = {
     #     'PORT': '',
     # }
 
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': 'fernando',  # 'root',
-        'PASSWORD': 'password',  # 'Orgullovalor',
-        # 'USER': 'root',
-        # 'PASSWORD': 'Orgullovalor',
-        'HOST': os.environ.get('DB_HOST'),  # 'db','127.0.0.1', arpbig_ps
-        "connect_timeout": 180,
-        'PORT': '', # 3306
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
+    #     'USER': 'fernando',  # 'root',
+    #     'PASSWORD': 'password',  # 'Orgullovalor',
+    #     # 'USER': 'root',
+    #     # 'PASSWORD': 'Orgullovalor',
+    #     'HOST': os.environ.get('DB_HOST'),  # 'db','127.0.0.1', arpbig_ps
+    #     "connect_timeout": 180,
+    #     'PORT': '', # 3306
+    # }
 }
 
 
