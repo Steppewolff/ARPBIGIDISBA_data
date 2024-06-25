@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-_m-1mo5%058umv#@eyi28m5p%(k^z&-#w7gz&&m53i$55sqogs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'bootstrap4',
     'bootstrap5',
+    'advanced_filters',
 
     # Project Apps
     'home',
@@ -92,15 +93,15 @@ WSGI_APPLICATION = 'ARPBIGIDISBA_frontend.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': '',
-        "connect_timeout": 180,
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': os.environ.get('DB_NAME'),
+    #     'USER': os.environ.get('DB_USER'),
+    #     'PASSWORD': os.environ.get('DB_PASSWORD'),
+    #     'HOST': os.environ.get('DB_HOST'),
+    #     'PORT': '3306',
+    #     "connect_timeout": 180,
+    # }
 
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -113,17 +114,17 @@ DATABASES = {
     #     'PORT': '',
     # }
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
-    #     'USER': 'fernando',  # 'root',
-    #     'PASSWORD': 'password',  # 'Orgullovalor',
-    #     # 'USER': 'root',
-    #     # 'PASSWORD': 'Orgullovalor',
-    #     'HOST': os.environ.get('DB_HOST'),  # 'db','127.0.0.1', arpbig_ps
-    #     "connect_timeout": 180,
-    #     'PORT': '', # 3306
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
+        'USER': 'fernando',  # 'root',
+        'PASSWORD': 'password',  # 'Orgullovalor',
+        # 'USER': 'root',
+        # 'PASSWORD': 'Orgullovalor',
+        'HOST': '127.0.0.1',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
+        "connect_timeout": 180,
+        'PORT': '3306', # 3306
+    }
 }
 
 

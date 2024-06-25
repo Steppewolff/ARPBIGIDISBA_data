@@ -1,23 +1,26 @@
 import django_tables2 as tables
-from .models import Mic, Fenotipo, Secuencia, MetadataGeneral
+from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral
+
 
 class MicTable(tables.Table):
     class Meta:
         model = Mic
         template_name = 'django_tables2/bootstrap5.html'
-        fields = ('aislado', 'fep', 'cip', 'imi', 'col', 'atm', 'caz_cloxa', 'imi_cloxa',)
+        fields = ('isolate', 'fep', 'cip', 'imi', 'col', 'atm', 'caz_cloxa', 'imi_cloxa',)
         attrs = {'class': 'table table-dark table-striped table-hover table-responsive'}
+
 
 class FenotipoTable(tables.Table):
     class Meta:
-        model = Fenotipo
+        model = PhenotypicData
         template_name = 'django_tables2/bootstrap5.html'
-        fields = ('fenotipo_id', 'test_cloxa', 'test_mbl', 'test_blee',)
+        fields = ('isolate', 'cloxa_test', 'mbl_test', 'ecdc_resistance_profile',)
         attrs = {'class': 'table table-dark table-striped table-hover table-responsive'}
+
 
 class SecuenciaTable(tables.Table):
     class Meta:
-        model = Secuencia
+        model = SequenceAnalysis
         template_name = 'django_tables2/bootstrap5.html'
-        fields = ('secuencia_id', 'clon', 'complejo_clonal', 'serotipo_insilico',)
+        fields = ('isolate', 'sequence_type', 'clonal_complex', 'insilico_serotype',)
         attrs = {'class': 'table table-dark table-sm table-hover'}
