@@ -3,5 +3,8 @@
   <component name="Black">
     <option name="sdkName" value="Pipenv (DOCKER)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Pipenv (DOCKER)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Pipenv (ARPBIGIDISBA_docker)" project-jdk-type="Python SDK" />
+  <component name="PyCharmProfessionalAdvertiser">
+    <option name="shown" value="true" />
+  </component>
 </project>

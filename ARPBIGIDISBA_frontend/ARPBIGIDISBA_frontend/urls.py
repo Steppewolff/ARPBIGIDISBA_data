@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+admin.site.site_header = "ARPBIG database Admin"
+admin.site.site_title = "ARPBIG Admin Portal"
+admin.site.index_title = "ARPBIG database Portal"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path(r'^advanced_filters/', include('advanced_filters.urls')),
-    # path(r'^advanced_filters/', include('advanced_filters.urls')),
-    # url(r'^advanced_filters/', include('advanced_filters.urls')),
 ]

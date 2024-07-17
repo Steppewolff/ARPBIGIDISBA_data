@@ -29,6 +29,7 @@ class Assembler(models.Model):
     def __str__(self):
         return self.assembler_name
 
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -145,7 +146,7 @@ class DjangoSession(models.Model):
 
 class FilePath(models.Model):
     file_path_id = models.AutoField(primary_key=True)
-    isolate = models.OneToOneField('MetadataGeneral', models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField('MetadataGeneral', models.DO_NOTHING, blank=True, null=True)
     fastq_path = models.CharField(max_length=255, blank=True, null=True)
     denovo_assembly_path = models.CharField(max_length=255, blank=True, null=True)
     assembler = models.ForeignKey(Assembler, models.DO_NOTHING, db_column='assembler', blank=True, null=True)
@@ -166,14 +167,15 @@ class FlowcellKit(models.Model):
     def __str__(self):
         return self.flowcell_kit_name
 
+
 class Hospital(models.Model):
     hospital_id = models.AutoField(primary_key=True)
-    hospital_name = models.CharField(max_length=255, blank=True, null=True)
-    hospital_code = models.CharField(max_length=255, blank=True, null=True)
-    hospital_comments = models.CharField(max_length=255, blank=True, null=True)
-    country = models.CharField(max_length=255, blank=True, null=True)
-    region = models.CharField(max_length=255, blank=True, null=True)
-    town = models.CharField(max_length=255, blank=True, null=True)
+    hospital_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nombre hospital")
+    hospital_code = models.CharField(max_length=255, blank=True, null=True, verbose_name="Código hospital")
+    hospital_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Comentarios hospital")
+    country = models.CharField(max_length=255, blank=True, null=True, verbose_name="País")
+    region = models.CharField(max_length=255, blank=True, null=True, verbose_name="Región")
+    town = models.CharField(max_length=255, blank=True, null=True, verbose_name="Localidad")
 
     class Meta:
         managed = True
@@ -181,6 +183,19 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.hospital_name
+
+
+class SampleType(models.Model):
+    sample_type_id = models.AutoField(primary_key=True)
+    sample = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'sample_type'
+
+    def __str__(self):
+        return self.sample
+
 
 class HypermutationGene(models.Model):
     hypermutation_gene_id = models.AutoField(primary_key=True)
@@ -205,6 +220,7 @@ class InvitroSerotype(models.Model):
     def __str__(self):
         return self.invitro_value
 
+
 class LocusMlst(models.Model):
     mlst_id = models.AutoField(primary_key=True)
     locus = models.CharField(max_length=20, blank=True, null=True)
@@ -217,11 +233,33 @@ class LocusMlst(models.Model):
         db_table = 'locus_mlst'
 
 
+class MetadataGeneral(models.Model):
+    isolate_id = models.AutoField(primary_key=True)
+    isolate_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Nombre aislado")
+    isolate_project_id = models.CharField(unique=True, max_length=50, blank=True, null=True)
+    species = models.CharField(max_length=255, blank=True, null=True, verbose_name="Especie")
+    project_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nombre proyecto")
+    isolation_day = models.IntegerField(blank=True, null=True)
+    isolation_month = models.IntegerField(blank=True, null=True)
+    isolation_year = models.IntegerField(blank=True, null=True)
+    isolation_date = models.DateField(blank=True, null=True, verbose_name="Fecha aislado")
+    isolate_source = models.CharField(max_length=255, blank=True, null=True, verbose_name="Origen aislado")
+    isolate_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Comentarios aislado")
+
+    class Meta:
+        managed = True
+        db_table = 'metadata_general'
+
+    def __str__(self):
+        return self.isolate_name
+        # return str(self.isolate_id)
+
+
 class MetadataClinic(models.Model):
     clinic_id = models.AutoField(primary_key=True)
-    isolate_id = models.IntegerField(unique=True, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
     patient_id = models.CharField(max_length=255, blank=True, null=True)
-    sample_type = models.CharField(max_length=255, blank=True, null=True)
+    sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type', blank=True, null=True)
     hospital = models.ForeignKey(Hospital, models.DO_NOTHING, db_column='hospital', blank=True, null=True)
     collection_ward = models.CharField(max_length=255, blank=True, null=True)
 
@@ -230,29 +268,9 @@ class MetadataClinic(models.Model):
         db_table = 'metadata_clinic'
 
 
-class MetadataGeneral(models.Model):
-    isolate_id = models.AutoField(primary_key=True)
-    isolate_name = models.CharField(max_length=50, blank=True, null=True)
-    isolate_project_id = models.CharField(unique=True, max_length=50, blank=True, null=True)
-    species = models.CharField(max_length=255, blank=True, null=True)
-    project_name = models.CharField(max_length=255, blank=True, null=True)
-    isolation_day = models.IntegerField(blank=True, null=True)
-    isolation_month = models.IntegerField(blank=True, null=True)
-    isolation_year = models.IntegerField(blank=True, null=True)
-    isolation_date = models.DateField(blank=True, null=True)
-    isolate_source = models.CharField(max_length=255, blank=True, null=True)
-    isolate_comments = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'metadata_general'
-
-    def __str__(self):
-        return self.isolate_name
-
 class Mic(models.Model):
     mic_id = models.AutoField(primary_key=True)
-    isolate = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
     pip = models.CharField(max_length=10, blank=True, null=True)
     pip_clinical_category = models.CharField(max_length=2, blank=True, null=True)
     pip_tz = models.CharField(max_length=10, blank=True, null=True)
@@ -320,7 +338,8 @@ class Mic(models.Model):
         db_table = 'mic'
 
     def __str__(self):
-        return self.mic_comments
+        return str(self.mic_id)
+
 
 class MutationalResistome(models.Model):
     mutational_resistome_id = models.AutoField(primary_key=True)
@@ -337,46 +356,40 @@ class MutationalResistome(models.Model):
 
 class PhenotypicData(models.Model):
     phenotypic_data_id = models.AutoField(primary_key=True)
-    isolate = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
-    ab_susceptibility_method = models.CharField(max_length=100, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    ab_susceptibility_method = models.CharField(max_length=100, blank=True, null=True, verbose_name="Test susceptibilidad antibiótica")
     mic = models.ForeignKey(Mic, models.DO_NOTHING, blank=True, null=True)
-    ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True)
-    idsa_resistance_profile = models.CharField(max_length=3, blank=True, null=True)
-    cloxa_test = models.CharField(max_length=3, blank=True, null=True)
-    mbl_test = models.CharField(max_length=3, blank=True, null=True)
-    esbl_test = models.CharField(max_length=3, blank=True, null=True)
-    class_a_carbapenemase_test = models.CharField(max_length=3, blank=True, null=True)
-    invitro_serotype = models.ForeignKey(InvitroSerotype, models.DO_NOTHING, blank=True, null=True)
-    hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True)
+    ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="Perfil ECDC")
+    idsa_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="Perfil IDSA")
+    cloxa_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test cloxa")
+    mbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test mbl")
+    esbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test esbl")
+    class_a_carbapenemase_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test Carbapenemasas clase A")
+    invitro_serotype = models.ForeignKey(InvitroSerotype, models.DO_NOTHING, blank=True, null=True, verbose_name="Serotipo in vitro")
+    hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True, verbose_name="Fenotipo hipermutador")
+    phenotypic_comments = models.TextField(blank=True, null=True, verbose_name="Comentarios fenotipo")
 
     class Meta:
         managed = True
         db_table = 'phenotypic_data'
-        verbose_name_plural = 'PhenoTypic Data'
+        verbose_name_plural = 'Phenotypic Data'
 
-
-class SampleType(models.Model):
-    sample_type_id = models.AutoField(primary_key=True)
-    sample = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'sample_type'
-
-    def __str__(self):
-        return self.sample
 
 class SequenceAnalysis(models.Model):
     sequence_analysis_id = models.AutoField(primary_key=True)
-    isolate = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
-    mlst_allelic_profile = models.JSONField(blank=True, null=True)
-    sequence_type = models.CharField(max_length=10, blank=True, null=True)
-    clonal_complex = models.CharField(max_length=10, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    mlst_allelic_profile = models.JSONField(blank=True, null=True, verbose_name="Perfil alélico MLST")
+    sequence_type = models.CharField(max_length=10, blank=True, null=True, verbose_name="Tipo de secuencia")
+    clonal_complex = models.CharField(max_length=10, blank=True, null=True, verbose_name="Complejo clonal")
     mutational_resistome = models.JSONField(blank=True, null=True)
+    ame_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci EMA")
+    beta_lactamase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci beta lactamasas")
+    carbapenemase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci carbapeneasas")
+    other_acq_ab_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci otros AB adquiridos")
     acquired_resistome = models.JSONField(blank=True, null=True)
     virulence_genes = models.JSONField(blank=True, null=True)
     hypermutation_genes = models.JSONField(blank=True, null=True)
-    insilico_serotype = models.CharField(max_length=3, blank=True, null=True)
+    insilico_serotype = models.CharField(max_length=3, blank=True, null=True, verbose_name="Serotipo in silico")
     betalactamase_pcr = models.JSONField(blank=True, null=True)
 
     class Meta:
@@ -387,13 +400,16 @@ class SequenceAnalysis(models.Model):
 
 class SequencingInfo(models.Model):
     sequencing_id = models.AutoField(primary_key=True)
-    isolate = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
-    sequencing_technology = models.ForeignKey('SequencingTechnology', models.DO_NOTHING, db_column='sequencing_technology', blank=True, null=True)
-    sequencing_platform = models.ForeignKey('SequencingPlatform', models.DO_NOTHING, db_column='sequencing_platform', blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    sequencing_technology = models.ForeignKey('SequencingTechnology', models.DO_NOTHING,
+                                              db_column='sequencing_technology', blank=True, null=True)
+    sequencing_platform = models.ForeignKey('SequencingPlatform', models.DO_NOTHING, db_column='sequencing_platform',
+                                            blank=True, null=True)
     flowcell_kit = models.ForeignKey(FlowcellKit, models.DO_NOTHING, db_column='flowcell_kit', blank=True, null=True)
     sequencing_goal = models.CharField(max_length=100, blank=True, null=True)
     sequencing_source = models.CharField(max_length=100, blank=True, null=True)
-    library_method = models.ForeignKey('SequencingLibrary', models.DO_NOTHING, db_column='library_method', blank=True, null=True)
+    library_method = models.ForeignKey('SequencingLibrary', models.DO_NOTHING, db_column='library_method', blank=True,
+                                       null=True)
 
     class Meta:
         managed = True
@@ -412,6 +428,7 @@ class SequencingLibrary(models.Model):
     def __str__(self):
         return self.sequencing_library_method
 
+
 class SequencingPlatform(models.Model):
     sequencing_platform_id = models.AutoField(primary_key=True)
     sequencing_platform_name = models.CharField(max_length=255, blank=True, null=True)
@@ -423,6 +440,7 @@ class SequencingPlatform(models.Model):
 
     def __str__(self):
         return self.sequencing_platform_name
+
 
 class SequencingTechnology(models.Model):
     sequencing_technology_id = models.AutoField(primary_key=True)
@@ -436,6 +454,7 @@ class SequencingTechnology(models.Model):
 
     def __str__(self):
         return self.sequencing_technology_name
+
 
 class VirulenceGene(models.Model):
     virulence_gene_id = models.AutoField(primary_key=True)

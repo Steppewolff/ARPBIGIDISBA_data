@@ -1,12 +1,43 @@
 import django_tables2 as tables
-from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral
+from django.db.models import Field
+
+from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral, MetadataClinic, FilePath
 
 
-class MicTable(tables.Table):
+def create_dynamic_table(*models):
+    attrs = {}
+
+    for model in models:
+        for field in model._meta.get_fields():
+            if isinstance(field, Field):
+                # attrs[f'_{field.name}'] = tables.Column(accessor=f'{str(model)}.{field.name}')
+                if model._meta.model_name == 'metadatageneral':
+                    accessor = f'{field.name}'
+                    column_name = f'{field.name}'
+                    attrs[column_name] = tables.Column(accessor=accessor)
+                else:
+                    accessor = f'{model._meta.model_name}.{field.name}'
+                    column_name = f'{model._meta.model_name}_{field.name}'
+                    attrs[column_name] = tables.Column(accessor=accessor)
+
+                pass
+
+            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'attrs': {
+                'class': 'table table-dark table-striped table-hover table-responsive results'}})
+
+            pass
+
+    return type('CombinedTable', (tables.Table,), attrs)
+
+
+CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)
+
+
+class MetadataGeneralTable(tables.Table):
     class Meta:
-        model = Mic
+        model = MetadataGeneral
         template_name = 'django_tables2/bootstrap5.html'
-        fields = ('isolate', 'fep', 'cip', 'imi', 'col', 'atm', 'caz_cloxa', 'imi_cloxa',)
+        fields = ('project_name', 'isolate_name', 'species', 'isolate_source', 'isolation_date', 'pip', 'pip_tz', 'fep')
         attrs = {'class': 'table table-dark table-striped table-hover table-responsive'}
 
 

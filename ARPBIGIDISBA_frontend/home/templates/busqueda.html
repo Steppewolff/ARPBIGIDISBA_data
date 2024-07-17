@@ -33,7 +33,7 @@
           </div>
 
         <!-- Query Filters -->
-        <form action="{% url 'resultados' %}" method="GET" id="filtros_busqueda">
+        <form action="{% url 'resultados' %}" method="POST" id="filtros_busqueda">
             {% csrf_token %}
             <div class="accordion" id="accordion_form">
               <div class="card accordion-group">
@@ -44,10 +44,20 @@
                     </button>
                   </h5>
                 </div>
-
                 <div id="collapseOne" class="accordion-body collapse" aria-labelledby="headingOne" data-parent="#accordion_form">
-                  <div class="card-body">
-                    {% crispy metadatageneral_form %}
+                  <div class="card-body form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ metadatageneral_form.isolate_name | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ metadatageneral_form.project_name | as_crispy_field }}
+                      </div>
+                       <div class="form-group col-md-6 mb-0">
+                        {{ metadataclinic_form.sample_type | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ metadataclinic_form.collection_ward | as_crispy_field }}
+                      </div>
                   </div>
                 </div>
               </div>
@@ -74,9 +84,374 @@
                   </h5>
                 </div>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion_form">
-                  <div class="card-body">
-                    {% crispy mic_form %}
-                  </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_pip" name="comparison_pip">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.pip | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_pip_tz" name="comparison_pip_tz">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.pip_tz | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_fep" name="comparison_fep">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.fep | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_cfdc" name="comparison_cfdc">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.cfdc | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_caz" name="comparison_caz">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.caz | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_caz_avi" name="comparison_caz_avi">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.caz_avi | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_ct" name="comparison_ct">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.ct | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_imi" name="comparison_imi">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.imi | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_imi_rel" name="comparison_imi_rel">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.imi_rel | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_mer" name="comparison_mer">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.mer | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_mer_vab" name="comparison_mer_vab">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.mer_vab | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_azt" name="comparison_azt">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.azt | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_azt_avi" name="comparison_azt_avi">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.azt_avi | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_cip" name="comparison_cip">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.cip | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_dlx" name="comparison_dlx">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.dlx | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_lvx" name="comparison_lvx">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.lvx | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_mxl" name="comparison_mxl">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.mxl | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_ami" name="comparison_ami">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.ami | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_gen" name="comparison_gen">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.gen | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_net" name="comparison_net">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.net | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_tob" name="comparison_tob">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.tob | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_col" name="comparison_col">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.col | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_fo" name="comparison_fo">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.fo | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_tic" name="comparison_tic">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.tic | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_ptz" name="comparison_ptz">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.ptz | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_taz" name="comparison_taz">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.taz | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_cza" name="comparison_cza">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.cza | as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="card-body form-row">
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_tol" name="comparison_tol">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                         {{ mic_form.tol | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-1 mb-0">
+                        <select id="comparison_atm" name="comparison_atm">
+                            <option value="" selected>-</option>
+                            <option value="gt">&gt;</option>
+                            <option value="gte">&gt;=</option>
+                            <option value="lt">&lt;</option>
+                            <option value="lte">&lt;=</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-2 mb-0">
+                        {{ mic_form.atm | as_crispy_field }}
+                      </div>
+                    </div>
                 </div>
               </div>
               <div class="card">
@@ -88,16 +463,54 @@
                   </h5>
                 </div>
                 <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion_form">
-                  <div class="card-body">
-                    {% crispy fenotipo_form %}
+                  <div class="card-body form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ fenotipo_form.ecdc_resistance_profile | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ fenotipo_form.idsa_resistance_profile | as_crispy_field }}
+                      </div>
+                  </div>
+                  <div class="card-body form-row">
+                      <div class="form-group col-md-4 mb-0">
+                        {{ fenotipo_form.cloxa_test | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-4 mb-0">
+                        {{ fenotipo_form.mbl_test | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-4 mb-0">
+                        {{ fenotipo_form.esbl_test | as_crispy_field }}
+                      </div>
+                  </div>
+                  <div class="card-body form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ fenotipo_form.invitro_serotype | as_crispy_field }}
+                      </div>
+                  </div>
+                </div>
+              <div class="card">
+                <div class="card-header" id="headingFive">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                      Datos moleculares
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseFive" class="collapse" aria-labelledby="headingFour" data-parent="#accordion_form">
+                  <div class="card-body form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ secuencia_analisis_form.clonal_complex | as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ secuencia_analisis_form.insilico_serotype | as_crispy_field }}
+                      </div>
                   </div>
                 </div>
               </div>
             </div>
-            <input type="submit" value="BUSCAR"/>
             <button type="submit" form="filtros_busqueda" value="BUSCAR">BUSCAR</button>
+          </div>
         </form>
-
 
     <!-- End page content -->
     </div>

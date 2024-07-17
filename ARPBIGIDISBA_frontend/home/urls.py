@@ -1,11 +1,12 @@
 from django.urls import path
 from . import views
-from .views import ResultadosTableView
+from .views import ResultadosListView # ResultadosTableView,
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('busqueda', views.busqueda, name='busqueda'),
-    path('resultados', ResultadosTableView.as_view(), name='resultados'),
+    # path('resultados', ResultadosTableView.as_view(), name='resultados'),
+    path('resultados', ResultadosListView.as_view(), name='resultados'),
     path('pipelines', views.pipelines, name='pipelines'),
     path('dashboard', views.dashboard, name='dashboard'),
     path('documentacion', views.documentacion, name='documentacion'),
