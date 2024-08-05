@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from django.db.models import Field
+from django_tables2_column_shifter.tables import ColumnShiftTableBootstrap4Responsive, ColumnShiftTable, ColumnShiftTableBootstrap5Responsive
 
 from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral, MetadataClinic, FilePath
 
@@ -27,7 +28,9 @@ def create_dynamic_table(*models):
 
             pass
 
-    return type('CombinedTable', (tables.Table,), attrs)
+    # NewDynamicClass = type('NewDynamicClass', (ColumnShiftTableBootstrap5, tables.Table), {})
+
+    return type('CombinedTable', (ColumnShiftTableBootstrap4Responsive, ColumnShiftTable, tables.Table), attrs)
 
 
 CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)

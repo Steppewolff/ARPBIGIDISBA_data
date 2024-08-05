@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'bootstrap4',
     'bootstrap5',
     'advanced_filters',
+    'django_filters',
+    'django_tables2_column_shifter',
 
     # Project Apps
     'home',

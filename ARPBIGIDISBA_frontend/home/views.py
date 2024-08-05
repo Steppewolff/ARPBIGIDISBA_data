@@ -4,10 +4,12 @@ from django.views.generic.edit import FormMixin, ModelFormMixin
 from django.views.generic.list import ListView
 from django.views.generic.base import TemplateView
 from django_tables2 import SingleTableView, SingleTableMixin
+from django_filters.views import FilterView
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
-from .tables import MetadataGeneralTable, create_dynamic_table, CombinedTable
+from .tables import CombinedTable
 from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
+from .filters import MultiFilter
 
 
 # Create your views here.
@@ -41,15 +43,19 @@ def busqueda(request):
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
 
-class ResultadosListView(SingleTableView):
+class ResultadosListView(SingleTableMixin, FilterView):
+    table_class = CombinedTable
     model = MetadataGeneral
     template_name = 'resultados.html'
-    table_class = CombinedTable
+    filterset_class = MultiFilter
 
     def get_context_data(self, **kwargs):
-        context = super(ResultadosListView, self).get_context_data(**kwargs)
+        # context = super(ResultadosListView, self).get_context_data(**kwargs)
 
-
+        context = super().get_context_data(**kwargs)
+        context['filter'] = self.get_filterset(self.get_filterset_class())
+        print(context['filter'].form)  # Imprime el formulario del filtro para depuración
+        return context
 
         context['FilePath_list'] = FilePath.objects.all()
         context['MetadataClinic_list'] = MetadataClinic.objects.all()
@@ -67,7 +73,7 @@ class ResultadosListView(SingleTableView):
         parameters = request.POST.copy()
         parameters_used = parameters.copy()
         for parameter, value in parameters.items():
-            if parameter == 'csrfmiddlewaretoken' or value == '' or value == 'nome':
+            if parameter == 'csrfmiddlewaretoken' or value == '' or value == 'none':
                 parameters_used.pop(parameter)
             else:
                 for model in apps.get_models():

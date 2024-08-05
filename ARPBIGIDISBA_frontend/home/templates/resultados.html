@@ -1,7 +1,9 @@
 {% extends "home_template.html" %}
 
+{% load crispy_forms_tags %}
 {% load django_tables2 %}
 {% load render_table from django_tables2 %}
+{% load bootstrap5 %}
 
     {% block head %}
     <script src="/static/js/admin_js.js"></script>
@@ -39,7 +41,12 @@
         <!-- Table Results -->
         <h2>Resultados de la búsqueda</h2>
         <div class="w3-container">
-<!--            {% render_table object_list %}-->
+            {% if filter %}
+                <form method="get">
+                    {% bootstrap_form filter.form layout='inline' %}
+                    {% bootstrap_button 'filter' %}
+                </form>
+            {% endif %}
             {% render_table table %}
         </div>
 

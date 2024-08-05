@@ -27,11 +27,17 @@ class MetadataGeneralForm(ModelForm):
 
 
 class MetadataClinicForm(ModelForm):
-    sample_type = ModelChoiceField(queryset=MetadataClinic.objects.values_list('sample_type', flat=True).distinct(),
-                               to_field_name='sample_type', label='Tipo de muestra', empty_label='Selecciona un tipo de muestra', required=False)
+    # sample_type = ModelChoiceField(queryset=MetadataClinic.objects.values_list('sample_type__sample', flat=True).distinct(),
+    #                            to_field_name='sample_type', label='Tipo de muestra', empty_label='Selecciona un tipo de muestra', required=False)
+    sample_type = ModelChoiceField(queryset=SampleType.objects.all(), widget=Select(),
+                               to_field_name='sample', label="Tipo de muestra", empty_label='Selecciona un tipo de muestra', required=False)
+    # attrs={'id': .id}
     collection_ward = ModelChoiceField(queryset=MetadataClinic.objects.values_list('collection_ward', flat=True).distinct(),
                               to_field_name="collection_ward", label='Departamento', empty_label='Selecciona un departamento',
                               required=False)
+    #
+    # def label_from_instance(self, obj):
+    #     return f'{obj.first_name}'
 
     class Meta:
         model = MetadataClinic
@@ -39,7 +45,7 @@ class MetadataClinicForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MetadataClinicForm, self).__init__(*args, **kwargs)
-        # self.fields["sample_type"].label_from_instance = lambda obj: obj.sample_type
+        self.fields['sample_type'].label_from_instance = lambda obj: obj.sample
 
 
 class HospitalForm(ModelForm):
