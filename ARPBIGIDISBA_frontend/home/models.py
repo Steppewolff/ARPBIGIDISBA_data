@@ -146,7 +146,7 @@ class DjangoSession(models.Model):
 
 class FilePath(models.Model):
     file_path_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField('MetadataGeneral', models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField('MetadataGeneral', models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     fastq_path = models.CharField(max_length=255, blank=True, null=True)
     denovo_assembly_path = models.CharField(max_length=255, blank=True, null=True)
     assembler = models.ForeignKey(Assembler, models.DO_NOTHING, db_column='assembler', blank=True, null=True)
@@ -257,7 +257,7 @@ class MetadataGeneral(models.Model):
 
 class MetadataClinic(models.Model):
     clinic_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     patient_id = models.CharField(max_length=255, blank=True, null=True)
     sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type', blank=True, null=True)
     hospital = models.ForeignKey(Hospital, models.DO_NOTHING, db_column='hospital', blank=True, null=True)
@@ -270,7 +270,7 @@ class MetadataClinic(models.Model):
 
 class Mic(models.Model):
     mic_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     pip = models.CharField(max_length=10, blank=True, null=True)
     pip_clinical_category = models.CharField(max_length=2, blank=True, null=True)
     pip_tz = models.CharField(max_length=10, blank=True, null=True)
@@ -356,7 +356,7 @@ class MutationalResistome(models.Model):
 
 class PhenotypicData(models.Model):
     phenotypic_data_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     ab_susceptibility_method = models.CharField(max_length=100, blank=True, null=True, verbose_name="Test susceptibilidad antibiótica")
     mic = models.ForeignKey(Mic, models.DO_NOTHING, blank=True, null=True)
     ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="Perfil ECDC")
@@ -377,7 +377,7 @@ class PhenotypicData(models.Model):
 
 class SequenceAnalysis(models.Model):
     sequence_analysis_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     mlst_allelic_profile = models.JSONField(blank=True, null=True, verbose_name="Perfil alélico MLST")
     sequence_type = models.CharField(max_length=10, blank=True, null=True, verbose_name="Tipo de secuencia")
     clonal_complex = models.CharField(max_length=10, blank=True, null=True, verbose_name="Complejo clonal")
@@ -400,7 +400,7 @@ class SequenceAnalysis(models.Model):
 
 class SequencingInfo(models.Model):
     sequencing_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True)
+    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     sequencing_technology = models.ForeignKey('SequencingTechnology', models.DO_NOTHING,
                                               db_column='sequencing_technology', blank=True, null=True)
     sequencing_platform = models.ForeignKey('SequencingPlatform', models.DO_NOTHING, db_column='sequencing_platform',
