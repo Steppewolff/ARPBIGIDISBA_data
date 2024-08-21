@@ -2,6 +2,8 @@
 
 {% load crispy_forms_tags %}
 {% load django_tables2 %}
+{% load querystring from django_tables2 %}
+{% load export_url from django_tables2 %}
 {% load render_table from django_tables2 %}
 {% load bootstrap5 %}
 
@@ -33,7 +35,7 @@
         <!-- Parámetros búsqueda -->
         <h2>Parámetros de la búsqueda</h2>
         <div class="w3-container">
-            {% for parameter, value in parameters_used.items %}
+            {% for parameter, value in verbose_used.items %}
                 <p><b>{{ parameter }} : </b> {{ value }}</p>
             {% endfor %}
         </div>
@@ -41,12 +43,50 @@
         <!-- Table Results -->
         <h2>Resultados de la búsqueda</h2>
         <div class="w3-container">
-            {% if filter %}
-                <form method="get">
-                    {% bootstrap_form filter.form layout='inline' %}
-                    {% bootstrap_button 'filter' %}
-                </form>
-            {% endif %}
+
+                <div class="accordion" id="accordion_filter">
+                  {% if filter %}
+                  <div class="card accordion-group">
+                    <div class="card-header accordion-heading" id="headingFilterOne">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFilterOne" aria-expanded="true" aria-controls="collapseFilterOne" data-parent="#accordion_filter" href="#collapseFilterOne">
+                          Filtrar resultados
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapseFilterOne" class="accordion-body collapse" aria-labelledby="headingFilter" data-parent="#accordion_filter">
+                      <div class="card-body form-row">
+                          <div class="form-group col-md-6 mb-0">
+                            <form action="{% url 'resultados' %}" method="POST">
+                                {% csrf_token %}
+
+                                {% bootstrap_form filter.form layout='inline' %}
+                                {% bootstrap_button 'Filtrar' %}
+                            </form>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                  <div class="card accordion-group">
+                    <div class="card-header accordion-heading" id="headingPrint">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapsePrint" aria-expanded="true" aria-controls="collapsePrint" data-parent="#accordion_filter" href="#collapsePrint">
+                          Exportar resultados
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="collapsePrint" class="accordion-body collapse" aria-labelledby="headingPrint" data-parent="#accordion_filter">
+                      <div class="card-body form-row">
+                          <div class="form-group col-md-6 mb-0">
+                            <form method="GET">
+                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a Excel</a>
+                            </form>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             {% render_table table %}
         </div>
 

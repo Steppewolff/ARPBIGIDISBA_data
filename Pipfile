@@ -17,6 +17,7 @@ gunicorn = "*"
 django-advanced-filters = "*"
 django-filter = "*"
 django-tables2-column-shifter = "*"
+tablib = "*"
 
 [dev-packages]
 

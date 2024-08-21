@@ -1,9 +1,7 @@
 from django.apps import apps
 from django.shortcuts import render, redirect
-from django.views.generic.edit import FormMixin, ModelFormMixin
-from django.views.generic.list import ListView
-from django.views.generic.base import TemplateView
-from django_tables2 import SingleTableView, SingleTableMixin
+from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
+from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
@@ -50,11 +48,11 @@ class ResultadosListView(SingleTableMixin, FilterView):
     filterset_class = MultiFilter
 
     def get_context_data(self, **kwargs):
-        # context = super(ResultadosListView, self).get_context_data(**kwargs)
-
+        verbose_used = self.request.session.get('verbose_used', {})
         context = super().get_context_data(**kwargs)
         context['filter'] = self.get_filterset(self.get_filterset_class())
-        print(context['filter'].form)  # Imprime el formulario del filtro para depuración
+        context['verbose_used'] = verbose_used
+
         return context
 
         context['FilePath_list'] = FilePath.objects.all()
@@ -66,75 +64,88 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
         return context
 
+    def get_table(self, **kwargs):
+        qs=self.get_queryset()
+        table = self.table_class(data=qs, **kwargs)
+
+        RequestConfig(self.request).configure(table)
+        return table
+
+    def get(self, request, *args, **kwargs):
+        export_format = request.GET.get('_export', None)
+
+        if TableExport.is_valid_format(export_format):
+            table = self.get_table()
+            exporter = TableExport(export_format, table)
+            return exporter.response('File_Name.{}'.format(export_format))
+
+        return super().get(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data(**kwargs)
 
+        return render(request, 'resultados.html', context=context)
+
+    def update_parameters(self, request, *args, **kwargs):
         parameters = request.POST.copy()
-        parameters_used = parameters.copy()
+        parameters_used = request.session.get('parameters_used', {})
+        verbose_used = request.session.get('verbose_used', {})
         for parameter, value in parameters.items():
-            if parameter == 'csrfmiddlewaretoken' or value == '' or value == 'none':
-                parameters_used.pop(parameter)
+            if parameter == 'csrfmiddlewaretoken' or value == 'none':
+                pass
+            elif value == '' :
+                if parameter in parameters_used:
+                    parameters_used.pop(parameter)
+                    for model in apps.get_models():
+                        for field in model._meta.get_fields():
+                            if field.name == parameter:
+                                new_name = field.verbose_name
+                                verbose_used.pop(new_name)
+                                break
+                else:
+                    pass
             else:
                 for model in apps.get_models():
                     for field in model._meta.get_fields():
-                        # field_name = model._meta.get_field(parameter)
                         if field.name == parameter:
                             new_name = field.verbose_name
-                            parameters_used[str(new_name)] = parameters_used.pop(parameter)
+                            parameters_used[field.name] = value
+                            verbose_used[str(new_name)] = value
+                            break
 
-        context['parameters_used'] = parameters_used
-
-        return render(request, 'resultados.html', context=context)
+        self.request.session['parameters_used'] = parameters_used
+        self.request.session['verbose_used'] = verbose_used
 
     def get_queryset(self, *args, **kwargs):
         qs = super(ResultadosListView, self).get_queryset(*args, **kwargs)
         metadatageneral_fields=[field.name for field in MetadataGeneral._meta.get_fields()]
-        filters = self.request.POST.copy()
-        for filter, value in filters.items():
+        self.update_parameters(self.request)
+        filter_param = self.request.session.get('parameters_used', {})
+        for filter, value in filter_param.items():
             if filter not in ['encoding', 'csrfmiddlewaretoken', '__len__'] and value != '':
 
                 if filter in metadatageneral_fields:
                     kwargs = {f'{filter}': value}
 
                 else:
-                    # isolate_ids = self.get_context_data().get(filter)
                     for model in apps.get_models():
                         if filter in [field.name for field in model._meta.get_fields()]:
                             filter_model = model.__name__.lower()
                             break
-                        else:
-                            print(f'The field {filter} is not present in {model} model')
 
                     if 'comparison_' in str(filter):
                         filter_name = filter.replace('comparison_', '')
-                        kwargs = {f'{filter_model}__{filter_name}__{value}': filters.get(filter_name)}
+                        kwargs = {f'{filter_model}__{filter_name}__{value}': filter_param.get(filter_name)}
 
                     else:
                         kwargs = {f'{filter_model}__{filter}': value}
 
-
                 qs = qs.filter(**kwargs)
 
         qs = qs.filter().order_by("isolate_name")
+
         return qs
-
-
-# class ResultadosTableView(SingleTableView):
-#     model = Mic
-#     template_name = 'resultados.html'
-#     table_class = MicTable
-#
-#     # if request.method == 'POST':
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         return context
-#
-#     def get_queryset(self, *args, **kwargs):
-#         qs = super(ResultadosTableView, self).get_queryset(*args, **kwargs)
-#         qs = qs.order_by("mic_id")
-#         return qs
-
 
 def pipelines(request):
     return render(request, 'pipelines.html')
