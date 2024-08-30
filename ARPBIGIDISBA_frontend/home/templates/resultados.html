@@ -26,7 +26,7 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 
       <!-- Header -->
-      <div class="w3-container" style="margin-top:80px" id="showcase">
+      <div class="w3-container" style="margin-top:10px" id="showcase">
         <h1 class="w3-jumbo"><b>Resultados</b></h1>
         <h3 class="w3-xxxlarge w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
         <hr style="width:50px;border:5px solid red" class="w3-round">
@@ -80,7 +80,9 @@
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
                             <form method="GET">
-                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a Excel</a>
+                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
+                                <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
+                                <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
                             </form>
                           </div>
                       </div>

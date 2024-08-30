@@ -77,7 +77,7 @@ class ResultadosListView(SingleTableMixin, FilterView):
         if TableExport.is_valid_format(export_format):
             table = self.get_table()
             exporter = TableExport(export_format, table)
-            return exporter.response('File_Name.{}'.format(export_format))
+            return exporter.response('arpbig_data_export.{}'.format(export_format))
 
         return super().get(request, *args, **kwargs)
 
@@ -138,8 +138,11 @@ class ResultadosListView(SingleTableMixin, FilterView):
                         filter_name = filter.replace('comparison_', '')
                         kwargs = {f'{filter_model}__{filter_name}__{value}': filter_param.get(filter_name)}
 
-                    else:
+                    elif filter_model in metadatageneral_fields:
                         kwargs = {f'{filter_model}__{filter}': value}
+
+                    else:
+                        kwargs = {f'metadataclinic__{filter_model}__{filter}': value}
 
                 qs = qs.filter(**kwargs)
 
@@ -149,10 +152,6 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
 def pipelines(request):
     return render(request, 'pipelines.html')
-
-
-def dashboard(request):
-    return render(request, 'dashboard.html')
 
 
 def documentacion(request):

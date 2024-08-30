@@ -1,0 +1,74 @@
+{% extends "home_template.html" %}
+
+{% load plotly_dash %}
+
+    {% block title %}
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+      <span>Base de datos ARPBIG</span>
+    </header>
+
+    {% endblock %}
+
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+          <!-- Header -->
+          <div class="w3-container" style="margin-top:10px;" id="showcase">
+            <h1 class="w3-jumbo"><b>Dashboard</b></h1>
+            <h3 class="w3-xxxlarge w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
+            <h4> Bienvenido, {{ user.username }}</h4>
+            <hr style="width:50px;border:5px solid red" class="w3-round">
+          </div>
+          <div class="w3-container" style="display: flex; flex-direction: column; height: max-content; box-sizing: border-box; gap: 0;">
+                <!-- Fila superior con 1 elemento -->
+             <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 1px; margin: 0">
+                     Complejo clonal
+                 </div>
+             </div>
+             <div class="w3-section" style="flex-shrink: 0; min-height: 0; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 1px; flex-shrink:0; min-height: 0; margin: 0;">
+                     {% plotly_app name="histograma" ratio=0.4 %}
+                 </div>
+             </div>
+             <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     Distribución geográfica
+                 </div>
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     Tabla resumen
+                 </div>
+             </div>
+             <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 10px; margin: 0;">
+                      {% plotly_app name="mapa" ratio=0.9 %}
+                 </div>
+                 <div style="flex: 1; padding: 10px; margin: 0;">
+                      {% plotly_app name="tabla" ratio=0.9 %}
+                 </div>
+             </div>
+
+    <!-- Fila inferior con 2 elementos multiplot -->
+             <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     Pie charts
+                 </div>
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     Scater plot
+                 </div>
+             </div>
+             <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     {% plotly_app name="piechart" ratio=1 %}
+                 </div>
+                 <div style="flex: 1; padding: 1px; margin: 0;">
+                     {% plotly_app name="dispersion" ratio=1 %}
+                 </div>
+             </div>
+        </div>
+    </div>
+    {% endblock %}

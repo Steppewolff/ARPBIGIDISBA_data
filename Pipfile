@@ -18,6 +18,10 @@ django-advanced-filters = "*"
 django-filter = "*"
 django-tables2-column-shifter = "*"
 tablib = "*"
+pandas = "*"
+plotly = "*"
+dash = "*"
+django-plotly-dash = "*"
 
 [dev-packages]
 

@@ -49,15 +49,19 @@ class MetadataClinicForm(ModelForm):
 
 
 class HospitalForm(ModelForm):
-    country = ModelChoiceField(queryset=Hospital.objects.values_list('country', flat=True).distinct(),
-                               to_field_name="country", label='País', empty_label='Selecciona un país', required=False)
+    # country = ModelChoiceField(queryset=Hospital.objects.all('country', flat=True).distinct(),
+    #                            to_field_name="country", label='País', empty_label='Selecciona un país', required=False)
+    country = ModelChoiceField(queryset=Hospital.objects.values_list('country', flat=True).distinct(), widget=Select(),
+                               to_field_name='country', label="País", empty_label='Selecciona un país', required=False)
+
+
     region = ModelChoiceField(queryset=Hospital.objects.values_list('region', flat=True).distinct(),
-                              to_field_name="region", label='Región', empty_label='Selecciona una región',
+                              to_field_name="clinic_id", label='Región', empty_label='Selecciona una región',
                               required=False)
     town = ModelChoiceField(queryset=Hospital.objects.values_list('town', flat=True).distinct(), to_field_name="town",
                             label='Localidad', empty_label='Selecciona una localidad', required=False)
     hospital = ModelChoiceField(queryset=Hospital.objects.values_list('hospital_name', flat=True).distinct(),
-                                to_field_name="hospital_name", label='Hospital', empty_label='Selecciona un hospital',
+                                to_field_name="clinic_id", label='Hospital', empty_label='Selecciona un hospital',
                                 required=False)
 
     class Meta:

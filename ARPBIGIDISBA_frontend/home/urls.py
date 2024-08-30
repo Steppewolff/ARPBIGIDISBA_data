@@ -7,10 +7,7 @@ urlpatterns = [
     path('busqueda', views.busqueda, name='busqueda'),
     path('resultados', ResultadosListView.as_view(), name='resultados'),
     path('pipelines', views.pipelines, name='pipelines'),
-    path('dashboard', views.dashboard, name='dashboard'),
     path('documentacion', views.documentacion, name='documentacion'),
     path('cargadatos', views.cargadatos, name='cargadatos'),
     path('contacto', views.contacto, name='contacto'),
 ]
-
-# path('busqueda', views.busqueda, name='busqueda'),

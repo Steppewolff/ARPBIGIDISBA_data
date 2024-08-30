@@ -49,9 +49,12 @@ INSTALLED_APPS = [
     'advanced_filters',
     'django_filters',
     'django_tables2_column_shifter',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'channels',  # Necesario para que Dash funcione con Django
 
     # Project Apps
     'home',
+    'dashboard',
 ]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
@@ -67,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_plotly_dash.middleware.BaseMiddleware',
 ]
 
 ROOT_URLCONF = 'ARPBIGIDISBA_frontend.urls'
@@ -87,12 +91,12 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'ARPBIGIDISBA_frontend.asgi.application'
+
 WSGI_APPLICATION = 'ARPBIGIDISBA_frontend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+# django_plotly_dash configuration to use frames within HTML documents
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 DATABASES = {
     # 'default': {
@@ -173,3 +177,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}

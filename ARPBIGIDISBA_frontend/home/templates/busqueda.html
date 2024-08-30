@@ -26,7 +26,7 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 
           <!-- Header -->
-          <div class="w3-container" style="margin-top:80px" id="showcase">
+          <div class="w3-container" style="margin-top:10px" id="showcase">
             <h1 class="w3-jumbo"><b>Búsqueda avanzada</b></h1>
             <h3 class="w3-xxxlarge w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
             <hr style="width:50px;border:5px solid red" class="w3-round">
@@ -71,7 +71,10 @@
                 </div>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion_form">
                   <div class="card-body">
-                    {% crispy hospital_form %}
+                    {{ hospital_form.country | as_crispy_field }}
+                    {{ hospital_form.region | as_crispy_field }}
+                    {{ hospital_form.town | as_crispy_field }}
+                    {{ hospital_form.hospital | as_crispy_field }}
                   </div>
                 </div>
               </div>

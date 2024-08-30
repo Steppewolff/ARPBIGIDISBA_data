@@ -24,7 +24,7 @@ def create_dynamic_table(*models):
 
                 pass
 
-            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'export_formats' : '["csv", "xlsx"]', 'attrs': {
+            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'export_formats' : '["csv", "xlsx", "txt"]', 'attrs': {
                 'class': 'table table-dark table-striped table-hover table-responsive results'}})
 
             pass
