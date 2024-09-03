@@ -18,13 +18,16 @@ def create_dynamic_table(*models):
                     column_name = f'{field.name}'
                     attrs[column_name] = tables.Column(accessor=accessor)
                 else:
-                    accessor = f'{model._meta.model_name}.{field.name}'
-                    column_name = f'{model._meta.model_name}_{field.name}'
-                    attrs[column_name] = tables.Column(accessor=accessor)
+                    if '_id' in field.name:
+                        pass
+                    else:
+                        accessor = f'{model._meta.model_name}.{field.name}'
+                        column_name = f'{model._meta.model_name}_{field.name}'
+                        attrs[column_name] = tables.Column(accessor=accessor)
 
                 pass
 
-            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'export_formats' : '["csv", "xlsx", "txt"]', 'attrs': {
+            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'exclude' : ('clinic_id', 'isolate_id',), 'export_formats' : '["csv", "xlsx", "txt"]', 'attrs': {
                 'class': 'table table-dark table-striped table-hover table-responsive results'}})
 
             pass

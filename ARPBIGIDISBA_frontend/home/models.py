@@ -176,6 +176,8 @@ class Hospital(models.Model):
     country = models.CharField(max_length=255, blank=True, null=True, verbose_name="País")
     region = models.CharField(max_length=255, blank=True, null=True, verbose_name="Región")
     town = models.CharField(max_length=255, blank=True, null=True, verbose_name="Localidad")
+    geo_longitude = models.FloatField(blank=True, null=True, verbose_name="Longitud")
+    geo_latitude = models.FloatField(blank=True, null=True, verbose_name="Latitud")
 
     class Meta:
         managed = True

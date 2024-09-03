@@ -22,13 +22,6 @@ del cnt_clonal_complex[None]
 
 pd_fig1 = pd.DataFrame.from_dict(cnt_clonal_complex, orient='index', columns=['values']).reset_index()
 
-# Datos de la tabla
-df_tabla = pd.DataFrame({
-    'ID': [1, 2, 3],
-    'Nombre': ['Elemento 1', 'Elemento 2', 'Elemento 3'],
-    'Descripción': ['Descripción 1', 'Descripción 2', 'Descripción 3']
-})
-
 # Gráfico 1: Histograma
 app1 = DjangoDash('histograma')
 # fig1 = px.bar(pd.DataFrame.from_dict(cnt_clonal_complex, orient='index',columns=['values']).reset_index(), x='values', y='index', title='Gráfico de Barras')
@@ -65,47 +58,75 @@ app2.layout = html.Div([dcc.Graph(figure=fig2)])
 # Gráfico 3: Dispersión
 app3 = DjangoDash('dispersion')
 fig3 = px.scatter(df, x='Categoría', y='Valores')
-app3.layout = html.Div([dcc.Graph(figure=fig3)])
+app3.layout = html.Div([
+    dcc.Dropdown(
+        id='my-dropdown',
+        options=[
+            {'label': 'MDR', 'value': 'MDR'},
+            {'label': 'XDR', 'value': 'XDR'},
+            {'label': 'PDR', 'value': 'PDR'},
+            {'label': 'multiS', 'value': 'multiS'},
+        ],
+        value='MDR'
+    ),
+
+    dcc.Graph(
+        id='my-graph',
+        figure=fig3
+    )
+])
 
 
 # Datos para el mapa
 hospitals = list(MetadataClinic.objects.values_list('hospital__hospital_name'))
 hospitals = [x[0] for x in hospitals]
-cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
+hospital_freq = Counter(hospitals)
+hospitals = list(hospital_freq.keys())
+latitudes = list(MetadataClinic.objects.values_list('hospital__geo_latitude').distinct())
+latitudes = [x[0] for x in latitudes]
+longitudes = list(MetadataClinic.objects.values_list('hospital__geo_longitude').distinct())
+longitudes = [x[0] for x in longitudes]
+frequencies = list(hospital_freq.values())
+
+# cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
 
 df_map = pd.DataFrame({
-    'Ciudad': ['Madrid', 'Barcelona', 'Valencia'],
-    'Latitud': [40.4168, 41.3851, 39.4699],
-    'Longitud': [-3.7038, 2.1734, -0.3763],
-    'Población': [3223000, 1602000, 791413],
-    'Color': ['Madrid', 'Barcelona', 'Valencia']
-})
-
-df_map = pd.DataFrame({
-    'Ciudad': ['Madrid', 'Barcelona', 'Valencia'],
-    'Latitud': [40.4168, 41.3851, 39.4699],
-    'Longitud': [-3.7038, 2.1734, -0.3763],
-    'Población': [3223000, 1602000, 791413],
-    'Color': ['Madrid', 'Barcelona', 'Valencia']
+    'Hospital': hospitals,
+    'Latitud': latitudes,
+    'Longitud': longitudes,
+    'Total aislados': frequencies,
+    'Color': hospitals
 })
 
 #Gráfico: Mapa
 app4 = DjangoDash('mapa')
 fig4 = px.scatter_mapbox(
-    df_map, lat='Latitud', lon='Longitud', hover_name='Ciudad', zoom=5, color='Color', size='Población'
+    df_map, lat='Latitud', lon='Longitud', hover_name='Hospital', zoom=3, color='Color', size='Total aislados'
 )
 fig4.update_layout(mapbox_style="open-street-map")
 fig4.update_layout(title='Mapa con Puntos de Datos', margin={"r":0,"t":0,"l":0,"b":0})
 app4.layout = html.Div([dcc.Graph(figure=fig4)])
 
 # Tabla resumen
+
+# Datos de la tabla
+st_list = list(cnt_clonal_complex.keys())
+st_freq = list(cnt_clonal_complex.values())
+st_list = [str(x) for x in st_list]
+st_freq = [str(x) for x in st_freq]
+df_tabla = pd.DataFrame({
+    'Sequence_type': st_list,
+    'Frecuencia': st_freq,
+    # 'Descripción': ['Descripción 1', 'Descripción 2', 'Descripción 3']
+})
+
 app5 = DjangoDash('tabla')
 
 fig5 = go.Figure(data=[go.Table(
     header=dict(values=list(df_tabla.columns),
                 fill_color='paleturquoise',
                 align='left'),
-    cells=dict(values=[df_tabla.ID, df_tabla.Nombre, df_tabla.Descripción],
+    cells=dict(values=[df_tabla.Sequence_type, df_tabla.Frecuencia],
                fill_color='lavender',
                align='left'))
 ])
@@ -117,13 +138,22 @@ app6 = DjangoDash('piechart')
 
 fig6 = make_subplots(rows=2, cols=2, specs=[[{"type": "pie"}, {"type": "pie"}], [{"type": "pie"}, {"type": "pie"}]])
 
-df = px.data.gapminder().query("year == 2007").query("continent == 'Americas'")
+df_st = pd.DataFrame()
+
+df_st['ST'] = ["ST235", "ST111", "ST233", "ST244",
+                "ST357", "ST308", "ST175", "ST277",
+                "ST654", "ST298"
+                ]
+# **************************************************************************************************************
+# Crear aqui el df para mostrar la frecuencia en piecharts de cada ST con MDR, XDR, MultiS y R ¿R = a PDR?
 
 fig6.add_trace(
     go.Pie(
-        values=[27, 11, 25, 8, 1, 3, 25],
-        labels=["US", "China", "European Union", "Russian Federation",
-                "Brazil", "India", "Rest of World"
+        title='multiS',
+        values=[27, 11, 25, 8, 1, 3, 25, 2, 8, 7],
+        labels=["ST235", "ST111", "ST233", "ST244",
+                "ST357", "ST308", "ST175", "ST277",
+                "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
         name="CO2 Emissions"),
@@ -132,9 +162,11 @@ fig6.add_trace(
 
 fig6.add_trace(
     go.Pie(
-        values=[27, 11, 25, 8, 1, 3, 25],
-        labels=["US", "China", "European Union", "Russian Federation",
-                "Brazil", "India", "Rest of World"
+        title='R',
+        values=[27, 11, 25, 8, 1, 3, 25, 2, 8, 7],
+        labels=["ST235", "ST111", "ST233", "ST244",
+                "ST357", "ST308", "ST175", "ST277",
+                "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
         name="CO2 Emissions"),
@@ -143,45 +175,30 @@ fig6.add_trace(
 
 fig6.add_trace(
     go.Pie(
-        values=[27, 11, 25, 8, 1, 3, 25],
-        labels=["US", "China", "European Union", "Russian Federation",
-                "Brazil", "India", "Rest of World"
+        title='XDR',
+        values=[27, 11, 25, 8, 1, 3, 25, 15, 9, 11],
+        labels=["ST235", "ST111", "ST233", "ST244",
+                "ST357", "ST308", "ST175", "ST277",
+                "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
-        name="CO2 Emissions"),
+        name="XDR"),
     row=2, col=1
 )
 
 fig6.add_trace(
     go.Pie(
-        values=[27, 11, 25, 8, 1, 3, 25],
-        labels=["US", "China", "European Union", "Russian Federation",
-                "Brazil", "India", "Rest of World"
+        title='MDR',
+        values=[27, 11, 25, 8, 1, 3, 25, 2, 8, 7],
+        labels=["ST235", "ST111", "ST233", "ST244",
+                "ST357", "ST308", "ST175", "ST277",
+                "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
         name="CO2 Emissions"),
     row=2, col=2
 )
-# pie_plot = go.Figure(go.Pie(
-#     labels=labels,            # Labels for the pie slices
-#     values=values,            # Values for the pie slices
-#     name='Pie Chart',         # Name for the trace (used in legends)
-#     pull=[0, 0.2, 0],         # Specify how much each slice should be pulled from the center (optional)
-#     textinfo='percent+label', # Information to display on the pie slices
-#     hoverinfo='label+percent',# Information to display on hover
-#     marker=dict(colors=['blue', 'green', 'red'], line=dict(color='white', width=2))  # Customize colors and borders
-# ))
 
 fig6.update_layout(height=500, width=500)
-
-# fig6.add_trace(
-#     px.pie(df, values='pop', names='country',
-#            title='Population of American continent',
-#            hover_data=['lifeExp'], labels={'lifeExp': 'life expectancy'}))
-#
-# fig6.add_trace(
-#     px.pie(df, values='pop', names='country',
-#            title='Population of American continent',
-#            hover_data=['lifeExp'], labels={'lifeExp': 'life expectancy'}))
 
 app6.layout = html.Div([dcc.Graph(figure=fig6)])
