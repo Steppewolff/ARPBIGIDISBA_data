@@ -142,7 +142,3 @@
 $(document).ready(function($) {
    $('.results').doubleScroll({resetOnWindowResize: true});
 });
-
-//document.addEventListener("DOMContentLoaded", () => {
-//    django.jQuery('.results').doubleScroll({resetOnWindowResize: true});
-//})

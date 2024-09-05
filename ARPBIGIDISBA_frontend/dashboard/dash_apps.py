@@ -156,7 +156,7 @@ fig6.add_trace(
                 "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
-        name="CO2 Emissions"),
+        name="multiS"),
     row=1, col=1
 )
 
@@ -169,7 +169,7 @@ fig6.add_trace(
                 "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
-        name="CO2 Emissions"),
+        name="R"),
     row=1, col=2
 )
 
@@ -195,7 +195,7 @@ fig6.add_trace(
                 "ST654", "ST298"
                 ],
         domain=dict(x=[0.5, 1.0]),
-        name="CO2 Emissions"),
+        name="MDR"),
     row=2, col=2
 )
 
