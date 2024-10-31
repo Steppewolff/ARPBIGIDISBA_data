@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-_m-1mo5%058umv#@eyi28m5p%(k^z&-#w7gz&&m53i$55sqogs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -123,8 +123,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': 'fernando',  # 'root',
-        'PASSWORD': 'password',  # 'Orgullovalor',
+        'USER': 'fernando',
+        'PASSWORD': 'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
         'HOST': '127.0.0.1',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
