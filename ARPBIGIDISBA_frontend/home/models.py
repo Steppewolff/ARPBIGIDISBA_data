@@ -169,12 +169,15 @@ class FlowcellKit(models.Model):
 
 
 class Hospital(models.Model):
-    hospital_id = models.AutoField(primary_key=True)
+    hospital_id = models.AutoField(primary_key=True, db_column='hospital_id')
     hospital_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nombre hospital")
     hospital_code = models.CharField(max_length=255, blank=True, null=True, verbose_name="Código hospital")
+    hospital_ccn = models.CharField(max_length=10, blank=True, null=True, verbose_name="Código CCN hospital")
+    hospital_codcnh = models.CharField(max_length=6, blank=True, null=True, verbose_name="Código CODCNH hospital")
     hospital_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Comentarios hospital")
     country = models.CharField(max_length=255, blank=True, null=True, verbose_name="País")
-    region = models.CharField(max_length=255, blank=True, null=True, verbose_name="Región")
+    region = models.CharField(max_length=255, blank=True, null=True, verbose_name="Comunidad autónoma")
+    sub_region = models.CharField(max_length=255, blank=True, null=True, verbose_name="Provincia")
     town = models.CharField(max_length=255, blank=True, null=True, verbose_name="Localidad")
     geo_longitude = models.FloatField(blank=True, null=True, verbose_name="Longitud")
     geo_latitude = models.FloatField(blank=True, null=True, verbose_name="Latitud")
