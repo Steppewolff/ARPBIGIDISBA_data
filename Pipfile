@@ -22,6 +22,7 @@ pandas = "*"
 plotly = "*"
 dash = "*"
 django-plotly-dash = "*"
+xlrd = "*"
 
 [dev-packages]
 

@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.db.models import ForeignKey, Q
 from django.shortcuts import render, redirect
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
@@ -13,7 +14,6 @@ from .filters import MultiFilter
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
-
 
 def busqueda(request):
     if request.method == 'POST':
@@ -100,7 +100,7 @@ class ResultadosListView(SingleTableMixin, FilterView):
                     for model in apps.get_models():
                         for field in model._meta.get_fields():
                             if field.name == parameter:
-                                new_name = field.verbose_name
+                                new_name = field.verbose_name.capitalize()
                                 verbose_used.pop(new_name)
                                 break
                 else:
@@ -109,9 +109,14 @@ class ResultadosListView(SingleTableMixin, FilterView):
                 for model in apps.get_models():
                     for field in model._meta.get_fields():
                         if field.name == parameter:
-                            new_name = field.verbose_name
+                            new_name = field.verbose_name.capitalize()
                             parameters_used[field.name] = value
                             verbose_used[str(new_name)] = value
+                            if isinstance(field, ForeignKey):
+                                model_id = field.related_model._meta.pk.name
+                                value = field.related_model.objects.get(Q((model_id, value))).__str__()
+                                verbose_used[str(new_name)] = value
+
                             break
 
         self.request.session['parameters_used'] = parameters_used

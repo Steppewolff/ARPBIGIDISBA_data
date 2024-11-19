@@ -1,0 +1,67 @@
+{% extends "home_template.html" %}
+
+    {% block title %}
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+      <span>Base de datos ARPBIG</span>
+    </header>
+
+    {% endblock %}
+
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+      <!-- Header -->
+      <div class="w3-container" style="margin-top:10px" id="showcase">
+        <h1 class="w3-jumbo"><b>Carga de datos</b></h1>
+        <h4 class="w3-text-red"><b>Interfaz para la carga de datos en la Base de datos ARPBIG IdISBa</b></h4>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+      </div>
+
+      <div style="display: block; margin:0 auto;">
+          <form action="{% url 'cargadatos' %}" method="POST" enctype="multipart/form-data"  id="upload_file">
+              {% csrf_token %}
+              <label for="fileselect" style="width: 100%;">Seleccione el archivo con la información:</label>
+              <input type="file" id="fileselect" name="fileselect" accept=".xlsx, .xls, .csv" style="width: 100%;" required>
+              <input type="submit" value="Cargar archivo" class="btn btn-primary">
+          </form>
+      </div>
+
+      <div>Nombre del archivo: {{ file.name }}</div>
+      <div>Datos: {{ df_json }}</div>
+
+
+      <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
+        <div>
+            <h3>Variables Input</h3>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+        </div>
+        <div>
+            <h3>Variables BDD</h3>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+            <div>Var1</div>
+        </div>
+      </div>
+
+      <hr style="width:100%;">
+
+      <div>
+          <a href="/admin"><button>Acceder a base de Datos</button></a>
+      </div>
+
+    <!-- End page content -->
+    </div>
+
+    {% endblock %}

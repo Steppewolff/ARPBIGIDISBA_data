@@ -8,6 +8,5 @@ urlpatterns = [
     path('resultados', ResultadosListView.as_view(), name='resultados'),
     path('pipelines', views.pipelines, name='pipelines'),
     path('documentacion', views.documentacion, name='documentacion'),
-    path('cargadatos', views.cargadatos, name='cargadatos'),
     path('contacto', views.contacto, name='contacto'),
 ]

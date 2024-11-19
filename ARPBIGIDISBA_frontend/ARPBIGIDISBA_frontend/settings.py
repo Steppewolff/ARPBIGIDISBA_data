@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # Project Apps
     'home',
     'dashboard',
+    'upload',
 ]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
@@ -74,6 +75,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'ARPBIGIDISBA_frontend.urls'
+
+APPEND_SLASH=True
 
 TEMPLATES = [
     {
