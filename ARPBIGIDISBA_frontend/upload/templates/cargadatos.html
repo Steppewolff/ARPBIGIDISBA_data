@@ -1,5 +1,9 @@
 {% extends "home_template.html" %}
 
+    {% block head %}
+    <script src="/static/js/admin_js.js"></script>
+    {% endblock %}
+
     {% block title %}
     <!-- Top menu on small screens -->
     <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
@@ -31,32 +35,92 @@
       </div>
 
       <div>Nombre del archivo: {{ file.name }}</div>
-      <div>Datos: {{ df_json }}</div>
 
+      {% if amr_mutations %}
+
+      <div>Datos:</div>
+      <div class="results" style="overflow: auto;">
+            <table class="table table-striped results" style="overflow: auto;">
+                <thead>
+                    <tr>
+                        {% for column in df_columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in df_rows %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+
+      <hr style="width:100%;">
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
         <div>
-            <h3>Variables Input</h3>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-        </div>
-        <div>
             <h3>Variables BDD</h3>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
-            <div>Var1</div>
+            <form action="{% url 'cargadatos' %}" method="POST" id="upload_matches">
+                <h4>Seleccione campo en la BDD para cada columna: </h4>
+                {% csrf_token %}
+                {% for df_column in df_columns %}
+                    <label for="variable_{{ df_column }}" style="text-align: left;">{{ df_column }}</label>
+                    <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" style="float: right;">
+                        {% for db_column in db_columns %}
+                            {% if db_column == 'No escribir en BDD' %}
+                                <option value="option_{{ db_column }}" selected="selected">{{ db_column }}</option>
+                            {% else %}
+                                <option value="option_{{ db_column }}">{{ db_column }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <br>
+                {% endfor %}
+                <input type="hidden" id="db_var_input" name="db_var_input">
+                <input type="submit" value="Guardar variables" class="btn btn-primary">
+            </form>
         </div>
       </div>
 
       <hr style="width:100%;">
 
+      <h3>Genes de resistencia a AB en archivo de entrada</h3>
+
+      {% for amr in amr_columns %}
+        <div>{{ amr }}</div>
+      {% endfor %}
+
+      <div class="results" style="overflow: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        {% for column in amr_loci %}
+                                <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in amr_mutations %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+
+      {% endif %}
+
+      <hr style="width:100%;">
+
+      <h3>Acceso a Admin de BDD</h3>
       <div>
           <a href="/admin"><button>Acceder a base de Datos</button></a>
       </div>

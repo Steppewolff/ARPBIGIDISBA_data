@@ -6,6 +6,7 @@ from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 import pandas as pd
+import numpy as np
 import os.path
 from tkinter import filedialog
 import json
@@ -350,11 +351,40 @@ def upload(request):
             return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
 
         df_json = df.to_json(orient='records')
+        df_columns = df.columns.tolist()
+        amr_loci = []
+        locus_pattern = r"PA ?\d{4}"
 
-        return render(request, 'cargadatos.html', {'df_json': df_json, 'file': file}) #'file_name': file_name,
+        for column in df_columns:
+            if re.search(locus_pattern, column):
+                amr_loci.append(column)
+
+        df_columns = [column for column in df_columns if not re.search(locus_pattern, column)]
+
+        db_columns = []
+        tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis', 'SequencingInfo']
+
+        df_noamr = df.filter(df_columns, axis=1)
+        df_rows = df_noamr.to_dict('split')['data']
+
+        for table in tables:
+            table_fields = apps.get_model('home', table)._meta.get_fields()
+            for field in table_fields:
+                if '_id' not in field.name:
+                    db_columns.append(field.name)
+
+        db_columns = sorted(db_columns)
+        db_columns.insert(0, 'No escribir en BDD')
+
+        df_amr = df.filter(amr_loci, axis=1)
+        df_amr.insert(0, 'isolate_name', df['Isolate'])
+        df_amr = df_amr.replace(np.nan, '-')
+        amr_mutations = df_amr.to_dict('split')['data']
+        amr_columns = amr_loci.copy()
+        amr_columns.insert(0, 'Isolate_name')
+
+        return render(request, 'cargadatos.html', {'df_json': df_json, 'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations})
+    elif request.method == 'POST' and 'db_var_input' in request.POST:
+        return render(request, 'home.html')
     else:
         return render(request, 'cargadatos.html')
-
-# class UploadListView(ListView):
-#     model = MetadataGeneral
-#     template_name = 'cargadatos.html'

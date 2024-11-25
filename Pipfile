@@ -23,6 +23,7 @@ plotly = "*"
 dash = "*"
 django-plotly-dash = "*"
 xlrd = "*"
+openpyxl = "*"
 
 [dev-packages]
 
