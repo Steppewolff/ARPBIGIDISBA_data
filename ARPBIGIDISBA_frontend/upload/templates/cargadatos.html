@@ -10,7 +10,6 @@
       <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
       <span>Base de datos ARPBIG</span>
     </header>
-
     {% endblock %}
 
     {% block content %}
@@ -65,7 +64,7 @@
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
         <div>
             <h3>Variables BDD</h3>
-            <form action="{% url 'cargadatos' %}" method="POST" id="upload_matches">
+            <form action="{% url 'upload_summary' %}" method="POST" id="upload_matches">
                 <h4>Seleccione campo en la BDD para cada columna: </h4>
                 {% csrf_token %}
                 {% for df_column in df_columns %}
@@ -91,7 +90,7 @@
 
       <h3>Genes de resistencia a AB en archivo de entrada</h3>
 
-      {% for amr in amr_columns %}
+      {% for amr in amr_loci %}
         <div>{{ amr }}</div>
       {% endfor %}
 
@@ -99,7 +98,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        {% for column in amr_loci %}
+                        {% for column in amr_columns %}
                                 <th>{{ column }}</th>
                         {% endfor %}
                     </tr>

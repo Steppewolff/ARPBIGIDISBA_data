@@ -1,10 +1,65 @@
 {% extends "home_template.html" %}
 
+    {% block head %}
+    <script src="/upload/static/js/upload.js"></script>
+    {% endblock %}
+
     {% block title %}
     <!-- Top menu on small screens -->
     <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
       <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
-      <span>Resumen de variables para carga en BDD</span>
+      <span>Base de datos ARPBIG</span>
     </header>
+    {% endblock %}
 
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+      <!-- Header -->
+      <div class="w3-container" style="margin-top:10px" id="showcase">
+        <h1 class="w3-jumbo"><b>Carga de datos</b></h1>
+        <h4 class="w3-text-red"><b>Resumen de variables a cargar en BDD</b></h4>
+        <hr style="width:50px;border:5px solid red" class="w3-round">
+      </div>
+
+      {% if all_fields %}
+        <div class="results" style="overflow: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Columna excel</th>
+                        <th>--></th>
+                        <th>Campo BDD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in all_fields %}
+                        <tr>
+                            <td>{{ field.0 }}</td>
+                            <td> </td>
+                            <td>{{ field.1 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+
+      <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
+<!--        <form action="{% url 'upload_summary' %}" method="POST" id="upload_button">-->
+<!--            {% csrf_token %}-->
+<!--            <input type="hidden" id="upload_order" name="upload_order">-->
+<!--            <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">-->
+<!--        </form>-->
+            <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">
+      </div>
+
+      {% endif %}
+
+      <div id="upload_modal" class="modal fade" role="dialog"></div>
+
+    </div>
+
+    </div>
     {% endblock %}

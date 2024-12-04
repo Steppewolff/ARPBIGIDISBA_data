@@ -1,5 +1,6 @@
 from django.apps import apps
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
@@ -384,7 +385,30 @@ def upload(request):
         amr_columns.insert(0, 'Isolate_name')
 
         return render(request, 'cargadatos.html', {'df_json': df_json, 'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations})
-    elif request.method == 'POST' and 'db_var_input' in request.POST:
-        return render(request, 'home.html')
+
     else:
         return render(request, 'cargadatos.html')
+
+def summary(request):
+    if request.method == 'POST' and 'db_var_input' in request.POST:
+        all_fields = {}
+        all_fields = [list(field) for field in request.POST.items()]
+        all_fields = [field for field in all_fields if 'variable_' in field[0] and field[1] != 'option_No escribir en BDD']
+
+        for index, field in enumerate(all_fields):
+            for index_list, value in enumerate(field):
+                if 'variable_' in value:
+                    field[index_list] = field[index_list].replace('variable_', '')
+                elif 'option_' in value:
+                    field[index_list] = field[index_list].replace('option_', '')
+                else:
+                    pass
+        return render(request, 'upload_summary.html', {'all_fields': all_fields}) # 'all_values': all_values})
+
+    # elif request.method == 'POST' and 'upload_order' in request.POST:
+    #     return render(request, 'cargadatos.html')
+    else:
+        pass
+
+def modal(request):
+    return render(request, 'upload_modal.html')
