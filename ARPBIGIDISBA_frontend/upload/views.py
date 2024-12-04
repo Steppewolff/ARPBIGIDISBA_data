@@ -405,10 +405,15 @@ def summary(request):
                     pass
         return render(request, 'upload_summary.html', {'all_fields': all_fields}) # 'all_values': all_values})
 
-    # elif request.method == 'POST' and 'upload_order' in request.POST:
-    #     return render(request, 'cargadatos.html')
     else:
         pass
 
 def modal(request):
+    # Comprobar si existen aislados con el mismo nombre en la base de datos, nombre sólo por un lado y nombre_proyecto por otro (aclararlo en el texto del modal)
+    # Comprobar si el nombre del Hospital existe en la tabla o no, para modificarlo si hace falta
+    # Comprobar si varias columnas del excel escriben a un mismo campo de la BDD
+    # Comprobar si una columna del excel escribe a varios campos de la BDD
+    # Pensar en más comprobaciones
+    # El botón de escribir en BDD hace el .save
+    # Ver cómo hacer los qs, usar Class Based Views, ver cual se ajusta mejor
     return render(request, 'upload_modal.html')

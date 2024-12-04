@@ -1,7 +1,8 @@
 {% extends "home_template.html" %}
+{% load static %}
 
     {% block head %}
-    <script src="/upload/static/js/upload.js"></script>
+    <script src="/static/js/upload.js"></script>
     {% endblock %}
 
     {% block title %}
@@ -47,11 +48,6 @@
       </div>
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
-<!--        <form action="{% url 'upload_summary' %}" method="POST" id="upload_button">-->
-<!--            {% csrf_token %}-->
-<!--            <input type="hidden" id="upload_order" name="upload_order">-->
-<!--            <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">-->
-<!--        </form>-->
             <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">
       </div>
 
