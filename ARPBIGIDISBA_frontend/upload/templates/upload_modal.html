@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="/static/js/upload.js"></script>
 </head>
 <body>
 <div class="modal-dialog" role="document">
@@ -18,9 +19,13 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-danger">Escribir datos en BDD</button>
-            <button type="button" class="btn btn-success">Revisar asignación de variables</button>
+            <button type="button" class="btn btn-success" onclick="desplegar_variables('reasignar')">Revisar asignación de variables</button>
+<!--            <button type="button" class="btn btn-success" value="Back">Revisar asignación de variables</button>-->
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
         </div>
+    </div>
+    <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
+        <p>Esta es la información del div que se puede mostrar u ocultar.</p>
     </div>
 </div>
 </body>

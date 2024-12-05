@@ -377,6 +377,9 @@ def upload(request):
         db_columns = sorted(db_columns)
         db_columns.insert(0, 'No escribir en BDD')
 
+        # Write the available database columns in the session
+        request.session['db_columns'] = db_columns
+
         df_amr = df.filter(amr_loci, axis=1)
         df_amr.insert(0, 'isolate_name', df['Isolate'])
         df_amr = df_amr.replace(np.nan, '-')
@@ -392,9 +395,11 @@ def upload(request):
 def summary(request):
     if request.method == 'POST' and 'db_var_input' in request.POST:
         all_fields = {}
+        # List with all the selected options in the db variables form
         all_fields = [list(field) for field in request.POST.items()]
-        all_fields = [field for field in all_fields if 'variable_' in field[0] and field[1] != 'option_No escribir en BDD']
 
+        # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
+        all_fields = [field for field in all_fields if 'variable_' in field[0]]
         for index, field in enumerate(all_fields):
             for index_list, value in enumerate(field):
                 if 'variable_' in value:
@@ -403,6 +408,13 @@ def summary(request):
                     field[index_list] = field[index_list].replace('option_', '')
                 else:
                     pass
+
+        # Write the selected options in the session
+        request.session['all_fields'] = all_fields
+
+        all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
+
+
         return render(request, 'upload_summary.html', {'all_fields': all_fields}) # 'all_values': all_values})
 
     else:
@@ -416,4 +428,7 @@ def modal(request):
     # Pensar en más comprobaciones
     # El botón de escribir en BDD hace el .save
     # Ver cómo hacer los qs, usar Class Based Views, ver cual se ajusta mejor
+    if 'all_fields' in request.session:
+        all_fields = request.session['all_fields']
+        db_columns = request.session['db_columns']
     return render(request, 'upload_modal.html')
