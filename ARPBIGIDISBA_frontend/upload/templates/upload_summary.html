@@ -49,18 +49,11 @@
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
           <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">
-          <button class="w3-button w3-block w3-black w3-hover-red" onclick="window.modal.showModal();">Botón BDD</button>
       </div>
 
       {% endif %}
 
       <div id="upload_modal" class="modal fade" role="dialog"></div>
-      <dialog id="modal" class="modal fade">
-          <h4>¡¡ATENCIÓN!! Esta operación va a hacer cambios en la BDD</h4>
-          <p>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</p>
-          <button onclick="window.modal.close();">Cerrar</button>
-      </dialog>
-
     </div>
 
     {% endblock %}

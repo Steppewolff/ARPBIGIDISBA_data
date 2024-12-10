@@ -16,3 +16,13 @@ function cerrar_modal()
 $('#upload_modal').modal('hide');
 return false;
 }
+
+var dialog = document.getElementById("myDialog");
+
+function showDialog() {
+  dialog.show();
+}
+
+function closeDialog() {
+  dialog.close();
+}
