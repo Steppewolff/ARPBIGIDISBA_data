@@ -20,19 +20,35 @@
             <h6>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</h6>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-danger">Escribir datos en BDD</button>
-<!--            <button type="button" class="btn btn-success" onclick="desplegar('reasignar')">Revisar asignación de variables</button>-->
-<!--            <button type="button" class="btn btn-success" onclick="myFunction()">Revisar asignación de variables</button>-->
-            <!--            <button type="button" class="btn btn-success" value="Back">Revisar asignación de variables</button>-->
+            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'">Escribir datos en BDD</button>
             <button type="button" class="btn btn-success" onclick="showDialog()">Revisar asignación de variables</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
             <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
                 <p>Esta es la información del div que se puede mostrar u ocultar.</p>
             </div>
-            <dialog id="myDialog">
-              <h4>¡¡ATENCIÓN!! Esta operación va a hacer cambios en la BDD</h4>
-              <p>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</p>
-              <button onclick="closeDialog()">Volver</button>
+            <dialog id="myDialog" style="position: fixed; top: 10px; overflow: auto; max-height: calc(100vh - 20px)">
+                <p>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</p>
+                <form action="{% url 'upload_modal' %}" method="POST" id="upload_matches">
+                    <h4>Seleccione campo en la BDD para cada columna: </h4>
+                    {% csrf_token %}
+                    {% for field in all_fields %}
+                        <label for="{{ field.0 }}" style="text-align: left;">{{ field.0 }}</label>
+                        <select name="{{ field.0 }}" id="{{ field.0 }}" style="float: right;">
+                            {% for db_column in db_columns %}
+                                {% if db_column == field.1 %}
+                                    <option value="{{ field.1 }}" selected="selected">{{ field.1 }}</option>
+                                {% else %}
+                                    <option value="{{ db_column }}">{{ db_column }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <br>
+                    {% endfor %}
+                    <input type="hidden" id="db_var_modal" name="db_var_modal">
+                    <input type="submit" value="Modificar asignación" class="btn btn-primary">
+                </form>
+
+                <button onclick="closeDialog()">Volver</button>
             </dialog>
         </div>
     </div>

@@ -340,7 +340,6 @@ def read_input_file():
 # Create your views here.
 def upload(request):
     if request.method == 'POST' and 'fileselect' in request.FILES:
-        # file_name = request.POST['fileselect']
         file = request.FILES['fileselect']
 
         extensions = ['xls', 'xlsx']
@@ -428,7 +427,28 @@ def modal(request):
     # Pensar en más comprobaciones
     # El botón de escribir en BDD hace el .save
     # Ver cómo hacer los qs, usar Class Based Views, ver cual se ajusta mejor
+
     if 'all_fields' in request.session:
         all_fields = request.session['all_fields']
         db_columns = request.session['db_columns']
-    return render(request, 'upload_modal.html')
+    else:
+        all_fields = {}
+        db_columns = []
+
+    if request.method == 'POST' and 'db_var_modal' in request.POST:
+        modified_fields = [list(field) for field in request.POST.items()]
+        for index, field in enumerate(all_fields):
+            for modified_field in modified_fields:
+                if field[0] == modified_field[0]:
+                    field[1] = modified_field[1]
+
+        # Write the modified fields in the session
+        request.session['all_fields'] = all_fields
+
+        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'db_columns': db_columns})
+
+    else:
+        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns})
+
+def confirm(request):
+    return render(request, 'upload_confirm.html')

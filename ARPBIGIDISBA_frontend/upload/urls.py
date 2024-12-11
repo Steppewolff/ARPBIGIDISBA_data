@@ -6,4 +6,5 @@ urlpatterns = [
     path('cargadatos', views.upload, name='cargadatos'),
     path('upload_summary', views.summary, name='upload_summary'),
     path('upload_modal', views.modal, name='upload_modal'),
+    path('upload_confirm', views.confirm, name='upload_confirm'),
 ]

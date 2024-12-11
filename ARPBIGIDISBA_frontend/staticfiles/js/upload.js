@@ -31,7 +31,3 @@ function desplegar_variables(divId)
         console.error('No se encontró el elemento con id: ' + divId);
     }
 }
-
-function myFunction() {
-    document.getElementById("demo").innerHTML = "Paragraph changed.";
-}

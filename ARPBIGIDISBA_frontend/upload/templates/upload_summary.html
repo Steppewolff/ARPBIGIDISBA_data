@@ -37,11 +37,13 @@
                 </thead>
                 <tbody>
                     {% for field in all_fields %}
+                    {% if field.1 != 'No escribir en BDD' %}
                         <tr>
                             <td>{{ field.0 }}</td>
                             <td> </td>
                             <td>{{ field.1 }}</td>
                         </tr>
+                    {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
