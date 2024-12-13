@@ -6,14 +6,13 @@ from django.views.generic.list import ListView
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
+from django.db import transaction
 import pandas as pd
 import numpy as np
 import os.path
-from tkinter import filedialog
-import json
 import re
 
-#from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
+from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 
 # **********************************************************************************************************************
 # Variables para almacenar nombres de campos y opciones de select
@@ -350,7 +349,9 @@ def upload(request):
         else:
             return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
 
-        df_json = df.to_json(orient='records')
+        request.session['file'] = file.filename
+
+        # df_json = df.to_json(orient='records')
         df_columns = df.columns.tolist()
         amr_loci = []
         locus_pattern = r"PA ?\d{4}"
@@ -386,7 +387,7 @@ def upload(request):
         amr_columns = amr_loci.copy()
         amr_columns.insert(0, 'Isolate_name')
 
-        return render(request, 'cargadatos.html', {'df_json': df_json, 'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations})
+        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations})
 
     else:
         return render(request, 'cargadatos.html')
@@ -451,4 +452,67 @@ def modal(request):
         return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns})
 
 def confirm(request):
+    all_fields = request.session['all_fields']
+    file = request.session.get['file']
+
+    input_fields = [field[0] for field in all_fields]
+
+    extensions = ['xls', 'xlsx']
+    if file.endswith(tuple(extensions)):
+    # if file.name.endswith(tuple(extensions)):
+        df = pd.read_excel(file)
+    #     df = pd.DataFrame.from_e(file)
+
+    elif file.endswith('.csv'):
+    # elif file.name.endswith('.csv'):
+        df = pd.DataFrame.from_csv(file)
+        # df = pd.read_csv(file)
+    else:
+        return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
+
+    tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis',
+              'SequencingInfo']
+
+    model_fields = {table: [] for table in tables}
+    for model_name, values in model_fields:
+        table_fields = apps.get_model('home', model_name)._meta.get_fields()
+        for field in table_fields:
+            if '_id' not in field.name and field.name in input_fields:
+                model_fields[model_name].append(field.name)
+
+    with transaction.atomic():
+        for _, row in df.iterrows():
+            # Procesar el modelo principal (MetadataGeneral)
+            metadata_general_data = {key: row[key] for key in row.index if
+                                     key in MetadataGeneral._meta.fields_map}
+            metadata_general = MetadataGeneral.objects.create(**metadata_general_data)
+
+            # Guardar los modelos relacionados
+            if any(col in row and not pd.isna(row[col]) for col in FilePath._meta.fields_map):
+                file_path_data = {key: row[key] for key in row.index if key in FilePath._meta.fields_map}
+                FilePath.objects.create(metadata_general=metadata_general, **file_path_data)
+
+            if any(col in row and not pd.isna(row[col]) for col in MetadataClinic._meta.fields_map):
+                metadata_clinic_data = {key: row[key] for key in row.index if
+                                        key in MetadataClinic._meta.fields_map}
+                MetadataClinic.objects.create(metadata_general=metadata_general, **metadata_clinic_data)
+
+            if any(col in row and not pd.isna(row[col]) for col in Mic._meta.fields_map):
+                mic_data = {key: row[key] for key in row.index if key in Mic._meta.fields_map}
+                Mic.objects.create(metadata_general=metadata_general, **mic_data)
+
+            if any(col in row and not pd.isna(row[col]) for col in PhenotypicData._meta.fields_map):
+                phenotypic_data = {key: row[key] for key in row.index if key in PhenotypicData._meta.fields_map}
+                PhenotypicData.objects.create(metadata_general=metadata_general, **phenotypic_data)
+
+            if any(col in row and not pd.isna(row[col]) for col in SequenceAnalysis._meta.fields_map):
+                sequence_analysis_data = {key: row[key] for key in row.index if
+                                          key in SequenceAnalysis._meta.fields_map}
+                SequenceAnalysis.objects.create(metadata_general=metadata_general, **sequence_analysis_data)
+
+            if any(col in row and not pd.isna(row[col]) for col in SequencingInfo._meta.fields_map):
+                sequencing_info_data = {key: row[key] for key in row.index if
+                                        key in SequencingInfo._meta.fields_map}
+                SequencingInfo.objects.create(metadata_general=metadata_general, **sequencing_info_data)
+
     return render(request, 'upload_confirm.html')
