@@ -349,7 +349,8 @@ def upload(request):
         else:
             return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
 
-        request.session['file'] = file.filename
+        request.session['file'] = file.name
+        request.session['df'] = df.to_json(orient='split')
 
         # df_json = df.to_json(orient='records')
         df_columns = df.columns.tolist()
@@ -453,28 +454,30 @@ def modal(request):
 
 def confirm(request):
     all_fields = request.session['all_fields']
-    file = request.session.get['file']
+    df = pd.read_json(request.session['df'], orient='split')
 
-    input_fields = [field[0] for field in all_fields]
+    # file = request.session.get['file']
 
-    extensions = ['xls', 'xlsx']
-    if file.endswith(tuple(extensions)):
-    # if file.name.endswith(tuple(extensions)):
-        df = pd.read_excel(file)
-    #     df = pd.DataFrame.from_e(file)
+    input_fields = [field[1] for field in all_fields]
 
-    elif file.endswith('.csv'):
-    # elif file.name.endswith('.csv'):
-        df = pd.DataFrame.from_csv(file)
-        # df = pd.read_csv(file)
-    else:
-        return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
+    # extensions = ['xls', 'xlsx']
+    # if file.endswith(tuple(extensions)):
+    # # if file.name.endswith(tuple(extensions)):
+    #     df = pd.read_excel(file)
+    # #     df = pd.DataFrame.from_e(file)
+    #
+    # elif file.endswith('.csv'):
+    # # elif file.name.endswith('.csv'):
+    #     df = pd.DataFrame.from_csv(file)
+    #     # df = pd.read_csv(file)
+    # else:
+    #     return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
 
-    tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis',
+    tables = ['MetadataGeneral', 'FilePath', 'MetadataClinic', 'Mic', 'PhenotypicData', 'SequenceAnalysis',
               'SequencingInfo']
 
     model_fields = {table: [] for table in tables}
-    for model_name, values in model_fields:
+    for model_name in model_fields:
         table_fields = apps.get_model('home', model_name)._meta.get_fields()
         for field in table_fields:
             if '_id' not in field.name and field.name in input_fields:
