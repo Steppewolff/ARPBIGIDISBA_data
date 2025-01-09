@@ -458,7 +458,7 @@ def confirm(request):
 
     # file = request.session.get['file']
 
-    input_fields = [field[1] for field in all_fields]
+    input_fields = [field for field in all_fields]
 
     # extensions = ['xls', 'xlsx']
     # if file.endswith(tuple(extensions)):
@@ -480,11 +480,15 @@ def confirm(request):
     for model_name in model_fields:
         table_fields = apps.get_model('home', model_name)._meta.get_fields()
         for field in table_fields:
-            if '_id' not in field.name and field.name in input_fields:
+            if '_id' not in field.name and field.name in (item for sublist in input_fields for item in sublist):
                 model_fields[model_name].append(field.name)
 
     with transaction.atomic():
         for _, row in df.iterrows():
+
+            # Procesar el modelo principal (MetadataGeneral)
+            p, created = MetadataGeneral.objects.get_or_create(isolate_id="2")
+
             # Procesar el modelo principal (MetadataGeneral)
             metadata_general_data = {key: row[key] for key in row.index if
                                      key in MetadataGeneral._meta.fields_map}
