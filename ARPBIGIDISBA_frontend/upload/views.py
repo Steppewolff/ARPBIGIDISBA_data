@@ -456,9 +456,18 @@ def confirm(request):
     all_fields = request.session['all_fields']
     df = pd.read_json(request.session['df'], orient='split')
 
-    # file = request.session.get['file']
+    # input_fields = [field for field in all_fields]
+    input_fields = {field[1] : field[0] for field in all_fields}
 
-    input_fields = [field for field in all_fields]
+    # aux_id = 0
+    # for index, field in enumerate(input_fields):
+    #     if field[1] == 'isolate_name':
+    #         isolate_id = field[0]
+    #         aux_id = 1
+    #         break
+    #
+    # if aux_id == 0:
+    #     return render(request, 'upload_confirm.html', {'error': 'No se ha seleccionado un campo para el nombre del aislado'})
 
     # extensions = ['xls', 'xlsx']
     # if file.endswith(tuple(extensions)):
@@ -480,19 +489,36 @@ def confirm(request):
     for model_name in model_fields:
         table_fields = apps.get_model('home', model_name)._meta.get_fields()
         for field in table_fields:
-            if '_id' not in field.name and field.name in (item for sublist in input_fields for item in sublist):
+            if '_id' not in field.name and field.name in input_fields:
                 model_fields[model_name].append(field.name)
+
 
     with transaction.atomic():
         for _, row in df.iterrows():
 
             # Procesar el modelo principal (MetadataGeneral)
-            p, created = MetadataGeneral.objects.get_or_create(isolate_id="2")
+            metadata_general_data = {field: row[input_fields[field]] for field in model_fields['MetadataGeneral'] if input_fields[field] in row}
+            metadata_general_instance, created = MetadataGeneral.objects.get_or_create(isolate_name=metadata_general_data['isolate_name'], defaults = metadata_general_data)
 
-            # Procesar el modelo principal (MetadataGeneral)
-            metadata_general_data = {key: row[key] for key in row.index if
-                                     key in MetadataGeneral._meta.fields_map}
-            metadata_general = MetadataGeneral.objects.create(**metadata_general_data)
+            if not created:
+                for field, value in metadata_general_data.items():
+                    setattr(metadata_general_instance, field, value)
+                metadata_general_instance.save()
+
+            for model_name, fields in model_fields.items():
+                if model_name == 'MetadataGeneral':
+                    continue
+
+                model_data = {field: row[input_fields[field]] for field in fields if input_fields[field] in row}
+                model_data['metadata_general'] = metadata_general_instance
+
+                if model_data:
+                    pass
+
+                # # Procesar el modelo principal (MetadataGeneral)
+                # metadata_general_data = {key: row[key] for key in row.index if
+                #                          key in MetadataGeneral._meta.fields_map}
+                # metadata_general = MetadataGeneral.objects.create(**metadata_general_data)
 
             # Guardar los modelos relacionados
             if any(col in row and not pd.isna(row[col]) for col in FilePath._meta.fields_map):

@@ -20,4 +20,11 @@
         <hr style="width:50px;border:5px solid red" class="w3-round">
       </div>
     </div>
+
+    {% if error %}
+    <div>
+        <h4>{{ error }}</h4>
+    </div>
+    {% endif %}
+
     {% endblock %}
