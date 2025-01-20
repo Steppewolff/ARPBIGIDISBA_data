@@ -513,36 +513,11 @@ def confirm(request):
                 model_data = {field: row[input_fields[field]] for field in fields if input_fields[field] in row}
 
                 if model_data:
-                    model_data['isolate_id'] = metadata_general_instance
-                    model_instance = apps.get_model('home', model_name).objects.create(**model_data)
+                    model_instance, created = apps.get_model('home', model_name).objects.get_or_create(isolate_id=metadata_general_instance, defaults=model_data)
 
-
-            # Guardar los modelos relacionados
-            # if any(col in row and not pd.isna(row[col]) for col in FilePath._meta.fields_map):
-            #     file_path_data = {key: row[key] for key in row.index if key in FilePath._meta.fields_map}
-            #     FilePath.objects.create(metadata_general=metadata_general, **file_path_data)
-            #
-            # if any(col in row and not pd.isna(row[col]) for col in MetadataClinic._meta.fields_map):
-            #     metadata_clinic_data = {key: row[key] for key in row.index if
-            #                             key in MetadataClinic._meta.fields_map}
-            #     MetadataClinic.objects.create(metadata_general=metadata_general, **metadata_clinic_data)
-            #
-            # if any(col in row and not pd.isna(row[col]) for col in Mic._meta.fields_map):
-            #     mic_data = {key: row[key] for key in row.index if key in Mic._meta.fields_map}
-            #     Mic.objects.create(metadata_general=metadata_general, **mic_data)
-            #
-            # if any(col in row and not pd.isna(row[col]) for col in PhenotypicData._meta.fields_map):
-            #     phenotypic_data = {key: row[key] for key in row.index if key in PhenotypicData._meta.fields_map}
-            #     PhenotypicData.objects.create(metadata_general=metadata_general, **phenotypic_data)
-            #
-            # if any(col in row and not pd.isna(row[col]) for col in SequenceAnalysis._meta.fields_map):
-            #     sequence_analysis_data = {key: row[key] for key in row.index if
-            #                               key in SequenceAnalysis._meta.fields_map}
-            #     SequenceAnalysis.objects.create(metadata_general=metadata_general, **sequence_analysis_data)
-            #
-            # if any(col in row and not pd.isna(row[col]) for col in SequencingInfo._meta.fields_map):
-            #     sequencing_info_data = {key: row[key] for key in row.index if
-            #                             key in SequencingInfo._meta.fields_map}
-            #     SequencingInfo.objects.create(metadata_general=metadata_general, **sequencing_info_data)
+                    if not created:
+                        for field, value in model_data.items():
+                            setattr(model_instance, field, value)
+                        model_instance.save()
 
     return render(request, 'upload_confirm.html')
