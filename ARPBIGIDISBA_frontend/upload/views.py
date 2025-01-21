@@ -7,6 +7,7 @@ from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 from django.db import transaction
+from collections import Counter
 import pandas as pd
 import numpy as np
 import os.path
@@ -415,20 +416,15 @@ def summary(request):
 
         all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
 
-
         return render(request, 'upload_summary.html', {'all_fields': all_fields}) # 'all_values': all_values})
 
     else:
         pass
 
 def modal(request):
-    # Comprobar si existen aislados con el mismo nombre en la base de datos, nombre sólo por un lado y nombre_proyecto por otro (aclararlo en el texto del modal)
     # Comprobar si el nombre del Hospital existe en la tabla o no, para modificarlo si hace falta
-    # Comprobar si varias columnas del excel escriben a un mismo campo de la BDD
-    # Comprobar si una columna del excel escribe a varios campos de la BDD
+    # Valores de hospitales y tipo de muestra (pensar si hay alguno mas), ¿cómo se busca en los listados para encontrar sus ID? ¿o con el ORM se puede hacer de manera más directa?
     # Pensar en más comprobaciones
-    # El botón de escribir en BDD hace el .save
-    # Ver cómo hacer los qs, usar Class Based Views, ver cual se ajusta mejor
 
     if 'all_fields' in request.session:
         all_fields = request.session['all_fields']
@@ -450,7 +446,21 @@ def modal(request):
         return render(request, 'upload_summary.html', {'all_fields': all_fields, 'db_columns': db_columns})
 
     else:
-        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns})
+        isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
+        isolates_project_list = MetadataGeneral.objects.values_list('isolate_project_id', flat=True)
+        isolates_excel_list = pd.read_json(request.session['df'], orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
+        difference_hospitals = []
+        if 'hospital_name' in dict(tuple(reversed(t)) for t in all_fields):
+            hospitals_db_list = Hospital.objects.values_list('hospital_name', flat=True)
+            hospitals_excel_list = pd.read_json(request.session['df'], orient='split')[dict(tuple(reversed(t)) for t in all_fields)['hospital_name']].tolist()
+            difference_hospitals = set(hospitals_excel_list).difference(hospitals_db_list)
+
+        common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
+        count_dict = Counter(dict(all_fields).values())
+        duplicates = [key for key, value in count_dict.items()
+                  if count_dict[key] > 1]
+
+        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals})
 
 def confirm(request):
     all_fields = request.session['all_fields']
@@ -494,11 +504,16 @@ def confirm(request):
 
 
     with transaction.atomic():
+        created_records = []
+        edited_records = {}
         for _, row in df.iterrows():
 
             # Procesar el modelo principal (MetadataGeneral)
             metadata_general_data = {field: row[input_fields[field]] for field in model_fields['MetadataGeneral'] if input_fields[field] in row}
             metadata_general_instance, created = MetadataGeneral.objects.get_or_create(isolate_name=metadata_general_data['isolate_name'], defaults = metadata_general_data)
+
+            if created:
+                created_records.append(metadata_general_data['isolate_name'])
 
             if not created:
                 for field, value in metadata_general_data.items():
@@ -514,10 +529,16 @@ def confirm(request):
 
                 if model_data:
                     model_instance, created = apps.get_model('home', model_name).objects.get_or_create(isolate_id=metadata_general_instance, defaults=model_data)
+                    if created:
+                        edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(fields)
 
                     if not created:
-                        for field, value in model_data.items():
-                            setattr(model_instance, field, value)
+                        for field, new_value in model_data.items():
+                            current_value = getattr(model_instance, field)
+                            if str(current_value) != str(new_value):
+                                setattr(model_instance, field, new_value)
+                                edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(field)
                         model_instance.save()
 
-    return render(request, 'upload_confirm.html')
+        # Renderizar página para confirmar
+        return render(request, 'upload_confirm.html', {'created_records': created_records, 'edited_records': edited_records})

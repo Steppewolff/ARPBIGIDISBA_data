@@ -68,7 +68,7 @@ class HospitalForm(ModelForm):
 class MicForm(ModelForm):
     class Meta:
         model = Mic
-        fields = ['pip', 'pip_tz', 'fep', 'cfdc', 'caz', 'caz_avi', 'ct', 'imi', 'imi_rel', 'mer',
+        fields = ['pip', 'pip_tz', 'fep', 'cfdc', 'caz', 'caz_avi', 'ctz', 'imi', 'imi_rel', 'mer',
                   'mer_vab', 'azt', 'azt_avi', 'cip', 'dlx', 'lvx', 'mxl', 'ami', 'gen', 'net', 'tob',
                   'col', 'fo', 'tic', 'ptz', 'taz', 'cza', 'tol', 'atm']
 

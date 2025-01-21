@@ -21,10 +21,54 @@
       </div>
     </div>
 
-    {% if error %}
-    <div>
-        <h4>{{ error }}</h4>
-    </div>
-    {% endif %}
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+        {% if error %}
+        <div>
+            <h4>{{ error }}</h4>
+        </div>
+        {% endif %}
 
+
+        {% if created_records %}
+        <div class="results" style="overflow: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        Registros que serán creados:
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in created_records %}
+                        <tr>
+                            <td>{{ row }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if edited_records %}
+        <div class="results" style="overflow: auto;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        Registros que serán modificados:
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in edited_records.items %}
+                        <tr>
+                        <td>{{ key }} : {{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if not created_records and not edited_records %}
+            <h4>Todos los registros ya existen en la Base de Datos, no se hará ningún cambio</h4>
+        {% endif %}
+    </div>
     {% endblock %}
