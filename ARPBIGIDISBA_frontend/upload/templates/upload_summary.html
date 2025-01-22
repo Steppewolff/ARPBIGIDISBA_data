@@ -3,6 +3,7 @@
 
     {% block head %}
     <script src="/static/js/upload.js"></script>
+    <script src="/static/js/admin_js.js"></script>
     {% endblock %}
 
     {% block title %}
@@ -26,7 +27,7 @@
       </div>
 
       {% if all_fields %}
-        <div class="results" align="center" style="overflow: auto; width: 40%;" >
+        <div class="results" align="center" style="width: 40vw; overflow: auto" >
             <table class="table table-striped">
                 <thead style="font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
                     <tr>
@@ -48,6 +49,34 @@
                 </tbody>
             </table>
       </div>
+
+      <hr style="width:100%;">
+
+      {% if amr_mutations %}
+
+      <h4>Genes del resistoma:</h4>
+      <div class="results" style="overflow: auto; height: 400px;">
+            <table class="table table-striped results" style="overflow: auto;">
+                <thead style="position: sticky; top:0; background-color: #fff; z-index: 2;">
+                    <tr>
+                        {% for column in amr_columns %}
+                                <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in amr_mutations %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+
+      {% endif %}
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
           <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">

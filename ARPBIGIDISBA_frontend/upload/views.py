@@ -8,6 +8,7 @@ from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 from django.db import transaction
 from collections import Counter
+from io import StringIO
 import pandas as pd
 import numpy as np
 import os.path
@@ -362,6 +363,8 @@ def upload(request):
             if re.search(locus_pattern, column):
                 amr_loci.append(column)
 
+        request.session['amr_loci'] = amr_loci
+
         df_columns = [column for column in df_columns if not re.search(locus_pattern, column)]
 
         db_columns = []
@@ -382,14 +385,7 @@ def upload(request):
         # Write the available database columns in the session
         request.session['db_columns'] = db_columns
 
-        df_amr = df.filter(amr_loci, axis=1)
-        df_amr.insert(0, 'isolate_name', df['Isolate'])
-        df_amr = df_amr.replace(np.nan, '-')
-        amr_mutations = df_amr.to_dict('split')['data']
-        amr_columns = amr_loci.copy()
-        amr_columns.insert(0, 'Isolate_name')
-
-        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations})
+        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci})
 
     else:
         return render(request, 'cargadatos.html')
@@ -415,8 +411,20 @@ def summary(request):
         request.session['all_fields'] = all_fields
 
         all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
+        dict_fields = {field[1]: field[0] for field in all_fields}
+        isolate_var = dict_fields['isolate_name']
 
-        return render(request, 'upload_summary.html', {'all_fields': all_fields}) # 'all_values': all_values})
+        amr_loci = request.session['amr_loci']
+        df = pd.read_json(StringIO(request.session['df']), orient='split')
+
+        df_amr = df.filter(amr_loci, axis=1)
+        df_amr.insert(0, 'isolate_name', df[str(isolate_var)])
+        df_amr = df_amr.replace(np.nan, '-')
+        amr_mutations = df_amr.to_dict('split')['data']
+        amr_columns = amr_loci.copy()
+        amr_columns.insert(0, 'Isolate_name')
+
+        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations}) # 'all_values': all_values})
 
     else:
         pass
@@ -448,11 +456,11 @@ def modal(request):
     else:
         isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
         isolates_project_list = MetadataGeneral.objects.values_list('isolate_project_id', flat=True)
-        isolates_excel_list = pd.read_json(request.session['df'], orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
+        isolates_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
         difference_hospitals = []
         if 'hospital_name' in dict(tuple(reversed(t)) for t in all_fields):
             hospitals_db_list = Hospital.objects.values_list('hospital_name', flat=True)
-            hospitals_excel_list = pd.read_json(request.session['df'], orient='split')[dict(tuple(reversed(t)) for t in all_fields)['hospital_name']].tolist()
+            hospitals_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['hospital_name']].tolist()
             difference_hospitals = set(hospitals_excel_list).difference(hospitals_db_list)
 
         common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
@@ -464,7 +472,7 @@ def modal(request):
 
 def confirm(request):
     all_fields = request.session['all_fields']
-    df = pd.read_json(request.session['df'], orient='split')
+    df = pd.read_json(StringIO(request.session['df']), orient='split')
 
     # input_fields = [field for field in all_fields]
     input_fields = {field[1] : field[0] for field in all_fields}

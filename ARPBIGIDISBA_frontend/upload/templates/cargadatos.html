@@ -35,7 +35,7 @@
 
       <div>Nombre del archivo: {{ file.name }}</div>
 
-      {% if amr_mutations %}
+      {% if df_columns %}
 
       <div>Datos:</div>
       <div class="results" style="overflow: auto;">
@@ -86,34 +86,17 @@
         </div>
       </div>
 
+      {% endif %}
+
       <hr style="width:100%;">
 
       <h3>Genes de resistencia a AB en archivo de entrada</h3>
 
+      {% if amr_loci %}
+
       {% for amr in amr_loci %}
         <div>{{ amr }}</div>
       {% endfor %}
-
-      <div class="results" style="overflow: auto;">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        {% for column in amr_columns %}
-                                <th>{{ column }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in amr_mutations %}
-                        <tr>
-                            {% for value in row %}
-                                <td>{{ value }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-      </div>
 
       {% endif %}
 
