@@ -52,12 +52,14 @@
 
       <hr style="width:100%;">
 
+      {% endif %}
+
       {% if amr_mutations %}
 
       <h4>Genes del resistoma:</h4>
-      <div class="results" style="overflow: auto; height: 400px;">
-            <table class="table table-striped results" style="overflow: auto;">
-                <thead style="position: sticky; top:0; background-color: #fff; z-index: 2;">
+      <div class="results" style="position: relative; overflow-x: auto !important; overflow-y: auto !important; height: 500px;">
+            <table class="table table-striped results" style="overflow: auto !important;">
+                <thead style="position: sticky; top:0; background-color: #fff; z-index: 2; font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
                     <tr>
                         {% for column in amr_columns %}
                                 <th>{{ column }}</th>
@@ -81,8 +83,6 @@
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
           <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">
       </div>
-
-      {% endif %}
 
       <div id="upload_modal" class="modal fade" role="dialog"></div>
     </div>

@@ -7,6 +7,7 @@ from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 from django.db import transaction
+from django.contrib import messages
 from collections import Counter
 from io import StringIO
 import pandas as pd
@@ -342,6 +343,7 @@ def read_input_file():
 def upload(request):
     if request.method == 'POST' and 'fileselect' in request.FILES:
         file = request.FILES['fileselect']
+        loci_ext = request.POST.get('loci')
 
         extensions = ['xls', 'xlsx']
         if file.name.endswith (tuple(extensions)):
@@ -354,14 +356,14 @@ def upload(request):
         request.session['file'] = file.name
         request.session['df'] = df.to_json(orient='split')
 
-        # df_json = df.to_json(orient='records')
         df_columns = df.columns.tolist()
         amr_loci = []
         locus_pattern = r"PA ?\d{4}"
 
-        for column in df_columns:
-            if re.search(locus_pattern, column):
-                amr_loci.append(column)
+        if loci_ext == 'yes':
+            for column in df_columns:
+                if re.search(locus_pattern, column):
+                    amr_loci.append(column)
 
         request.session['amr_loci'] = amr_loci
 
@@ -396,35 +398,43 @@ def summary(request):
         # List with all the selected options in the db variables form
         all_fields = [list(field) for field in request.POST.items()]
 
-        # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
-        all_fields = [field for field in all_fields if 'variable_' in field[0]]
-        for index, field in enumerate(all_fields):
-            for index_list, value in enumerate(field):
-                if 'variable_' in value:
-                    field[index_list] = field[index_list].replace('variable_', '')
-                elif 'option_' in value:
-                    field[index_list] = field[index_list].replace('option_', '')
-                else:
-                    pass
+        if 'isolate_name' not in dict(all_fields).values() or 'isolate_project_id' not in dict(all_fields).values():
+            messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name) o el ID del proyecto (isolate_project_id)')
+            return redirect("cargadatos")
+        else:
+            # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
+            all_fields = [field for field in all_fields if 'variable_' in field[0]]
+            for index, field in enumerate(all_fields):
+                for index_list, value in enumerate(field):
+                    if 'variable_' in value:
+                        field[index_list] = field[index_list].replace('variable_', '')
+                    elif 'option_' in value:
+                        field[index_list] = field[index_list].replace('option_', '')
+                    else:
+                        pass
 
-        # Write the selected options in the session
-        request.session['all_fields'] = all_fields
+            # Write the selected options in the session
+            request.session['all_fields'] = all_fields
 
-        all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
-        dict_fields = {field[1]: field[0] for field in all_fields}
-        isolate_var = dict_fields['isolate_name']
+            all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
+            dict_fields = {field[1]: field[0] for field in all_fields}
+            isolate_var = dict_fields['isolate_name']
 
-        amr_loci = request.session['amr_loci']
-        df = pd.read_json(StringIO(request.session['df']), orient='split')
+            amr_loci = request.session['amr_loci']
+            df = pd.read_json(StringIO(request.session['df']), orient='split')
 
-        df_amr = df.filter(amr_loci, axis=1)
-        df_amr.insert(0, 'isolate_name', df[str(isolate_var)])
-        df_amr = df_amr.replace(np.nan, '-')
-        amr_mutations = df_amr.to_dict('split')['data']
-        amr_columns = amr_loci.copy()
-        amr_columns.insert(0, 'Isolate_name')
+            amr_columns = []
+            amr_mutations = {}
 
-        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations}) # 'all_values': all_values})
+            if amr_loci:
+                df_amr = df.filter(amr_loci, axis=1)
+                df_amr.insert(0, 'isolate_name', df[str(isolate_var)])
+                df_amr = df_amr.replace(np.nan, '-')
+                amr_mutations = df_amr.to_dict('split')['data']
+                amr_columns = amr_loci.copy()
+                amr_columns.insert(0, 'Isolate_name')
+
+            return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations}) # 'all_values': all_values})
 
     else:
         pass

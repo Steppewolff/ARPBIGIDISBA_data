@@ -29,18 +29,23 @@
               {% csrf_token %}
               <label for="fileselect" style="width: 100%;">Seleccione el archivo con la información:</label>
               <input type="file" id="fileselect" name="fileselect" accept=".xlsx, .xls, .csv" style="width: 100%;" required>
-              <input type="submit" value="Cargar archivo" class="btn btn-primary">
+              <label for="loci">¿Extraer los loci del archivo de entrada?</label>
+              <select id="loci" name="loci">
+                <option value="yes" selected="selected">Extraer</option>
+                <option value="no">No extraer</option>
+              </select>
+              <div><input type="submit" value="Cargar archivo" class="btn btn-primary"></div>
           </form>
       </div>
 
       <div>Nombre del archivo: {{ file.name }}</div>
 
       {% if df_columns %}
-
-      <div>Datos:</div>
-      <div class="results" style="overflow: auto;">
+      <hr style="width:100%;">
+      <h4>Datos:</h4>
+      <div class="results" style="position: relative; overflow-x: auto; overflow-y: auto; height: 500px;">
             <table class="table table-striped results" style="overflow: auto;">
-                <thead>
+                <thead style="position: sticky; top:0; background-color: #fff; z-index: 2; font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
                     <tr>
                         {% for column in df_columns %}
                             <th>{{ column }}</th>
@@ -84,15 +89,18 @@
                 <input type="submit" value="Guardar variables" class="btn btn-primary">
             </form>
         </div>
+        {% if messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+        {% endif %}
       </div>
 
       {% endif %}
 
+      {% if amr_loci %}
+
       <hr style="width:100%;">
 
       <h3>Genes de resistencia a AB en archivo de entrada</h3>
-
-      {% if amr_loci %}
 
       {% for amr in amr_loci %}
         <div>{{ amr }}</div>
