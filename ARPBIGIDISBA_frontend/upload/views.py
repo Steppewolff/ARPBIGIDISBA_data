@@ -398,43 +398,57 @@ def summary(request):
         # List with all the selected options in the db variables form
         all_fields = [list(field) for field in request.POST.items()]
 
-        if 'isolate_name' not in dict(all_fields).values() or 'isolate_project_id' not in dict(all_fields).values():
+        mandatory_fields = []
+
+        if 'option_isolate_name' not in dict(all_fields).values():
+            mandatory_fields.append('isolate_name')
+        if 'option_project_name' not in dict(all_fields).values():
+            mandatory_fields.append('project_name')
             messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name) o el ID del proyecto (isolate_project_id)')
-            return redirect("cargadatos")
-        else:
-            # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
-            all_fields = [field for field in all_fields if 'variable_' in field[0]]
-            for index, field in enumerate(all_fields):
-                for index_list, value in enumerate(field):
-                    if 'variable_' in value:
-                        field[index_list] = field[index_list].replace('variable_', '')
-                    elif 'option_' in value:
-                        field[index_list] = field[index_list].replace('option_', '')
-                    else:
-                        pass
 
-            # Write the selected options in the session
-            request.session['all_fields'] = all_fields
+        # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
+        all_fields = [field for field in all_fields if 'variable_' in field[0]]
+        for index, field in enumerate(all_fields):
+            for index_list, value in enumerate(field):
+                if 'variable_' in value:
+                    field[index_list] = field[index_list].replace('variable_', '')
+                elif 'option_' in value:
+                    field[index_list] = field[index_list].replace('option_', '')
+                else:
+                    pass
 
-            all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
-            dict_fields = {field[1]: field[0] for field in all_fields}
+        # Write the selected options in the session
+        request.session['all_fields'] = all_fields
+        request.session['mandatory_fields'] = mandatory_fields
+
+        # Get amr_loci list of tuples and dataframe with raw data
+        amr_loci = request.session['amr_loci']
+        df = pd.read_json(StringIO(request.session['df']), orient='split')
+
+        all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
+        dict_fields = {field[1]: field[0] for field in all_fields}
+        if 'isolate_name' in dict_fields:
             isolate_var = dict_fields['isolate_name']
+        else:
+            isolate_var = 'NA'
+            r, c = df.shape
+            na_column = [isolate_var for value in range(r)]
 
-            amr_loci = request.session['amr_loci']
-            df = pd.read_json(StringIO(request.session['df']), orient='split')
+        amr_columns = []
+        amr_mutations = {}
 
-            amr_columns = []
-            amr_mutations = {}
-
-            if amr_loci:
-                df_amr = df.filter(amr_loci, axis=1)
+        if amr_loci:
+            df_amr = df.filter(amr_loci, axis=1)
+            if 'isolate_name' in dict_fields:
                 df_amr.insert(0, 'isolate_name', df[str(isolate_var)])
-                df_amr = df_amr.replace(np.nan, '-')
-                amr_mutations = df_amr.to_dict('split')['data']
-                amr_columns = amr_loci.copy()
-                amr_columns.insert(0, 'Isolate_name')
+            else:
+                df_amr.insert(0, 'isolate_name', na_column)
+            df_amr = df_amr.replace(np.nan, '-')
+            amr_mutations = df_amr.to_dict('split')['data']
+            amr_columns = amr_loci.copy()
+            amr_columns.insert(0, 'Isolate_name')
 
-            return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations}) # 'all_values': all_values})
+        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'mandatory_fields': mandatory_fields})
 
     else:
         pass
@@ -451,6 +465,8 @@ def modal(request):
         all_fields = {}
         db_columns = []
 
+    mandatory_fields = request.session['mandatory_fields']
+
     if request.method == 'POST' and 'db_var_modal' in request.POST:
         modified_fields = [list(field) for field in request.POST.items()]
         for index, field in enumerate(all_fields):
@@ -461,24 +477,43 @@ def modal(request):
         # Write the modified fields in the session
         request.session['all_fields'] = all_fields
 
+        if 'isolate_name' not in dict(all_fields).values():
+            mandatory_fields[0] = 'isolate_name'
+        else:
+            mandatory_fields[0] = ""
+
+        if 'project_name' not in dict(all_fields).values():
+            mandatory_fields[1] = 'project_name'
+        else:
+            mandatory_fields[1] = ""
+
+        if mandatory_fields[0]:
+            messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
+        if mandatory_fields[1]:
+            messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
+
+        # Write the modified mandatory_fields in the session
+        request.session['mandatory_fields'] = mandatory_fields
+
         return render(request, 'upload_summary.html', {'all_fields': all_fields, 'db_columns': db_columns})
 
     else:
         isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
         isolates_project_list = MetadataGeneral.objects.values_list('isolate_project_id', flat=True)
-        isolates_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
+        # isolates_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
         difference_hospitals = []
         if 'hospital_name' in dict(tuple(reversed(t)) for t in all_fields):
             hospitals_db_list = Hospital.objects.values_list('hospital_name', flat=True)
             hospitals_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['hospital_name']].tolist()
             difference_hospitals = set(hospitals_excel_list).difference(hospitals_db_list)
 
-        common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
+        # common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
+        common_isolates = []
         count_dict = Counter(dict(all_fields).values())
         duplicates = [key for key, value in count_dict.items()
                   if count_dict[key] > 1]
 
-        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals})
+        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields})
 
 def confirm(request):
     all_fields = request.session['all_fields']
@@ -486,29 +521,6 @@ def confirm(request):
 
     # input_fields = [field for field in all_fields]
     input_fields = {field[1] : field[0] for field in all_fields}
-
-    # aux_id = 0
-    # for index, field in enumerate(input_fields):
-    #     if field[1] == 'isolate_name':
-    #         isolate_id = field[0]
-    #         aux_id = 1
-    #         break
-    #
-    # if aux_id == 0:
-    #     return render(request, 'upload_confirm.html', {'error': 'No se ha seleccionado un campo para el nombre del aislado'})
-
-    # extensions = ['xls', 'xlsx']
-    # if file.endswith(tuple(extensions)):
-    # # if file.name.endswith(tuple(extensions)):
-    #     df = pd.read_excel(file)
-    # #     df = pd.DataFrame.from_e(file)
-    #
-    # elif file.endswith('.csv'):
-    # # elif file.name.endswith('.csv'):
-    #     df = pd.DataFrame.from_csv(file)
-    #     # df = pd.read_csv(file)
-    # else:
-    #     return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
 
     tables = ['MetadataGeneral', 'FilePath', 'MetadataClinic', 'Mic', 'PhenotypicData', 'SequenceAnalysis',
               'SequencingInfo']
@@ -519,7 +531,6 @@ def confirm(request):
         for field in table_fields:
             if '_id' not in field.name and field.name in input_fields:
                 model_fields[model_name].append(field.name)
-
 
     with transaction.atomic():
         created_records = []

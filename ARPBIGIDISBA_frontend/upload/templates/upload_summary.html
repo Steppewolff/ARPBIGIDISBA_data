@@ -26,6 +26,14 @@
         <hr style="width:50px;border:5px solid red" class="w3-round">
       </div>
 
+      {% if mandatory_fields %}
+        {% if messages %}
+          {% for message in messages %}
+            <p class="{{ message.tags }}">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+
       {% if all_fields %}
         <div class="results" align="center" style="width: 40vw; overflow: auto" >
             <table class="table table-striped">

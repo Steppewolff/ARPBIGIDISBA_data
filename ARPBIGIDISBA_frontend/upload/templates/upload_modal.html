@@ -18,6 +18,15 @@
         </div>
         <div class="modal-body">
             <h6>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</h6>
+
+        {% if mandatory_fields %}
+          {% if messages %}
+            {% for message in messages %}
+              <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+
         {% if common_isolates %}
             <div class="alert alert-warning" role="alert">
                 <p>Los siguientes aislados ya están en la BDD. Si todos los valores del registro son iguales no se escribirá nada:</p>
@@ -53,7 +62,11 @@
 
         </div>
         <div class="modal-footer">
+            {% if mandatory_fields %}
+            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'" disabled>Escribir datos en BDD</button>
+            {% else %}
             <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'">Escribir datos en BDD</button>
+            {% endif %}
             <button type="button" class="btn btn-success" onclick="showDialog()">Revisar asignación de variables</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
             <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
