@@ -19,15 +19,17 @@
         <div class="modal-body">
             <h6>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</h6>
 
-        {% if mandatory_fields %}
-          {% if messages %}
-            {% for message in messages %}
-              <p class="{{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-          {% endif %}
-        {% endif %}
+            {% if mandatory_fields %}
+              {% if messages %}
+                  <ul class="message">
+                    {% for message in messages %}
+                      <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                  </ul>
+              {% endif %}
+            {% endif %}
 
-        {% if common_isolates %}
+            {% if common_isolates %}
             <div class="alert alert-warning" role="alert">
                 <p>Los siguientes aislados ya están en la BDD. Si todos los valores del registro son iguales no se escribirá nada:</p>
                 <ul>
@@ -62,7 +64,7 @@
 
         </div>
         <div class="modal-footer">
-            {% if mandatory_fields %}
+            {% if mandatory_fields.isolate_name == 0 or mandatory_fields.project_name == 0 %}
             <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'" disabled>Escribir datos en BDD</button>
             {% else %}
             <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'">Escribir datos en BDD</button>

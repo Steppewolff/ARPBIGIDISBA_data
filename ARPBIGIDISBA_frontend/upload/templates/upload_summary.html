@@ -28,9 +28,11 @@
 
       {% if mandatory_fields %}
         {% if messages %}
-          {% for message in messages %}
-            <p class="{{ message.tags }}">{{ message }}</p>
-          {% endfor %}
+            <ul class="message">
+              {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
         {% endif %}
       {% endif %}
 

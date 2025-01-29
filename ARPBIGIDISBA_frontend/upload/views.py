@@ -8,6 +8,7 @@ from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 from django.db import transaction
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from collections import Counter
 from io import StringIO
 import pandas as pd
@@ -398,13 +399,19 @@ def summary(request):
         # List with all the selected options in the db variables form
         all_fields = [list(field) for field in request.POST.items()]
 
-        mandatory_fields = []
+        mandatory_fields = {}
 
         if 'option_isolate_name' not in dict(all_fields).values():
-            mandatory_fields.append('isolate_name')
+            mandatory_fields['isolate_name'] = 0
+            messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
+        else:
+            mandatory_fields['isolate_name'] = 1
+
         if 'option_project_name' not in dict(all_fields).values():
-            mandatory_fields.append('project_name')
-            messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name) o el ID del proyecto (isolate_project_id)')
+            mandatory_fields['project_name'] = 0
+            messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
+        else:
+            mandatory_fields['project_name'] = 1
 
         # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
         all_fields = [field for field in all_fields if 'variable_' in field[0]]
@@ -447,11 +454,32 @@ def summary(request):
             amr_mutations = df_amr.to_dict('split')['data']
             amr_columns = amr_loci.copy()
             amr_columns.insert(0, 'Isolate_name')
+            request.session['amr_columns'] = amr_columns
+            request.session['amr_mutations'] = amr_mutations
 
         return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'mandatory_fields': mandatory_fields})
 
     else:
         pass
+
+def eval_mandatory(request, all_fields):
+    mandatory_fields = request.session['mandatory_fields']
+
+    if 'isolate_name' not in dict(all_fields).values():
+        mandatory_fields['isolate_name'] = 0
+        messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
+    else:
+        mandatory_fields['isolate_name'] = 1
+
+    if 'project_name' not in dict(all_fields).values():
+        mandatory_fields['project_name'] = 0
+        messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
+    else:
+        mandatory_fields['project_name'] = 1
+
+    request.session['mandatory_fields'] = mandatory_fields
+
+    return mandatory_fields
 
 def modal(request):
     # Comprobar si el nombre del Hospital existe en la tabla o no, para modificarlo si hace falta
@@ -465,7 +493,9 @@ def modal(request):
         all_fields = {}
         db_columns = []
 
-    mandatory_fields = request.session['mandatory_fields']
+    # mandatory_fields = request.session['mandatory_fields']
+    amr_columns = request.session['amr_columns']
+    amr_mutations = request.session['amr_mutations']
 
     if request.method == 'POST' and 'db_var_modal' in request.POST:
         modified_fields = [list(field) for field in request.POST.items()]
@@ -477,25 +507,9 @@ def modal(request):
         # Write the modified fields in the session
         request.session['all_fields'] = all_fields
 
-        if 'isolate_name' not in dict(all_fields).values():
-            mandatory_fields[0] = 'isolate_name'
-        else:
-            mandatory_fields[0] = ""
+        mandatory_fields = eval_mandatory(request, all_fields)
 
-        if 'project_name' not in dict(all_fields).values():
-            mandatory_fields[1] = 'project_name'
-        else:
-            mandatory_fields[1] = ""
-
-        if mandatory_fields[0]:
-            messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
-        if mandatory_fields[1]:
-            messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
-
-        # Write the modified mandatory_fields in the session
-        request.session['mandatory_fields'] = mandatory_fields
-
-        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'db_columns': db_columns})
+        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'db_columns': db_columns, 'mandatory_fields': mandatory_fields})
 
     else:
         isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
@@ -506,6 +520,8 @@ def modal(request):
             hospitals_db_list = Hospital.objects.values_list('hospital_name', flat=True)
             hospitals_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['hospital_name']].tolist()
             difference_hospitals = set(hospitals_excel_list).difference(hospitals_db_list)
+
+        mandatory_fields = eval_mandatory(request, all_fields)
 
         # common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
         common_isolates = []

@@ -74,7 +74,7 @@
                 {% csrf_token %}
                 {% for df_column in df_columns %}
                     <label for="variable_{{ df_column }}" style="text-align: left;">{{ df_column }}</label>
-                    <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" style="float: right;">
+                    <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" title="{{ df_column }}" style="float: right;">
                         {% for db_column in db_columns %}
                             {% if db_column == 'No escribir en BDD' %}
                                 <option value="option_{{ db_column }}" selected="selected">{{ db_column }}</option>

@@ -160,6 +160,9 @@ hr{height: 3px; background-color: #f44336; border:0;border-top:1px solid #f44336
 .table-container{overflow-x: scroll;white-space: nowrap;}
 .table{overflow-x: scroll;white-space: nowrap;}
 .results {overflow-x: auto !important; overflow-y: auto !important;}
+.message{list-style: none; margin: 1em;}
+.message li{padding: 1em; width: 100%; line-height: 1em;}
+.message li.warning {background-color: #ffec99; color}
 
 /* Colors */
 .w3-amber,.w3-hover-amber:hover{color:#000!important;background-color:#ffc107!important}
