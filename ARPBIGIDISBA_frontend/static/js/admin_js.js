@@ -142,3 +142,13 @@
 $(document).ready(function($) {
    $('.results').doubleScroll({resetOnWindowResize: true});
 });
+
+function showDialog() {
+  var dialog = document.getElementById("myDialog");
+  dialog.show();
+}
+
+function closeDialog() {
+  var dialog = document.getElementById("myDialog");
+  dialog.close();
+}

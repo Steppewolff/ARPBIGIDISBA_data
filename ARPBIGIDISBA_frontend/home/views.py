@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
+import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 from .tables import CombinedTable
@@ -52,12 +53,12 @@ class ResultadosListView(SingleTableMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['filter'] = self.get_filterset(self.get_filterset_class())
         context['verbose_used'] = verbose_used
+        context['Mic_list'] = Mic.objects.all()
 
         return context
 
         context['FilePath_list'] = FilePath.objects.all()
         context['MetadataClinic_list'] = MetadataClinic.objects.all()
-        context['Mic_list'] = Mic.objects.all()
         context['PhenotypicData_list'] = PhenotypicData.objects.all()
         context['SequenceAnalysis_list'] = SequenceAnalysis.objects.all()
         context['SequencingInfo_list'] = SequencingInfo.objects.all()

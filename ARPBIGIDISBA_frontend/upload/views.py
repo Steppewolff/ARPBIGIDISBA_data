@@ -443,6 +443,8 @@ def summary(request):
 
         amr_columns = []
         amr_mutations = {}
+        request.session['amr_columns'] = amr_columns
+        request.session['amr_mutations'] = amr_mutations
 
         if amr_loci:
             df_amr = df.filter(amr_loci, axis=1)
@@ -454,8 +456,6 @@ def summary(request):
             amr_mutations = df_amr.to_dict('split')['data']
             amr_columns = amr_loci.copy()
             amr_columns.insert(0, 'Isolate_name')
-            request.session['amr_columns'] = amr_columns
-            request.session['amr_mutations'] = amr_mutations
 
         return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'mandatory_fields': mandatory_fields})
 
