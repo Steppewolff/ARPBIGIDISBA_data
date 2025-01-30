@@ -1,10 +1,18 @@
+{% load static %} <!-- The rest of the Bootstrap Tags are below the jQuery scripts calls to work properly -->
+
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
 
+        {% block head %}
+
+        {% endblock %}
+
+    </head>
+<body>
+    {% block body %}
+
+    {% endblock %}
 </body>
 </html>

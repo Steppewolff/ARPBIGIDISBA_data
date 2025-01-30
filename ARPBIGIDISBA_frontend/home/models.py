@@ -98,6 +98,17 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
+class BreakpointTable(models.Model):
+    breakpoint_table_id = models.AutoField(primary_key=True)
+    table_version_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Tabla Puntos de corte")
+    table_version_number = models.CharField(max_length=10, blank=True, null=True, verbose_name="Versíón de tabla")
+    valid_date = models.DateTimeField(verbose_name="Fecha inicio validez")
+    organism = models.CharField(max_length=100, blank=True, null=True, verbose_name="Organismo")
+    organization = models.CharField(max_length=50, blank=True, null=True, verbose_name="Organización")
+
+    class Meta:
+        managed = True
+        db_table = 'file_path'
 
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()

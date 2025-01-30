@@ -143,6 +143,25 @@ $(document).ready(function($) {
    $('.results').doubleScroll({resetOnWindowResize: true});
 });
 
+function abrir_modal(url)
+{
+    $('#amr_clas_modal').load(url, function()
+    {
+    $(this).modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $(this).modal('show');
+    });
+    return false;
+}
+
+function cerrar_modal()
+{
+$('#amr_clas_modal').modal('hide');
+return false;
+}
+
 function showDialog() {
   var dialog = document.getElementById("myDialog");
   dialog.show();

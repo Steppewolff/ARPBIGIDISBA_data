@@ -41,12 +41,14 @@ def busqueda(request):
                        'mic_form': mic_form,
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
-
 class ResultadosListView(SingleTableMixin, FilterView):
     table_class = CombinedTable
     model = MetadataGeneral
     template_name = 'resultados.html'
     filterset_class = MultiFilter
+
+    def mra_classification(self):
+        pass
 
     def get_context_data(self, **kwargs):
         verbose_used = self.request.session.get('verbose_used', {})
@@ -85,6 +87,7 @@ class ResultadosListView(SingleTableMixin, FilterView):
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data(**kwargs)
+        mra_classification_dict = {}
 
         return render(request, 'resultados.html', context=context)
 
@@ -155,6 +158,9 @@ class ResultadosListView(SingleTableMixin, FilterView):
         qs = qs.filter().order_by("isolate_name")
 
         return qs
+
+def amr_clas_modal(request):
+    return render(request, 'amr_clas_modal.html')
 
 def pipelines(request):
     return render(request, 'pipelines.html')

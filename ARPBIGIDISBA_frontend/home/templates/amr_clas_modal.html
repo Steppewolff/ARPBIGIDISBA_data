@@ -1,0 +1,32 @@
+{% extends "modal_template.html" %}
+
+    {% block head %}
+    <title>Base de datos ARPBIGIDISBA</title>
+    <script src="/static/js/admin_js.js"></script>
+    {% endblock %}
+
+    {% block body %}
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Valores de AMR de las cepas filtradas:</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'amr_clas_modal' %}" method="POST" id="amr_clas_results">
+                    {% csrf_token %}
+                    <h6>Seleccione la versión de puntos de corte para calcular R/I/S: </h6>
+
+                    <input type="hidden" id="amr_clas_modal" name="amr_clas_modal">
+                    <input type="submit" value="Modificar asignación" class="btn btn-primary">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p>Seleccione la versión de puntos de corte para calcular R/I/S: </p>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}

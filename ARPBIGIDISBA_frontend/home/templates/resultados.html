@@ -26,11 +26,11 @@
     <div class="w3-main" style="margin-left:340px;margin-right:40px">
 
       <!-- Header -->
-      <div class="w3-container" style="margin-top:10px" id="showcase">
-        <h1 class="w3-jumbo"><b>Resultados</b></h1>
-        <h3 class="w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
-        <hr style="width:50px;border:5px solid red" class="w3-round">
-      </div>
+        <div class="w3-container" style="margin-top:10px" id="showcase">
+          <h1 class="w3-jumbo"><b>Resultados</b></h1>
+          <h3 class="w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
+          <hr style="width:50px;border:5px solid red" class="w3-round">
+        </div>
 
         <!-- Parámetros búsqueda -->
         <h2>Parámetros de la búsqueda</h2>
@@ -99,11 +99,13 @@
                     <div id="collapseClinicalCat" class="accordion-body collapse" aria-labelledby="headingClinicalCat" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-<!--                            <form action="{% url 'resultados' %}" method="POST">-->
 
-                                <button type="button" class="btn btn-success" onclick="showDialog()">Revisar asignación de variables</button>
 
-<!--                            </form>-->
+                                <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
+                                    <input type="submit" value="Revisar asignación de variables" class="w3-button w3-block btn btn-success w3-hover-red" onclick="return abrir_modal('{% url 'amr_clas_modal' %}')">
+                                </div>
+
+
                           </div>
                       </div>
                     </div>
@@ -112,20 +114,7 @@
             {% render_table table %}
         </div>
 
-        <dialog id="myDialog" style="position: fixed; top: 10px; overflow: auto; max-height: calc(100vh - 20px)">
-            <h4>Valores de AMR de las cepas filtradas:</h4>
-            <form action="{% url 'upload_modal' %}" method="POST" id="upload_matches">
-                <h6>Seleccione la versión de puntos de corte para calcular R/I/S: </h6>
-                {% csrf_token %}
-
-                <input type="hidden" id="db_var_modal" name="db_var_modal">
-                <input type="submit" value="Modificar asignación" class="btn btn-primary">
-            </form>
-
-            <button onclick="closeDialog()">Volver</button>
-        </dialog>
-
-    <!-- End page content -->
+        <div id="amr_clas_modal" class="modal fade" role="dialog"></div>
     </div>
 
     {% endblock %}
