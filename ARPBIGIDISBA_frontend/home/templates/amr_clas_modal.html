@@ -2,7 +2,7 @@
 
     {% block head %}
     <title>Base de datos ARPBIGIDISBA</title>
-    <script src="/static/js/admin_js.js"></script>
+<!--    <script src="/static/js/admin_js.js"></script>-->
     {% endblock %}
 
     {% block body %}
@@ -17,14 +17,30 @@
             <div class="modal-body">
                 <form action="{% url 'amr_clas_modal' %}" method="POST" id="amr_clas_results">
                     {% csrf_token %}
-                    <h6>Seleccione la versión de puntos de corte para calcular R/I/S: </h6>
+                    <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+
+                    <select name="breakpoint_table" id="breakpoint_table">
+                    {% for table in breakpoints_tables %}:
+                        {% if table == selected_table %}
+                        <option value="{{ table }}" selected="selected">{{ table }}</option>
+                        {% else %}
+                        <option value="{{ table }}">{{ table }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    </select>
 
                     <input type="hidden" id="amr_clas_modal" name="amr_clas_modal">
-                    <input type="submit" value="Modificar asignación" class="btn btn-primary">
+                    <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
                 </form>
             </div>
             <div class="modal-footer">
-                <p>Seleccione la versión de puntos de corte para calcular R/I/S: </p>
+                {% if selected_table %}
+                {% for ab in selected_breakpoints %}
+                {{ ab }}
+                {% endfor %}
+                {% else %}
+                <p>Seleccione una versión de puntos de corte para ver la clasificación clinica</p>
+                {% endif %}
             </div>
         </div>
     </div>

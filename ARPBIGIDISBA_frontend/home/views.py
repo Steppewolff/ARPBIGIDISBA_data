@@ -6,7 +6,7 @@ from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 import pandas as pd
 
-from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
+from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
 from .tables import CombinedTable
 from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
@@ -160,7 +160,14 @@ class ResultadosListView(SingleTableMixin, FilterView):
         return qs
 
 def amr_clas_modal(request):
-    return render(request, 'amr_clas_modal.html')
+    breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
+    if request.method == "POST":
+        selected_table = request.POST.get('breakpoint_table')
+        selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list('mic_breakpoints')
+        return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables, "selected_table" : selected_table, 'selected_breakpoints':selected_breakpoints})
+
+    else:
+        return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables})
 
 def pipelines(request):
     return render(request, 'pipelines.html')

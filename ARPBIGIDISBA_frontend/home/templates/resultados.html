@@ -104,7 +104,7 @@
                                 <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
                                     <input type="submit" value="Revisar asignación de variables" class="w3-button w3-block btn btn-success w3-hover-red" onclick="return abrir_modal('{% url 'amr_clas_modal' %}')">
                                 </div>
-
+                                <div id="amr_clas_modal" class="modal fade" role="dialog"></div>
 
                           </div>
                       </div>
@@ -114,7 +114,7 @@
             {% render_table table %}
         </div>
 
-        <div id="amr_clas_modal" class="modal fade" role="dialog"></div>
+<!--        <div id="amr_clas_modal" class="modal fade" role="dialog"></div>-->
     </div>
 
     {% endblock %}
