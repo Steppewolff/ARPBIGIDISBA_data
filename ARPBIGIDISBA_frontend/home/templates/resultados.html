@@ -102,11 +102,11 @@
 
 
 
-                            <form action="{% url 'resultados' %}" method="POST" id="amr_clas_results">
+                            <form action="{% url 'resultados' %}#mic_table" method="POST" id="amr_clas_results">
                                 {% csrf_token %}
                                 <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
 
-                                <select name="breakpoint_table" id="breakpoint_table">
+                                <select name="breakpoint_table_acc" id="breakpoint_table_acc">
                                 {% for table in breakpoints_tables %}:
                                     {% if table == selected_table %}
                                     <option value="{{ table }}" selected="selected">{{ table }}</option>
@@ -116,7 +116,7 @@
                                 {% endfor %}
                                 </select>
 
-                                <input type="hidden" id="amr_clas_modal" name="amr_clas_modal">
+                                <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">
                                 <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
                             </form>
 
@@ -129,22 +129,29 @@
             {% render_table table %}
         </div>
 
-        {% if selected_table %}
-        <h2>Tabla de Mic</h2>
+    {% if selected_table %}
+        <h2 id="mic_table">Tabla de Mic</h2>
         {% render_table mic_table %}
 
-        <div class="w3-container">
-            <table>
-            {% for ab, breakpoints in selected_breakpoints.0.items %}
-            <div>
-                {{ ab }} : {{breakpoints}}
-            </div>
+    <div class="w3-container">
+        <form action="{% url 'resultados' %}#mic_table" method="POST">
+            {% csrf_token %}
+            <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+
+            <select name="breakpoint_table_down" id="breakpoint_table_down">
+            {% for table in breakpoints_tables %}:
+                {% if table == selected_table %}
+                <option value="{{ table }}" selected="selected">{{ table }}</option>
+                {% else %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endif %}
             {% endfor %}
-            </table>
-        </div>
-        {% endif %}
+            </select>
 
-<!--        <div id="amr_clas_modal" class="modal fade" role="dialog"></div>-->
+            <input type="hidden" id="amr_clas_down" name="amr_clas_down">
+            <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
+        </form>
     </div>
-
+</div>
+    {% endif %}
     {% endblock %}

@@ -5,6 +5,7 @@ from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 import json
+import re
 import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
@@ -87,11 +88,13 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
         return super().get(request, *args, **kwargs)
 
-    def compute_clinical_category(value, bp):
+    def compute_clinical_category(self, value, bp):
         """
         value: el valor real (numérico o cadena) obtenido del registro para el antibiótico.
         bp: un diccionario con al menos las claves "S" y "R". Por ejemplo: {"R": 16, "S": 0.001}
         """
+        comparator = None
+
         # Si el valor es None (null) o no está definido
         if value is None:
             return "NA"
@@ -104,28 +107,67 @@ class ResultadosListView(SingleTableMixin, FilterView):
         try:
             valor = float(value)
         except (TypeError, ValueError):
-            return "NA"
+            # Expresión regular para detectar comparadores (<, <=, >, >=) y extraer el número
+            match = re.match(r'^(<|<=|≤|>|>=|≥)?\s*(\d*\.?\d+)$', str(value).strip())
+            if match:
+                comparator, number = match.groups()
+                if comparator == "≤":
+                    comparator = "<="
+                if comparator == "≥":
+                    comparator = ">="
+
+                try:
+                    valor = float(number)
+                except (TypeError, ValueError):
+                    return "NA"
+            else:
+                try:
+                    valor = float(value)
+                    comparator = None  # Sin operador
+                except (TypeError, ValueError):
+                    return "NA"
 
         # Se asume que los breakpoints vienen definidos numéricamente (aunque puede ser string en algunos casos)
         s_bp = bp.get("S")
         r_bp = bp.get("R")
 
-        # Se intenta convertir los breakpoints a float (si no se pueda, se asume que la regla es directa)
         try:
             s_bp = float(s_bp)
         except (TypeError, ValueError):
             s_bp = None
+
         try:
             r_bp = float(r_bp)
         except (TypeError, ValueError):
             r_bp = None
 
-        if s_bp is not None and valor <= s_bp:
-            return "S"
-        if r_bp is not None and valor > r_bp:
-            return "R"
+        if comparator is None:
+            if s_bp is not None and valor <= s_bp:
+                return "S"
+            elif r_bp is not None and valor > r_bp:
+                return "R"
+            else:
+                return "I"
+
+        elif comparator is not None:
+
+            if s_bp is not None and (comparator == "<=" or comparator == "<") and valor <= s_bp:
+                return "S"
+            elif s_bp is not None and comparator == "<" and (valor/s_bp) == 2:
+                return "S!"
+
+
+            if r_bp is not None and (comparator == ">=" or comparator == ">") and valor > r_bp:
+                return "R"
+            elif r_bp is not None and comparator == ">" and (valor/r_bp) == 0.5:
+                return "R!"
+
+
+            if s_bp is not None and valor > s_bp and r_bp is not None and valor < r_bp:
+                return "I"
+
         # En caso intermedio, se puede asignar "IE" u otro valor según tu criterio
-        return "IE"
+        return "No se ha podido asignar valor S/I/R"
 
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
@@ -133,36 +175,37 @@ class ResultadosListView(SingleTableMixin, FilterView):
         breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
         context["breakpoints_tables"] = breakpoints_tables
 
-        if request.method == "POST" and 'amr_clas_modal' in request.POST:
+        if request.method == "POST" and ('amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST):
+            if 'amr_clas_acc' in request.POST:
+                selected_table = request.POST.get('breakpoint_table_acc')
 
-            selected_table = request.POST.get('breakpoint_table')
+            if 'amr_clas_down' in request.POST:
+                selected_table = request.POST.get('breakpoint_table_down')
+
             selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
                 'mic_breakpoints', flat=True)
+
 
             qs_mic = context['qs_mic']
 
             if selected_breakpoints.exists():
                 bp_dict = selected_breakpoints.first()
-            #     try:
-            #         bp_dict = json.loads(bp_json)
-            #     except json.JSONDecodeError:
-            #         bp_dict = {}
-            # else:
-            #     bp_dict = {}
-
-            # isolates = self.object_list.values_list('isolate_id', flat=True)
-            # # mic_values = Mic.objects.all().values_list('table_version_name', flat=True)
-            # mic_values = Mic.objects.filter(mic_id__in=isolates)
 
             context["selected_table"] = selected_table
             context["selected_breakpoints"] = selected_breakpoints
 
             for record in qs_mic:
-                for ab in selected_breakpoints:
+                for ab in bp_dict:
                     value = getattr(record, ab, None)
                     bp = bp_dict.get(ab, {})
-                    clinical_category = self.compute_clinical_category(value, bp)
-                    setattr(record, f"{ab}_clinical_category", clinical_category)
+                    if value == None:
+                        pass
+                    elif None in bp.values() or "-" in bp.values():
+                        clinical_category = "Sin breakpoints en esta versión"
+                        setattr(record, f"{ab}_clinical_category", clinical_category)
+                    else:
+                        clinical_category = self.compute_clinical_category(value, bp)
+                        setattr(record, f"{ab}_clinical_category", clinical_category)
 
             context['mic_table'] = MicTable(data=qs_mic)
             RequestConfig(request).configure(context['mic_table'])
