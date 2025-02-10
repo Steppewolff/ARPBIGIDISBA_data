@@ -101,10 +101,25 @@
                           <div class="form-group col-md-6 mb-0">
 
 
-                                <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
-                                    <input type="submit" value="Revisar asignación de variables" class="w3-button w3-block btn btn-success w3-hover-red" onclick="return abrir_modal('{% url 'amr_clas_modal' %}')">
-                                </div>
-                                <div id="amr_clas_modal" class="modal fade" role="dialog"></div>
+
+                            <form action="{% url 'resultados' %}" method="POST" id="amr_clas_results">
+                                {% csrf_token %}
+                                <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+
+                                <select name="breakpoint_table" id="breakpoint_table">
+                                {% for table in breakpoints_tables %}:
+                                    {% if table == selected_table %}
+                                    <option value="{{ table }}" selected="selected">{{ table }}</option>
+                                    {% else %}
+                                    <option value="{{ table }}">{{ table }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                </select>
+
+                                <input type="hidden" id="amr_clas_modal" name="amr_clas_modal">
+                                <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
+                            </form>
+
 
                           </div>
                       </div>
@@ -113,6 +128,21 @@
                 </div>
             {% render_table table %}
         </div>
+
+        {% if selected_table %}
+        <h2>Tabla de Mic</h2>
+        {% render_table mic_table %}
+
+        <div class="w3-container">
+            <table>
+            {% for ab, breakpoints in selected_breakpoints.0.items %}
+            <div>
+                {{ ab }} : {{breakpoints}}
+            </div>
+            {% endfor %}
+            </table>
+        </div>
+        {% endif %}
 
 <!--        <div id="amr_clas_modal" class="modal fade" role="dialog"></div>-->
     </div>

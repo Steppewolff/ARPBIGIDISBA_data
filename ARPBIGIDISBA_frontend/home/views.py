@@ -4,10 +4,11 @@ from django.shortcuts import render, redirect
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
+import json
 import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
-from .tables import CombinedTable
+from .tables import CombinedTable, MicTable
 from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
 
@@ -53,17 +54,19 @@ class ResultadosListView(SingleTableMixin, FilterView):
     def get_context_data(self, **kwargs):
         verbose_used = self.request.session.get('verbose_used', {})
         context = super().get_context_data(**kwargs)
+
+        # Obtener los datos para la tabla de Mic con isolate_name
+        filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
+        # qs_mic = Mic.objects.select_related("matadatageneral.isolate_name").all()
+        qs_mic = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
+        context['qs_mic'] = qs_mic
+        context['mic_table'] = MicTable(data=qs_mic)
+        RequestConfig(self.request).configure(context['mic_table'])
+
+        # RequestConfig(self.request).configure(context['mic_table'])
+
         context['filter'] = self.get_filterset(self.get_filterset_class())
         context['verbose_used'] = verbose_used
-        context['Mic_list'] = Mic.objects.all()
-
-        return context
-
-        context['FilePath_list'] = FilePath.objects.all()
-        context['MetadataClinic_list'] = MetadataClinic.objects.all()
-        context['PhenotypicData_list'] = PhenotypicData.objects.all()
-        context['SequenceAnalysis_list'] = SequenceAnalysis.objects.all()
-        context['SequencingInfo_list'] = SequencingInfo.objects.all()
 
         return context
 
@@ -84,10 +87,85 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
         return super().get(request, *args, **kwargs)
 
+    def compute_clinical_category(value, bp):
+        """
+        value: el valor real (numérico o cadena) obtenido del registro para el antibiótico.
+        bp: un diccionario con al menos las claves "S" y "R". Por ejemplo: {"R": 16, "S": 0.001}
+        """
+        # Si el valor es None (null) o no está definido
+        if value is None:
+            return "NA"
+        # Si el valor es exactamente el guión (string)
+        if isinstance(value, str) and value.strip() == "-":
+            return "-"
+        # Si el valor es la cadena "IE"
+        if isinstance(value, str) and value.upper() == "IE":
+            return "IE"
+        try:
+            valor = float(value)
+        except (TypeError, ValueError):
+            return "NA"
+
+        # Se asume que los breakpoints vienen definidos numéricamente (aunque puede ser string en algunos casos)
+        s_bp = bp.get("S")
+        r_bp = bp.get("R")
+
+        # Se intenta convertir los breakpoints a float (si no se pueda, se asume que la regla es directa)
+        try:
+            s_bp = float(s_bp)
+        except (TypeError, ValueError):
+            s_bp = None
+        try:
+            r_bp = float(r_bp)
+        except (TypeError, ValueError):
+            r_bp = None
+
+        if s_bp is not None and valor <= s_bp:
+            return "S"
+        if r_bp is not None and valor > r_bp:
+            return "R"
+        # En caso intermedio, se puede asignar "IE" u otro valor según tu criterio
+        return "IE"
+
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data(**kwargs)
-        mra_classification_dict = {}
+        breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
+        context["breakpoints_tables"] = breakpoints_tables
+
+        if request.method == "POST" and 'amr_clas_modal' in request.POST:
+
+            selected_table = request.POST.get('breakpoint_table')
+            selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
+                'mic_breakpoints', flat=True)
+
+            qs_mic = context['qs_mic']
+
+            if selected_breakpoints.exists():
+                bp_dict = selected_breakpoints.first()
+            #     try:
+            #         bp_dict = json.loads(bp_json)
+            #     except json.JSONDecodeError:
+            #         bp_dict = {}
+            # else:
+            #     bp_dict = {}
+
+            # isolates = self.object_list.values_list('isolate_id', flat=True)
+            # # mic_values = Mic.objects.all().values_list('table_version_name', flat=True)
+            # mic_values = Mic.objects.filter(mic_id__in=isolates)
+
+            context["selected_table"] = selected_table
+            context["selected_breakpoints"] = selected_breakpoints
+
+            for record in qs_mic:
+                for ab in selected_breakpoints:
+                    value = getattr(record, ab, None)
+                    bp = bp_dict.get(ab, {})
+                    clinical_category = self.compute_clinical_category(value, bp)
+                    setattr(record, f"{ab}_clinical_category", clinical_category)
+
+            context['mic_table'] = MicTable(data=qs_mic)
+            RequestConfig(request).configure(context['mic_table'])
 
         return render(request, 'resultados.html', context=context)
 
@@ -159,15 +237,15 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
         return qs
 
-def amr_clas_modal(request):
-    breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
-    if request.method == "POST":
-        selected_table = request.POST.get('breakpoint_table')
-        selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list('mic_breakpoints')
-        return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables, "selected_table" : selected_table, 'selected_breakpoints':selected_breakpoints})
-
-    else:
-        return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables})
+# def amr_clas_modal(request):
+#     breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
+#     if request.method == "POST":
+#         selected_table = request.POST.get('breakpoint_table')
+#         selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list('mic_breakpoints')
+#         return render(request, 'resultados.html', {"breakpoints_tables" : breakpoints_tables, "selected_table" : selected_table, 'selected_breakpoints':selected_breakpoints})
+#
+#     else:
+#         return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables})
 
 def pipelines(request):
     return render(request, 'pipelines.html')
