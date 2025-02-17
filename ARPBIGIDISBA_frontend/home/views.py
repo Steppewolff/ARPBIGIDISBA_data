@@ -80,11 +80,23 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
     def get(self, request, *args, **kwargs):
         export_format = request.GET.get('_export', None)
+        export_mic_format = request.GET.get('_export_mic', None)
 
+        # Exporta la tabla principal (CombinedTable)
         if TableExport.is_valid_format(export_format):
             table = self.get_table()
             exporter = TableExport(export_format, table)
             return exporter.response('arpbig_data_export.{}'.format(export_format))
+
+        # Exporta la tabla de MIC (mic_table)
+        elif TableExport.is_valid_format(export_mic_format):
+            # Reutilizamos la lógica para obtener el queryset de MIC, igual que en get_context_data
+            filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
+            qs_mic = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
+            mic_table = MicTable(data=qs_mic)
+            RequestConfig(self.request).configure(mic_table)
+            exporter = TableExport(export_mic_format, mic_table)
+            return exporter.response('arpbig_data_export_mic.{}'.format(export_mic_format))
 
         return super().get(request, *args, **kwargs)
 
@@ -179,11 +191,12 @@ class ResultadosListView(SingleTableMixin, FilterView):
             if 'amr_clas_acc' in request.POST:
                 selected_table = request.POST.get('breakpoint_table_acc')
 
-            if 'amr_clas_down' in request.POST:
+            elif 'amr_clas_down' in request.POST:
                 selected_table = request.POST.get('breakpoint_table_down')
 
             selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
                 'mic_breakpoints', flat=True)
+            selected_filepath = BreakpointTable.objects.get(table_version_name=selected_table).filepath
 
 
             qs_mic = context['qs_mic']
@@ -193,6 +206,7 @@ class ResultadosListView(SingleTableMixin, FilterView):
 
             context["selected_table"] = selected_table
             context["selected_breakpoints"] = selected_breakpoints
+            context["selected_filepath"] = selected_filepath
 
             for record in qs_mic:
                 for ab in bp_dict:

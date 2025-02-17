@@ -8,6 +8,6 @@ urlpatterns = [
     path('resultados', ResultadosListView.as_view(), name='resultados'),
     path('pipelines', views.pipelines, name='pipelines'),
     path('documentacion', views.documentacion, name='documentacion'),
-    path('contacto', views.contacto, name='contacto'),
-    # path('amr_clas_modal', views.amr_clas_modal, name='amr_clas_modal'),
+    # path('contacto', views.contacto, name='contacto'),
+    # path('aplicaciones', views.aplicaciones, name='aplicaciones'),
 ]

@@ -1,5 +1,6 @@
 {% extends "home_template.html" %}
 
+{% load static %}
 {% load crispy_forms_tags %}
 {% load django_tables2 %}
 {% load querystring from django_tables2 %}
@@ -99,9 +100,6 @@
                     <div id="collapseClinicalCat" class="accordion-body collapse" aria-labelledby="headingClinicalCat" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-
-
-
                             <form action="{% url 'resultados' %}#mic_table" method="POST" id="amr_clas_results">
                                 {% csrf_token %}
                                 <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
@@ -119,8 +117,6 @@
                                 <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">
                                 <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
                             </form>
-
-
                           </div>
                       </div>
                     </div>
@@ -129,29 +125,43 @@
             {% render_table table %}
         </div>
 
-    {% if selected_table %}
-        <h2 id="mic_table">Tabla de Mic</h2>
-        {% render_table mic_table %}
+        {% if selected_table %}
+        <div class="w3-container">
+            <h2 id="mic_table">Tabla de Mic</h2>
+            <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
+              <form method="GET">
+                  <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
+                  <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
+                  <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
+              </form>
+            </div>
+            {% render_table mic_table %}
+        </div>
 
-    <div class="w3-container">
-        <form action="{% url 'resultados' %}#mic_table" method="POST">
-            {% csrf_token %}
-            <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+        <div class="w3-container">
+            <form action="{% url 'resultados' %}#mic_table" method="POST">
+                {% csrf_token %}
+                <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
 
-            <select name="breakpoint_table_down" id="breakpoint_table_down">
-            {% for table in breakpoints_tables %}:
-                {% if table == selected_table %}
-                <option value="{{ table }}" selected="selected">{{ table }}</option>
-                {% else %}
-                <option value="{{ table }}">{{ table }}</option>
-                {% endif %}
-            {% endfor %}
-            </select>
+                <select name="breakpoint_table_down" id="breakpoint_table_down">
+                {% for table in breakpoints_tables %}:
+                    {% if table == selected_table %}
+                    <option value="{{ table }}" selected="selected">{{ table }}</option>
+                    {% else %}
+                    <option value="{{ table }}">{{ table }}</option>
+                    {% endif %}
+                {% endfor %}
+                </select>
 
-            <input type="hidden" id="amr_clas_down" name="amr_clas_down">
-            <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
-        </form>
+                <input type="hidden" id="amr_clas_down" name="amr_clas_down">
+                <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
+                <!-- Botón para descargar la tabla de breakpoints usada como referencia -->
+                <a href="{% static selected_filepath %}" class="btn btn-success" download>
+                  Descargar tabla de la versión
+                </a>
+            </form>
+        </div>
     </div>
-</div>
+
     {% endif %}
     {% endblock %}

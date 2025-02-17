@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path('', include('dashboard.urls')),
     path('', include('upload.urls')),
+    path('', include('apps.urls')),
     path(r'^advanced_filters/', include('advanced_filters.urls')),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
 ]
