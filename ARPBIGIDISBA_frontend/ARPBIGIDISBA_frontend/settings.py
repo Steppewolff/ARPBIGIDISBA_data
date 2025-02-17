@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'home',
     'dashboard',
     'upload',
+    'apps',
 ]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
