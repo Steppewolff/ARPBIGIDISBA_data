@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django DB') }}{% endblock %}
 
 {% block branding %}
 <div id="site-name"><img src="{% static 'img/arpbig-high-resolution-logo-black-transparent(4).png' %}" alt="ARPBIG logo" width="250" height="90"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>

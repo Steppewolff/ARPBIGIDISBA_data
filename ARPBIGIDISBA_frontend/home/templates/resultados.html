@@ -6,10 +6,11 @@
 {% load querystring from django_tables2 %}
 {% load export_url from django_tables2 %}
 {% load render_table from django_tables2 %}
-{% load bootstrap5 %}
+{% load bootstrap4 %}
 
     {% block head %}
     <script src="/static/js/admin_js.js"></script>
+    <script type="text/javascript" src="{% static 'django_tables2_column_shifter/js/django_tables2_column_shifter.min.js' %}"></script>
     {% endblock %}
 
     {% block title %}
@@ -34,7 +35,7 @@
         </div>
 
         <!-- Parámetros búsqueda -->
-        <h2>Parámetros de la búsqueda</h2>
+        <h2 title="Resumen de parámetros introducidos">Parámetros de la búsqueda</h2>
         <div class="w3-container">
             {% for parameter, value in verbose_used.items %}
                 <p><b>{{ parameter }} : </b> {{ value }}</p>
@@ -58,37 +59,41 @@
                     <div id="collapseFilterOne" class="accordion-body collapse" aria-labelledby="headingFilter" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-                            <form action="{% url 'resultados' %}" method="POST">
-                                {% csrf_token %}
+<!--                            <form action="{% url 'resultados' %}" method="POST">-->
+<!--                                {% csrf_token %}-->
 
-                                {% bootstrap_form filter.form layout='inline' %}
-                                {% bootstrap_button 'Filtrar' %}
+<!--                                {% bootstrap_form filter.form layout='inline' %}-->
+<!--                                {% bootstrap_button 'Filtrar' %}-->
+<!--                            </form>-->
+                            <form method="GET">
+                              {% csrf_token %}
+                              {% crispy filter.form %}
                             </form>
                           </div>
                       </div>
                     </div>
                   </div>
                   {% endif %}
-                  <div class="card accordion-group">
-                    <div class="card-header accordion-heading" id="headingPrint">
-                      <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapsePrint" aria-expanded="true" aria-controls="collapsePrint" data-parent="#accordion_filter" href="#collapsePrint">
-                          Exportar resultados
-                        </button>
-                      </h5>
-                    </div>
-                    <div id="collapsePrint" class="accordion-body collapse" aria-labelledby="headingPrint" data-parent="#accordion_filter">
-                      <div class="card-body form-row">
-                          <div class="form-group col-md-6 mb-0">
-                            <form method="GET">
-                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
-                                <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
-                                <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
-                            </form>
-                          </div>
-                      </div>
-                    </div>
-                  </div>
+<!--                  <div class="card accordion-group">-->
+<!--                    <div class="card-header accordion-heading" id="headingPrint">-->
+<!--                      <h5 class="mb-0">-->
+<!--                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapsePrint" aria-expanded="true" aria-controls="collapsePrint" data-parent="#accordion_filter" href="#collapsePrint">-->
+<!--                          Filtrar resultados por mutación-->
+<!--                        </button>-->
+<!--                      </h5>-->
+<!--                    </div>-->
+<!--                    <div id="collapsePrint" class="accordion-body collapse" aria-labelledby="headingPrint" data-parent="#accordion_filter">-->
+<!--                      <div class="card-body form-row">-->
+<!--                          <div class="form-group col-md-6 mb-0">-->
+<!--                            <form method="GET">-->
+<!--                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>-->
+<!--                                <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>-->
+<!--                                <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>-->
+<!--                            </form>-->
+<!--                          </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
                   <div class="card accordion-group">
                     <div class="card-header accordion-heading" id="headingClinicalCat">
                       <h5 class="mb-0">
@@ -122,6 +127,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
+                  <form method="GET">
+                      <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
+                      <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
+                      <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
+                  </form>
+                </div>
             {% render_table table %}
         </div>
 
@@ -135,6 +147,8 @@
                   <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
               </form>
             </div>
+        </div>
+        <div class="w3-container">
             {% render_table mic_table %}
         </div>
 

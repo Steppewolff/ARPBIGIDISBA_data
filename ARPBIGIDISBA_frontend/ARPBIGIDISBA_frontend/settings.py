@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',  # Debe ir antes de 'django.contrib.admin'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -156,6 +157,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = '/accounts/login/'  # URL a donde se redirige si el usuario no está autenticado
+LOGIN_REDIRECT_URL = '/'  # Página a donde se redirige después de iniciar sesión
+LOGOUT_REDIRECT_URL = '/'  # Página tras cerrar sesión
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -199,3 +203,97 @@ STATICFILES_FINDERS = [
     'django_plotly_dash.finders.DashComponentFinder',
     'django_plotly_dash.finders.DashAppDirectoryFinder',
 ]
+
+JAZZMIN_SETTINGS = {
+    # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "ARPBIG DB",
+
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "ARPBIG database",
+
+    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_brand": None,
+
+    # Logo to use for your site, must be present in static files, used for brand on top left
+    "site_logo": "img/arpbig-logo-circular-white-transparent.png",
+
+    # CSS classes that are applied to the logo above
+    "site_logo_classes": None,
+
+    # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
+    "site_icon": "img/arpbig-high-resolution-logo-black-transparent(2).ico",
+
+    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
+    "login_logo": "img/arpbig-high-resolution-logo-transparent(2).png",
+
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to the ARPBIG database administrator",
+
+    # Copyright on the footer
+    "copyright": "Propiedad de ARPBIG - ARPBIG property",
+
+    ############
+    # Top Menu #
+    ############
+
+    # Links to put along the top menu
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "ARPBIG web", "url": "https://arpbigidisba.com", "new_window": True},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"name": "Modelos", "app": "home"},
+    ],
+
+    #############
+    # User Menu #
+    #############
+
+    #############
+    # Side Menu #
+    #############
+
+    # Whether to display the side menu
+    "show_sidebar": True,
+
+    # Whether to aut expand the menu
+    "navigation_expanded": True,
+
+    # Hide these apps when generating side menu e.g (auth)
+    "hide_apps": ['dashboard'],
+
+    # Hide these models when generating side menu (e.g auth.user)
+    "hide_models": [],
+
+    # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
+    "order_with_respect_to": ["home", "auth"],
+
+    #################
+    # Related Modal #
+    #################
+    # Use modals instead of popups
+    "related_modal_active": False,
+
+    #############
+    # UI Tweaks #
+    #############
+
+    ###############
+    # Change view #
+    ###############
+    # Render out the change view as a single form, or in tabs, current options are
+    # - single
+    # - horizontal_tabs (default)
+    # - vertical_tabs
+    # - collapsible
+    # - carousel
+    "changeform_format": "horizontal_tabs",
+    # override change forms on a per modeladmin basis
+    "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+    # Add a language dropdown into the admin
+    "language_chooser": False,
+}

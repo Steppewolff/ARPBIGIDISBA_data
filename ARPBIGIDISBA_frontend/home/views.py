@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 import re
 import pandas as pd
@@ -15,9 +17,11 @@ from .filters import MultiFilter
 
 
 # Create your views here.
+@login_required
 def home(request):
     return render(request, 'home.html')
 
+@login_required
 def busqueda(request):
     if request.method == 'POST':
         metadatageneral_form = MetadataGeneralForm(request.POST)
@@ -43,7 +47,7 @@ def busqueda(request):
                        'mic_form': mic_form,
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
-class ResultadosListView(SingleTableMixin, FilterView):
+class ResultadosListView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = CombinedTable
     model = MetadataGeneral
     template_name = 'resultados.html'
@@ -312,6 +316,7 @@ def documentacion(request):
     return render(request, 'documentacion.html')
 
 
+@login_required
 def cargadatos(request):
     return render(request, 'cargadatos.html')
 

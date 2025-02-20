@@ -171,3 +171,53 @@ function closeDialog() {
   var dialog = document.getElementById("myDialog");
   dialog.close();
 }
+
+//$(document).ready(function() {
+//    $('.select2').select2({
+//        placeholder: "Selecciona mutaciones",
+//        allowClear: true,
+//        width: '100%'
+//    });
+//});
+
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "Selecciona mutaciones",
+        allowClear: true,
+        width: '100%',
+        closeOnSelect: false,
+        templateResult: function(option) {
+            if (!option.id) return option.text;
+            return $('<span><input type="checkbox" style="margin-right: 5px;" /> ' + option.text + '</span>');
+        },
+        templateSelection: function(option) {
+            return option.text;
+        }
+    });
+
+    // Agregar interactividad: marcar checkbox con un clic
+    $('.select2').on('select2:select select2:unselect', function (e) {
+        let selectedOptions = $(this).find(':selected').map(function() {
+            return $(this).text();
+        }).get().join(', ');
+        console.log('Opciones seleccionadas:', selectedOptions);
+    });
+});
+
+//$(document).ready(function() {
+//    $('#myMultiSelect1, #myMultiSelect2').multiselect({
+//      enableFiltering: true,           // Activa la barra de búsqueda
+//      includeSelectAllOption: true,
+//      enableCaseInsensitiveFiltering: true,
+//      buttonWidth: '300px',           // Ajusta el ancho del botón
+//      buttonClass: 'btn btn-light',
+//      maxHeight: 300,                 // Altura máx. del desplegable
+//      nonSelectedText: 'Selecciona valores',
+//      allSelectedText: 'Todos seleccionados',
+//      nSelectedText: 'seleccionados',
+//      buttonContainer: '<div class="btn-group w-100" />', // Hace que use el ancho completo
+//      templates: {
+//        button: '<button type="button" class="multiselect dropdown-toggle btn btn-light w-100" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+//        li: '<li><a tabindex="0"><label class="checkbox"></label></a></li>'
+//    });
+//});

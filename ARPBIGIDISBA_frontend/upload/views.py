@@ -6,15 +6,21 @@ from django.views.generic.list import ListView
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
-from django.db import transaction
+from django.db import transaction, models
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from collections import Counter
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from django.templatetags.static import static
+from django.http import FileResponse, Http404
+from django.conf import settings
 from io import StringIO
 import pandas as pd
 import numpy as np
 import os.path
 import re
+import os
 
 from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 
@@ -340,6 +346,57 @@ def read_input_file():
 
 # **********************************************************************************************************************
 
+# Create variables manual
+def manual_file(db_columns_helpers):
+    folder = 'static/pdf'
+    pdf_file = 'explicacion_variables_bdd.pdf'
+    pdf_path = os.path.join(settings.BASE_DIR, folder, pdf_file)
+
+# Comprobar si el archivo existe
+    if not os.path.exists(pdf_path):
+        # Crear el directorio si no existe
+        # os.makedirs(folder, exist_ok=True)
+
+        # Crear un objeto canvas para el PDF
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
+
+        # Configurar posición inicial y espaciado
+        x = 50
+        y = height - 50
+        row_height = 20
+
+        # Escribir las cabeceras
+        c.drawString(x, y, "Campo BDD")
+        c.drawString(x + 200, y, "Explicación del campo")
+        y -= row_height
+
+        # Escribir los datos del diccionario
+        for key, value in db_columns_helpers.items():
+            # Si se llega al final de la página, crea una nueva
+            if y < 50:
+                c.showPage()
+                y = height - 50
+
+            c.drawString(x, y, str(key))
+            c.drawString(x + 200, y, str(value))
+            y -= row_height
+
+        # Guardar el PDF
+        c.save()
+        print(f"Archivo PDF creado: {pdf_path}")
+    else:
+        print("El archivo PDF ya existe.")
+
+def descargar_manual_bdd(request):
+    # Ruta completa del archivo PDF (asegúrate que la carpeta 'xls' esté en la raíz del proyecto o ajusta la ruta)
+    pdf_path = os.path.join(settings.BASE_DIR, 'static/pdf', 'explicacion_variables_bdd.pdf')
+
+    if os.path.exists(pdf_path):
+        return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+    else:
+        raise Http404("El archivo PDF no existe.")
+
 # Create your views here.
 def upload(request):
     if request.method == 'POST' and 'fileselect' in request.FILES:
@@ -366,31 +423,67 @@ def upload(request):
                 if re.search(locus_pattern, column):
                     amr_loci.append(column)
 
+        # Load the available database columns from the session
+        db_columns =  request.session['db_columns']
+        db_columns_helpers = request.session['db_columns_helpers']
         request.session['amr_loci'] = amr_loci
 
         df_columns = [column for column in df_columns if not re.search(locus_pattern, column)]
 
-        db_columns = []
-        tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis', 'SequencingInfo']
+        # db_columns = []
+        # db_columns_helpers = {}
+        # tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis', 'SequencingInfo']
 
         df_noamr = df.filter(df_columns, axis=1)
         df_rows = df_noamr.to_dict('split')['data']
 
+        # for table in tables:
+        #     table_fields = apps.get_model('home', table)._meta.get_fields()
+        #     for field in table_fields:
+        #         if ('_id' not in field.name
+        #                 and not isinstance(field, models.ForeignKey)
+        #                 and not isinstance(field, models.OneToOneField)
+        #                 and not isinstance(field, models.OneToOneRel)
+        #                 and not isinstance(field, models.ManyToOneRel)):
+        #             db_columns.append(field.name)
+        #             db_columns_helpers[field.name] = field.db_comment
+        #
+        # db_columns = sorted(db_columns)
+        # db_columns.insert(0, 'No escribir en BDD')
+        #
+        # # Write the available database columns in the session
+        # request.session['db_columns'] = db_columns
+        # request.session['db_columns_helpers'] = db_columns_helpers
+
+        manual_file(db_columns_helpers)
+
+        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'db_columns_helpers': db_columns_helpers})
+
+    else:
+        db_columns = []
+        db_columns_helpers = {}
+        tables = ['FilePath', 'MetadataClinic', 'MetadataGeneral', 'Mic', 'PhenotypicData', 'SequenceAnalysis', 'SequencingInfo']
+
         for table in tables:
             table_fields = apps.get_model('home', table)._meta.get_fields()
             for field in table_fields:
-                if '_id' not in field.name:
+                if ('_id' not in field.name
+                        and not isinstance(field, models.ForeignKey)
+                        and not isinstance(field, models.OneToOneField)
+                        and not isinstance(field, models.OneToOneRel)
+                        and not isinstance(field, models.ManyToOneRel)):
                     db_columns.append(field.name)
+                    db_columns_helpers[field.name] = field.db_comment
 
         db_columns = sorted(db_columns)
         db_columns.insert(0, 'No escribir en BDD')
 
         # Write the available database columns in the session
         request.session['db_columns'] = db_columns
+        request.session['db_columns_helpers'] = db_columns_helpers
 
-        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci})
+        manual_file(db_columns_helpers)
 
-    else:
         return render(request, 'cargadatos.html')
 
 def summary(request):
@@ -540,6 +633,7 @@ def confirm(request):
 
     tables = ['MetadataGeneral', 'FilePath', 'MetadataClinic', 'Mic', 'PhenotypicData', 'SequenceAnalysis',
               'SequencingInfo']
+
 
     model_fields = {table: [] for table in tables}
     for model_name in model_fields:

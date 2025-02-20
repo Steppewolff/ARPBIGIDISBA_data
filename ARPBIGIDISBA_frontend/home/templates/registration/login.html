@@ -1,0 +1,12 @@
+{% extends "home_template.html" %}
+
+{% block content %}
+<div style="margin-left:340px;margin-right:40px">
+  <h2>Iniciar Sesión</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Ingresar</button>
+  </form>
+</div>
+{% endblock %}
