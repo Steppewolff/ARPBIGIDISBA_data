@@ -290,7 +290,7 @@ class MetadataClinic(models.Model):
 
 
 class Mic(models.Model):
-    mic_id = models.AutoField(primary_key=True)
+    mic_id = models.AutoField(primary_key=True, verbose_name="MIC_id")
     isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     pip = models.CharField(max_length=10, blank=True, null=True, verbose_name="Piperacilina", db_comment='Valor numérico de la concentración mínima inhibitoria de piperacilina')
     pip_clinical_category = models.CharField(max_length=2, blank=True, null=True, db_comment='Categoría clínica de resistencia del aislado a piperacilina')
@@ -357,6 +357,7 @@ class Mic(models.Model):
     class Meta:
         managed = True
         db_table = 'mic'
+        verbose_name = 'MIC'
 
     def __str__(self):
         return str(self.mic_id)

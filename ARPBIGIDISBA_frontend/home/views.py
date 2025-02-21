@@ -17,11 +17,11 @@ from .filters import MultiFilter
 
 
 # Create your views here.
-@login_required
+# @login_required
 def home(request):
     return render(request, 'home.html')
 
-@login_required
+# @login_required
 def busqueda(request):
     if request.method == 'POST':
         metadatageneral_form = MetadataGeneralForm(request.POST)
@@ -47,7 +47,7 @@ def busqueda(request):
                        'mic_form': mic_form,
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
-class ResultadosListView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class ResultadosListView(SingleTableMixin, FilterView): #LoginRequiredMixin,
     table_class = CombinedTable
     model = MetadataGeneral
     template_name = 'resultados.html'
@@ -316,7 +316,7 @@ def documentacion(request):
     return render(request, 'documentacion.html')
 
 
-@login_required
+# @login_required
 def cargadatos(request):
     return render(request, 'cargadatos.html')
 

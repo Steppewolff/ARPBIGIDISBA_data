@@ -90,7 +90,7 @@ class MetadataGeneralAdmin(admin.ModelAdmin):
 
 class MicAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Mic._meta.fields]  # Mostrar todos los campos
-
+    exclude = ('mic_id', 'dlx', 'dlx_clinical_category', 'lvx', 'lvx_clinical_category', 'mxl', 'mxl_clinical_category', 'net', 'net_clinical_category', 'caz_cloxa', 'imi_cloxa')
     class Media:
         js = (
             'js/admin_js.js',  # project static folder
