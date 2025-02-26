@@ -24,6 +24,8 @@ dash = "*"
 django-plotly-dash = "*"
 xlrd = "*"
 openpyxl = "*"
+reportlab = "*"
+django-jazzmin = "*"
 
 [dev-packages]
 

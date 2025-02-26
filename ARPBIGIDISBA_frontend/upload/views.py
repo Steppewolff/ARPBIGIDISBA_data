@@ -472,7 +472,11 @@ def upload(request):
                         and not isinstance(field, models.OneToOneField)
                         and not isinstance(field, models.OneToOneRel)
                         and not isinstance(field, models.ManyToOneRel)):
-                    db_columns.append(field.name)
+                    if table == 'Mic' and field.help_text != "":
+                        db_columns.append(field.help_text)
+                    elif table != 'Mic':
+                        db_columns.append(field.verbose_name)
+
                     db_columns_helpers[field.name] = field.db_comment
 
         db_columns = sorted(db_columns)

@@ -44,3 +44,10 @@ def applications(request):
         return render(request, 'aplicaciones.html')
     else:
         return render(request, 'aplicaciones.html')
+
+
+def amr_score_prediction(request):
+    if request.method == 'POST':
+        return render(request, 'amr_score_prediction.html')
+    else:
+        return render(request, 'amr_score_prediction.html')
