@@ -16,8 +16,11 @@ df = pd.DataFrame({
 })
 
 df_sequenceAnalysis = pd.DataFrame(list(SequenceAnalysis.objects.all().values()))
-
+# df_sequenceAnalysis = pd.DataFrame()
+#
+# cnt_clonal_complex = Counter()
 cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
+
 del cnt_clonal_complex[None]
 
 pd_fig1 = pd.DataFrame.from_dict(cnt_clonal_complex, orient='index', columns=['values']).reset_index()

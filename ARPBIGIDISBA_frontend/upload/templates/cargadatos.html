@@ -9,7 +9,7 @@
     <!-- Top menu on small screens -->
     <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
       <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
-      <span>Base de datos ARPBIG</span>
+      <span>ARPBIG database</span>
     </header>
     {% endblock %}
 
@@ -20,38 +20,38 @@
 
       <!-- Header -->
       <div class="w3-container" style="margin-top:10px" id="showcase">
-        <h1 class="w3-jumbo"><b>Carga de datos</b></h1>
-        <h4 class="w3-text-red"><b>Interfaz para la carga de datos en la Base de datos ARPBIG IdISBa</b></h4>
+        <h1 class="w3-jumbo"><b>Data upload</b></h1>
+        <h4 class="w3-text-red"><b>Data upload interface to ARPBIG IdISBa database</b></h4>
         <hr style="width:50px;border:5px solid red" class="w3-round">
       </div>
 
       <div style="display: block; margin:0 auto; display: flex; justify-content: center; align-items: flex-start; flex-direction: row;">
           <div>
-              <h4>Seleccione el archivo con la información:</h4>
+              <h4>Select input file with information to be uploaded:</h4>
                   <form action="{% url 'cargadatos' %}" method="POST" enctype="multipart/form-data"  id="upload_file">
                       {% csrf_token %}
     <!--                  <label for="fileselect" style="width: 100%;">Seleccione el archivo con la información:</label>-->
                       <input type="file" id="fileselect" name="fileselect" accept=".xlsx, .xls, .csv" style="width: 100%;" required>
-                      <label for="loci">¿Extraer los loci del archivo de entrada?</label>
+                      <label for="loci">Obtain resistome loci from input file?</label>
                       <select id="loci" name="loci">
-                        <option value="yes" selected="selected">Extraer</option>
-                        <option value="no">No extraer</option>
+                        <option value="yes" selected="selected">Extract loci information</option>
+                        <option value="no">Do not extract loci information</option>
                       </select>
-                      <div><input type="submit" value="Cargar archivo" class="btn btn-primary"></div>
+                      <div><input type="submit" value="Read file" class="btn btn-primary"></div>
                   </form>
           </div>
           <div>
-              <h4>Descarga de archivo con campos de la BDD:</h4>
+              <h4>Download file with information about database fields:</h4>
               <button><a href="{% url 'descargar_manual_bdd' %}" class="btn btn-primary">
-                  Descargar PDF
+                  Download PDF
               </a></button>
           </div>
       </div>
 
       {% if df_columns %}
       <hr style="width:100%;">
-      <h4>Datos:</h4>
-      <div>Nombre del archivo: {{ file.name }}</div>
+      <h4>Data read:</h4>
+      <div>Read file name: {{ file.name }}</div>
 
       <div class="results" style="position: relative; overflow-x: auto; overflow-y: auto; height: 500px;">
             <table class="table table-striped results" style="overflow: auto;">
@@ -78,15 +78,15 @@
 
       <div class="w3-container" id="variables_bdd" style="width: 100%; display: flex; justify-content: space-evenly;">
         <div>
-            <h3>Variables BDD</h3>
+            <h3>DB variables</h3>
             <form action="{% url 'upload_summary' %}" method="POST" id="upload_matches">
-                <h4>Seleccione campo en la BDD para cada columna: </h4>
+                <h4>Select DB field to store each input file column information: </h4>
                 {% csrf_token %}
                 {% for df_column in df_columns %}
                     <label for="variable_{{ df_column }}" style="text-align: left;">{{ df_column }}</label>
                     <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" title="{{ df_column }}" style="float: right;">
                         {% for db_column in db_columns %}
-                            {% if db_column == 'No escribir en BDD' %}
+                            {% if db_column == 'Not write this in DB' %}
                                 <option value="option_{{ db_column }}" title="{{db_columns_helpers|get_item:db_column}}" selected="selected">{{ db_column }}</option>
                             {% else %}
                                 <option value="option_{{ db_column }}" title="{{db_columns_helpers|get_item:db_column}}">{{ db_column }}</option>
@@ -107,7 +107,7 @@
 
       <hr style="width:100%;">
 
-      <h3>Genes de resistencia a AB en archivo de entrada</h3>
+      <h3>ATB resistance related genes detected in input file</h3>
 
       {% for amr in amr_loci %}
         <div>{{ amr }}</div>
@@ -117,9 +117,9 @@
 
       <hr style="width:100%;">
 
-      <h3>Acceso a Admin de BDD</h3>
+      <h3>DB Admin access</h3>
       <div>
-          <a href="/admin"><button>Acceder a base de Datos</button></a>
+          <a href="/admin"><button>Go to DB Admin</button></a>
       </div>
 
     <!-- End page content -->

@@ -163,8 +163,8 @@ class DjangoSession(models.Model):
 class FilePath(models.Model):
     file_path_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField('MetadataGeneral', models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
-    fastq_path = models.CharField(max_length=255, blank=True, null=True, db_comment="Ruta de ubicación de los archivos fastq del aislado")
-    denovo_assembly_path = models.CharField(max_length=255, blank=True, null=True, db_comment="Ruta de ubicación de los archivos de ensamblaje denovo del aislado")
+    fastq_path = models.CharField(max_length=255, blank=True, null=True, verbose_name="FASTQ path", db_comment="Path to the folder where FASTQ files of the isolate are stored")
+    denovo_assembly_path = models.CharField(max_length=255, blank=True, null=True, verbose_name="DeNovo files path", db_comment="Path to the folder where de novo files of the isolate are stored")
     assembler = models.ForeignKey(Assembler, models.DO_NOTHING, db_column='assembler_id', blank=True, null=True, db_comment="Ensamblador utilizado")
 
     class Meta:
@@ -256,16 +256,16 @@ class LocusMlst(models.Model):
 
 class MetadataGeneral(models.Model):
     isolate_id = models.AutoField(primary_key=True)
-    isolate_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Nombre aislado", db_comment="Nombre del aislado")
-    isolate_project_code = models.CharField(unique=True, max_length=50, blank=True, null=True, verbose_name="Código proyecto", db_comment="código del proyecto")
-    species = models.CharField(max_length=255, blank=True, null=True, verbose_name="Especie", db_comment="Especie del aislado")
-    project_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nombre proyecto", db_comment="Nombre del proyecto")
-    isolation_day = models.IntegerField(blank=True, null=True, db_comment="Día de obtención del aislado")
-    isolation_month = models.IntegerField(blank=True, null=True, db_comment="Mes de obtención del aislado")
-    isolation_year = models.IntegerField(blank=True, null=True, db_comment="Año de obtención del aislado")
-    isolation_date = models.DateField(blank=True, null=True, verbose_name="Fecha aislado", db_comment="Fecha completa de obtención del aislado")
-    isolate_source = models.CharField(max_length=255, blank=True, null=True, verbose_name="Origen aislado", db_comment="Origen clínico del aislado")
-    isolate_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Comentarios aislado", db_comment="Comentarios sobre el aislado")
+    isolate_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Isolate name", db_comment="Isolate name in its project")
+    isolate_project_code = models.CharField(unique=True, max_length=50, blank=True, null=True, verbose_name="Project code", db_comment="Official project code")
+    species = models.CharField(max_length=255, blank=True, null=True, verbose_name="Species", db_comment="Isolate species")
+    project_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Project name", db_comment="Internal name of the project")
+    isolation_day = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention day", db_comment="Isolate obtention day")
+    isolation_month = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention month", db_comment="Isolate obtention month")
+    isolation_year = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention year", db_comment="Isolate obtention year")
+    isolation_date = models.DateField(blank=True, null=True, verbose_name="Isolate obtention date", db_comment="Whole date of obtention of the isolate")
+    isolate_source = models.CharField(max_length=255, blank=True, null=True, verbose_name="Isolate origin", db_comment="Clinic origin of the isolate")
+    isolate_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Isolate comments", db_comment="Comments about the isolate")
 
     class Meta:
         managed = True
@@ -279,10 +279,10 @@ class MetadataGeneral(models.Model):
 class MetadataClinic(models.Model):
     clinic_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
-    patient_code = models.CharField(max_length=255, blank=True, null=True)
-    sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type_id', blank=True, null=True, verbose_name="Tipo de muestra", db_comment="Tipo de muestra del que se obtuvo el aislado")
-    hospital_id = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, db_comment="Hospital donde se obtuvo el aislado")
-    collection_ward = models.CharField(max_length=255, blank=True, null=True, verbose_name="Departamento donde se obtuvo", db_comment="Departamento del hospital donde se obtuvo el aislado")
+    patient_code = models.CharField(max_length=255, blank=True, null=True, verbose_name="Patient code", db_comment="Code of the patient in the project")
+    sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type_id', blank=True, null=True, verbose_name="Sample type", db_comment="Type of the sample from which the isolate was obtained")
+    hospital_id = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
+    collection_ward = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward", db_comment="Name of the departament where the isolate was obtained")
 
     class Meta:
         managed = True
@@ -374,21 +374,35 @@ class MutationalResistome(models.Model):
         managed = True
         db_table = 'mutational_resistome'
 
+ATB_SUSCEPTIBILITY_METHOD_CHOICES = (
+    ('DD', 'Disc diffusion (halo diameter in mm.)'),
+    ('BM', 'Broth microdilution (mg/L)'),
+    ('ET', 'E-test'),
+    ('OT', 'Other'),
+)
+
+BROTH_TYPE_CHOICES = (
+    ('IH', 'In-house)'),
+    ('CM', 'Commercial'),
+)
 
 class PhenotypicData(models.Model):
     phenotypic_data_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
-    ab_susceptibility_method = models.CharField(max_length=100, blank=True, null=True, verbose_name="Test susceptibilidad antibiótica", db_comment="Método utilizado para determinar la susceptibilidad antibiótica")
+    atb_susceptibility_method = models.CharField(max_length=100, blank=True, null=True, choices=ATB_SUSCEPTIBILITY_METHOD_CHOICES, verbose_name="ATB susceptibility method", db_comment="Method used to determine antibiotic susceptibility")
+    atb_susceptibility_method_other = models.CharField(max_length=100, blank=True, null=True, verbose_name="ATB susceptibility other method", db_comment="Other method used to determine antibiotic susceptibility")
+    broth_type = models.CharField(max_length=100, blank=True, null=True, choices=BROTH_TYPE_CHOICES, verbose_name="Broth type", db_comment="Type of broth used in the susceptibility test")
+    commercial_panel_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Commercial panel name", db_comment="Name of the commercial panel used in the susceptibility test")
     mic = models.ForeignKey(Mic, models.DO_NOTHING, db_column='mic_id', blank=True, null=True)
-    ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="Perfil ECDC", db_comment='Perfil de resistencia según ECDC')
-    idsa_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="Perfil IDSA", db_comment='Perfil de resistencia según IDSA')
-    cloxa_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test cloxa", db_comment='Valor del test cloxa de ceftazidima, valores: +/-')
-    mbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test mbl", db_comment='Valor del test mbl, valores: +/-')
-    esbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test esbl", db_comment='Valor del test esbl, valores: +/-')
-    class_a_carbapenemase_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Test Carbapenemasas clase A", db_comment='Valor del test de carbapenemasas clase A')
-    invitro_serotype = models.ForeignKey(InvitroSerotype, models.DO_NOTHING, db_column='invitro_serotype_id', blank=True, null=True, verbose_name="Serotipo in vitro")
-    hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True, verbose_name="Fenotipo hipermutador", db_comment='Fenotipo hipermutador')
-    phenotypic_comments = models.TextField(blank=True, null=True, verbose_name="Comentarios fenotipo", db_comment='Comentarios sobre el fenotipo del aislado')
+    ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="ECDC profile", db_comment='Resistance profile following ECDC guidelines')
+    idsa_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="IDSA profile", db_comment='Resistance profile following IDSA guidelines')
+    cloxa_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="CLOXA test", db_comment='CLOXA test result, accepted values: +/-')
+    mbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="MBL test", db_comment='MBL test result, accepted values: +/-')
+    esbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="ESBL test", db_comment='ESBL test result, accepted values: +/-')
+    class_a_carbapenemase_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Class A carbapenemases", db_comment='Class A carbapenemases test result')
+    invitro_serotype = models.ForeignKey(InvitroSerotype, models.DO_NOTHING, db_column='invitro_serotype_id', blank=True, null=True, verbose_name="In vitro serotype")
+    hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True, verbose_name="Hypermutator phenotype", db_comment='Hypermutator phenotype')
+    phenotypic_comments = models.TextField(blank=True, null=True, verbose_name="Phenotypic comments", db_comment='Comments about isolate phenotype characteristics')
 
     class Meta:
         managed = True
@@ -399,19 +413,19 @@ class PhenotypicData(models.Model):
 class SequenceAnalysis(models.Model):
     sequence_analysis_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
-    mlst_allelic_profile = models.JSONField(blank=True, null=True, verbose_name="Perfil alélico MLST", db_comment="Perfil alélico de MLST en formato JSON")
-    sequence_type = models.CharField(max_length=10, blank=True, null=True, verbose_name="Tipo de secuencia", db_comment="ST del aislado")
-    clonal_complex = models.CharField(max_length=10, blank=True, null=True, verbose_name="Complejo clonal", db_comment="Complejo clonal del aislado")
-    mutational_resistome = models.JSONField(blank=True, null=True, db_comment="Resistoma mutacional en formato JSON")
-    ame_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci EMA", db_comment="Loci de enzimas de modificación de aminoglucósidos, listado de nombres separados por comas")
-    beta_lactamase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci beta lactamasas", db_comment="Loci de beta-lactamasas, listado de nombres separados por comas")
-    carbapenemase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci carbapeneasas", db_comment="Loci de carbapenemasas, listado de nombres separados por comas")
-    other_acq_ab_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Loci otros AB adquiridos", db_comment="Loci de otros genes de resistencia adquiridos, listado de nombres separados por comas")
-    acquired_resistome = models.JSONField(blank=True, null=True, db_comment="Resistoma adquirido en formato JSON")
-    virulence_genes = models.JSONField(blank=True, null=True, db_comment="Genes de virulencia en formato JSON")
-    hypermutation_genes = models.JSONField(blank=True, null=True, db_comment="Genes de hipermutación en formato JSON")
-    insilico_serotype = models.CharField(max_length=3, blank=True, null=True, verbose_name="Serotipo in silico", db_comment="Serotipo in silico del aislado")
-    betalactamase_pcr = models.JSONField(blank=True, null=True, db_comment="Resultados de PCR de beta-lactamasas en formato JSON")
+    mlst_allelic_profile = models.JSONField(blank=True, null=True, verbose_name="MLST allelic profile", db_comment="Allelic values of loci used in multilocus strain typing, using JSON format")
+    sequence_type = models.CharField(max_length=10, blank=True, null=True, verbose_name="Sequence type", db_comment="Sequence type of the isolate")
+    clonal_complex = models.CharField(max_length=10, blank=True, null=True, verbose_name="Clonal complex", db_comment="Clonal complex of the isolate")
+    mutational_resistome = models.JSONField(blank=True, null=True, db_comment="Mutational resistome, using JSON format")
+    ame_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="AME loci", db_comment="Aminoglycoside modifying enzymes loci, name list comma-separated")
+    beta_lactamase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Beta-lactamases/Carbapenemases loci", db_comment="Beta-lactamases/Carbapenemases loci, name list comma-separated")
+    fluoroquinolones_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Fluoroquinolones resistance determinants", db_comment="Fluoroquinolones resistance determinants loci, name list comma-separated")
+    other_acq_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Other acquired resistance determinants", db_comment="Other acquired resistance determinants, name list comma-separated")
+    acquired_resistome = models.JSONField(blank=True, null=True, db_comment="Acquired resistome, in JSON format")
+    virulence_genes = models.JSONField(blank=True, null=True, db_comment="Virulencia genes, in JSON format")
+    hypermutation_genes = models.JSONField(blank=True, null=True, db_comment="Hypermutation genes, in JSON format")
+    insilico_serotype = models.CharField(max_length=3, blank=True, null=True, verbose_name="In silico serotype", db_comment="Phenotypic in silico serotype of the isolate")
+    betalactamase_pcr = models.JSONField(blank=True, null=True, db_comment="Beta-lactamases PCR results, in JSON format")
 
     class Meta:
         managed = True
@@ -427,8 +441,8 @@ class SequencingInfo(models.Model):
     sequencing_platform = models.ForeignKey('SequencingPlatform', models.DO_NOTHING, db_column='sequencing_platform_id',
                                             blank=True, null=True, db_comment="Plataforma de secuenciación para obtener el aislado")
     flowcell_kit = models.ForeignKey(FlowcellKit, models.DO_NOTHING, db_column='flowcell_kit_id', blank=True, null=True, db_comment='Flowcell Kit utilizado en la secuenciación')
-    sequencing_goal = models.CharField(max_length=100, blank=True, null=True, db_comment="Objetivo de la secuenciación, cual es el motivo para el que se realiza la secuenciación")
-    sequencing_source = models.CharField(max_length=100, blank=True, null=True, db_comment="Fuente de la secuenciación, de donde se obtuvo la secuencia")
+    sequencing_goal = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sequencing goal", db_comment="Objective for sequencing this isolate")
+    sequencing_source = models.CharField(max_length=100, blank=True, null=True, verbose_name="Sequencing source", db_comment="Where was the sequencing obtained")
     library_method = models.ForeignKey('SequencingLibrary', models.DO_NOTHING, db_column='library_method_id', blank=True,
                                        null=True, db_comment="Método de preparación de la librería")
 

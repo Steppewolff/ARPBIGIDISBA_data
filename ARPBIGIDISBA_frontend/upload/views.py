@@ -449,7 +449,7 @@ def upload(request):
         #             db_columns_helpers[field.name] = field.db_comment
         #
         # db_columns = sorted(db_columns)
-        # db_columns.insert(0, 'No escribir en BDD')
+        # db_columns.insert(0, 'Not write this in DB')
         #
         # # Write the available database columns in the session
         # request.session['db_columns'] = db_columns
@@ -470,17 +470,19 @@ def upload(request):
                 if ('_id' not in field.name
                         and not isinstance(field, models.ForeignKey)
                         and not isinstance(field, models.OneToOneField)
+                        and not isinstance(field, models.JSONField)
                         and not isinstance(field, models.OneToOneRel)
                         and not isinstance(field, models.ManyToOneRel)):
                     if table == 'Mic' and field.help_text != "":
                         db_columns.append(field.help_text)
+                        db_columns_helpers[field.help_text] = field.db_comment
                     elif table != 'Mic':
                         db_columns.append(field.verbose_name)
+                        db_columns_helpers[field.verbose_name] = field.db_comment
 
-                    db_columns_helpers[field.name] = field.db_comment
 
         db_columns = sorted(db_columns)
-        db_columns.insert(0, 'No escribir en BDD')
+        db_columns.insert(0, 'Not write this in DB')
 
         # Write the available database columns in the session
         request.session['db_columns'] = db_columns
@@ -510,7 +512,7 @@ def summary(request):
         else:
             mandatory_fields['project_name'] = 1
 
-        # Update list with variables, removing variable_ and option_ prefixes, and removing the 'No escribir en BDD' option
+        # Update list with variables, removing variable_ and option_ prefixes, and removing the 'Not write this in DB' option
         all_fields = [field for field in all_fields if 'variable_' in field[0]]
         for index, field in enumerate(all_fields):
             for index_list, value in enumerate(field):
@@ -529,7 +531,7 @@ def summary(request):
         amr_loci = request.session['amr_loci']
         df = pd.read_json(StringIO(request.session['df']), orient='split')
 
-        all_fields = [field for field in all_fields if field[1] != 'No escribir en BDD']
+        all_fields = [field for field in all_fields if field[1] != 'Not write this in DB']
         dict_fields = {field[1]: field[0] for field in all_fields}
         if 'isolate_name' in dict_fields:
             isolate_var = dict_fields['isolate_name']

@@ -2,11 +2,11 @@
 
 {% block content %}
 <div style="margin-left:340px;margin-right:40px">
-  <h2>Iniciar Sesión</h2>
+  <h2>Session login</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Ingresar</button>
+    <button type="submit">Login</button>
   </form>
 </div>
 {% endblock %}
