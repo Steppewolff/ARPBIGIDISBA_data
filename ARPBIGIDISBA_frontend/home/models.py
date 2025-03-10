@@ -281,7 +281,8 @@ class MetadataClinic(models.Model):
     isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
     patient_code = models.CharField(max_length=255, blank=True, null=True, verbose_name="Patient code", db_comment="Code of the patient in the project")
     sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type_id', blank=True, null=True, verbose_name="Sample type", db_comment="Type of the sample from which the isolate was obtained")
-    hospital_id = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
+    # hospital_id = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
+    hospital = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
     collection_ward = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward", db_comment="Name of the departament where the isolate was obtained")
 
     class Meta:

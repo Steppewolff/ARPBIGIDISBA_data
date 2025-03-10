@@ -18,14 +18,14 @@
 
       <!-- Header -->
       <div class="w3-container" style="margin-top:10px" id="showcase">
-        <h1 class="w3-jumbo"><b>Aplicaciones web</b></h1>
-        <h4 class="w3-text-red"><b>Predicción AMR por scores</b></h4>
+        <h1 class="w3-jumbo"><b>Web applications</b></h1>
+        <h4 class="w3-text-red"><b>Score AMR prediction</b></h4>
         <hr style="width:50px;border:5px solid red" class="w3-round">
       </div>
     </div>
     <form style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; max-width: 900px; margin: auto; margin-bottom: 20px;" action="{% url 'amr_score_prediction' %}" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      <h4 style="margin-bottom: 20px;">AMR score prediction:</h4>
+      <h4 style="margin-bottom: 20px;">Score AMR prediction:</h4>
       <p style="margin-bottom: 20px;">This tool predicts the clinical category of a bacterial strain based on the presence of cromosomal and acquired gene variants in the genome. <strong>The tool can work using one of the below summary files as input OR raw data files as input in FASTQ format, but not both of them:</strong></p>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
