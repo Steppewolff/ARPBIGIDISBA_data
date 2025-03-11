@@ -38,8 +38,8 @@
                   <div style="font-weight: bold; margin-bottom: 10px;">Summary files</div>
                   <div style="margin-bottom: 10px;">
                     <input type="radio" name="fileOption" id="totalpileup" value="totalpileup" style="margin-right: 5px;">
-                    <label for="totalpileup" style="margin-right: 10px;">Totalpileup file</label>
-                    <input type="file" name="totalpileupFile">
+                    <label for="totalpileup" style="margin-right: 10px;">Variant calling annotated file</label>
+                    <input type="file" id="variantCallingFile" name="variantCallingFile">
                   </div>
                   <div>
                     <input type="radio" name="fileOption" id="snippy" value="snippy" style="margin-right: 5px;">
@@ -78,6 +78,7 @@
         <!-- Fila de resultados -->
         <tr>
           <td colspan="2" style="padding-top: 20px; text-align: center;">
+            <input type="hidden" id="amr_score_calculation" name="amr_score_calculation">
             <input type="submit" value="Calculate" style="padding: 10px 20px; margin-bottom: 10px;">
             <br>
             <table style="width: 100%; border-collapse: collapse; margin: auto;">
@@ -89,15 +90,34 @@
                 </tr>
               </thead>
               <tbody>
+                {% for antibiotic, score in score_results.items %}
                 <tr style="background-color: #FFFFFF;">
-                  <td colspan="4" style="padding: 10px; border: 1px solid #ccc;"></td>
+                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ antibiotic }}</td>
+                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ score.0 }}</td>
+                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center; background-color:
+                  {% if score.1 == 'S' %} #90EE9099 {% elif score.1 == 'I' %} #FFFF9999 {% elif score.1 == 'R' %} #FF999999 {% else %} white {% endif %};">{{ score.1 }}</td>
                 </tr>
+                {% endfor %}
               </tbody>
             </table>
-            <br>
-            <button type="button" style="padding: 10px 20px;">Download results</button>
+<!--            <br>-->
+<!--            <button type="button" style="padding: 10px 20px;">Download results</button>-->
           </td>
         </tr>
       </table>
     </form>
+
+    <table style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; max-width: 900px; margin: auto; margin-bottom: 20px;">
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc; background-color: #FFDAB9;">
+          Download obtained results
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding-top: 20px; text-align: center;">
+          <button type="button" style="padding: 10px 20px;">Download!!</button>
+        </td>
+      </tr>
+    </table>
+
     {% endblock %}
