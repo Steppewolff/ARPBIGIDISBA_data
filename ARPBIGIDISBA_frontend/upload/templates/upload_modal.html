@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    {% load static %}
+{% extends "home_template.html" %}
 
+{% block head %}
     <script src="/static/js/upload.js"></script>
-</head>
-<body>
+    <script>console.log('Prueba')</script>
+{% endblock %}
+
+{% block body %}
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
@@ -101,5 +99,4 @@
         </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}

@@ -1,5 +1,5 @@
-function abrir_modal(url)
-{
+function abrir_modal(url){
+    console.log("Cargando modal desde:", url);
     $('#upload_modal').load(url, function()
     {
     $(this).modal({

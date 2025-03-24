@@ -4,6 +4,7 @@
     {% block head %}
     <script src="/static/js/upload.js"></script>
     <script src="/static/js/admin_js.js"></script>
+    <script>console.log("URL del modal:", "{% url 'upload_modal' %}");</script>
     {% endblock %}
 
     {% block title %}
@@ -91,7 +92,8 @@
       {% endif %}
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
-          <input type="submit" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">
+<!--          <input type="button" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">          -->
+          <input type="button" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('/upload_modal')">
       </div>
 
       <div id="upload_modal" class="modal fade" role="dialog"></div>
