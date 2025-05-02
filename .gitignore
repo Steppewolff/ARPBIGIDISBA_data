@@ -1,4 +1,4 @@
-# APSL custom ignores
+# ARPBIG custom ignores
 
 *.sqlite
 *.geany
@@ -8,6 +8,7 @@ docker-images/
 .vscode
 postgres
 postgres-data
+mysql_data/
 
 # End of APSL custom ignores
 
