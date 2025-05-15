@@ -2,8 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const table = document.getElementById('sample-table');
-  const rackSchema = document.getElementById('rack-schema');
-  const boxSchema = document.getElementById('box-schema');
+  const rackSchemaContainer = document.getElementById('rack-schema');
+  const boxSchemaContainer = document.getElementById('box-schema');
   const rackSelect = document.getElementById('rack-select');
   const boxSelect = document.getElementById('box-select');
   const rackInfo = document.getElementById('rack-info');
@@ -12,73 +12,116 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedRack = '';
   let selectedBox = '';
 
-  function clearGrid(container, cols, rows) {
+  function createGrid(container, cols, rows, type) {
     container.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'schema-grid';
+    grid.style.gridTemplateColumns = `min-content repeat(${cols}, min-content)`;
+    grid.style.gridTemplateRows = `min-content repeat(${rows}, min-content)`;
+
+    // Encabezado vacío
+    const emptyHeader = document.createElement('div');
+    grid.appendChild(emptyHeader);
+
+    // Encabezados de columnas
+    for (let c = 1; c <= cols; c++) {
+      const header = document.createElement('div');
+      header.className = 'schema-header';
+      header.textContent = String.fromCharCode(64 + c);
+      grid.appendChild(header);
+    }
+
     for (let r = 1; r <= rows; r++) {
-      for (let c = 0; c < cols; c++) {
+      // Encabezado de fila
+      const rowHeader = document.createElement('div');
+      rowHeader.className = 'schema-header';
+      rowHeader.textContent = r;
+      grid.appendChild(rowHeader);
+
+      for (let c = 1; c <= cols; c++) {
         const cell = document.createElement('div');
         cell.className = 'schema-cell';
-        container.appendChild(cell);
+        cell.dataset.col = String.fromCharCode(64 + c);
+        cell.dataset.row = r;
+
+        cell.addEventListener('click', () => {
+          handleCellClick(cell, type);
+        });
+        grid.appendChild(cell);
       }
     }
+    container.appendChild(grid);
+    return grid; // Devolvemos la referencia al grid creado
   }
 
+  let rackGrid = null;
+  let boxGrid = null;
+
   function drawRackSchema(rackId) {
-    clearGrid(rackSchema, 4, 4);
+    rackGrid = createGrid(rackSchemaContainer, 4, 4, 'rack');
     rackInfo.textContent = '';
     if (!rackId) return;
 
-    // Filtrar muestras de este rack
-    const rackSamples = samples.filter(s => s.rack === rackId);
     rackInfo.textContent = `Rack: ${rackId}`;
-
-    const map = {};
+    const rackSamples = samples.filter(s => s.rack === rackId);
+    const cellMap = {};
     rackSamples.forEach(s => {
-      const label = s.rackCol + s.rackRow;
-      map[label] = s.box;
+      cellMap[s.rackCol + s.rackRow] = s.box;
     });
 
-    rackSchema.querySelectorAll('.schema-cell').forEach((cell, i) => {
-      const col = String.fromCharCode(65 + (i % 4));
-      const row = 1 + Math.floor(i / 4);
-      const key = col + row;
-      if (map[key]) cell.textContent = `Caja ${map[key]}`;
+    rackGrid.querySelectorAll('.schema-cell').forEach(cell => {
+      const key = cell.dataset.col + cell.dataset.row;
+      if (cellMap[key]) {
+        cell.textContent = `Caja ${cellMap[key]}`;
+        cell.title = `Caja ${cellMap[key]}`;
+      } else {
+        cell.textContent = '';
+        cell.title = '';
+      }
     });
   }
 
   function drawBoxSchema(boxId) {
-    clearGrid(boxSchema, 9, 9);
+    boxGrid = createGrid(boxSchemaContainer, 9, 9, 'box');
     boxInfo.textContent = '';
     if (!boxId) return;
 
     const boxSamples = samples.filter(s => s.box === boxId);
-    if (boxSamples.length > 0) {
-      const { name, strain, description } = boxSamples[0];
-      boxInfo.textContent = `Name: ${name}\nStrain: ${strain}\nDescription: ${description}`;
-    }
-
-    const map = {};
+    const cellMap = {};
     boxSamples.forEach(s => {
-      const label = s.boxCol + s.boxRow;
-      map[label] = s.id;
+      cellMap[s.boxCol + s.boxRow] = s.id;
+    });
+    const tooltipMap = {};
+    boxSamples.forEach(s => {
+      tooltipMap[s.boxCol + s.boxRow] = s.strain;
+    });
+    const sampleInfoMap = {};
+    boxSamples.forEach(s => {
+      sampleInfoMap[s.boxCol + s.boxRow] = { name: s.name, strain: s.strain, description: s.description };
     });
 
-    boxSchema.querySelectorAll('.schema-cell').forEach((cell, i) => {
-      const col = String.fromCharCode(65 + (i % 9));
-      const row = 1 + Math.floor(i / 9);
-      const key = col + row;
-      if (map[key]) cell.textContent = `Muestra Id ${map[key]}`;
+    boxGrid.querySelectorAll('.schema-cell').forEach(cell => {
+      const key = cell.dataset.col + cell.dataset.row;
+      if (cellMap[key]) {
+        cell.textContent = `Muestra Id ${cellMap[key]}`;
+        cell.title = `Strain: ${tooltipMap[key]}`;
+        cell.dataset.sampleInfo = JSON.stringify(sampleInfoMap[key]); // Almacenar info
+      } else {
+        cell.textContent = '';
+        cell.title = '';
+        delete cell.dataset.sampleInfo; // Limpiar si no hay info
+      }
     });
   }
 
   function updateBoxSelect(rackId) {
-    boxSelect.innerHTML = '<option value="">-- Selecciona una caja --</option>';
-    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))];
+    boxSelect.innerHTML = '<option value="">Todos</option>';
+    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))].sort();
     boxesInRack.forEach(box => {
-      const opt = document.createElement('option');
-      opt.value = box;
-      opt.textContent = box;
-      boxSelect.appendChild(opt);
+      const option = document.createElement('option');
+      option.value = box;
+      option.textContent = box;
+      boxSelect.appendChild(option);
     });
   }
 
@@ -91,9 +134,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function handleCellClick(cell, type) {
+    if (type === 'rack') {
+      const key = cell.dataset.col + cell.dataset.row;
+      const box = samples.find(s => s.rack === selectedRack && (s.rackCol + s.rackRow) === key)?.box;
+      if (box) {
+        boxSelect.value = box;
+        selectedBox = box;
+        drawBoxSchema(selectedBox);
+        applyFilters();
+      } else {
+        boxSelect.value = '';
+        selectedBox = '';
+        drawBoxSchema('');
+        applyFilters();
+      }
+    } else if (type === 'box') {
+      if (cell.dataset.sampleInfo) {
+        const sampleInfo = JSON.parse(cell.dataset.sampleInfo);
+        boxInfo.textContent = `Name: ${sampleInfo.name}\nStrain: ${sampleInfo.strain}\nDescription: ${sampleInfo.description}`;
+      } else {
+        boxInfo.textContent = '';
+      }
+    }
+  }
+
   rackSelect.addEventListener('change', () => {
     selectedRack = rackSelect.value;
-    selectedBox = ''; // reset caja al cambiar rack
+    selectedBox = '';
     boxSelect.value = '';
     drawRackSchema(selectedRack);
     drawBoxSchema('');
@@ -107,10 +175,682 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilters();
   });
 
-  // INIT: todo vacío
-  clearGrid(rackSchema, 4, 4);
-  clearGrid(boxSchema, 9, 9);
+  // Inicialización: dibujar esquemas vacíos y cargar opciones de cajas (por si hay un rack seleccionado por defecto)
+  drawRackSchema('');
+  drawBoxSchema('');
+  updateBoxSelect('');
 });
+
+
+
+
+//document.addEventListener('DOMContentLoaded', () => {
+//  const table = document.getElementById('sample-table');
+//  const rackSchema = document.getElementById('rack-schema');
+//  const boxSchema = document.getElementById('box-schema');
+//  const rackSelect = document.getElementById('rack-select');
+//  const boxSelect = document.getElementById('box-select');
+//  const rackInfo = document.getElementById('rack-info');
+//  const boxInfo = document.getElementById('box-info');
+//
+//  let selectedRack = '';
+//  let selectedBox = '';
+//
+//  function createGrid(container, cols, rows, type) {
+//    container.innerHTML = '';
+//
+//    const grid = document.createElement('div');
+//    grid.className = 'schema-grid';
+//    grid.style.display = 'grid';
+//    grid.style.gridTemplateColumns = `min-content repeat(${cols}, 1fr)`; /* Modificado */
+//    grid.style.gridTemplateRows = `min-content repeat(${rows}, min-content)`;
+//    grid.style.gap = '2px';
+//
+//    // Encabezados columnas
+//    const emptyHeader = document.createElement('div');
+//    grid.appendChild(emptyHeader);
+//    for (let c = 1; c <= cols; c++) {
+//      const header = document.createElement('div');
+//      header.className = 'schema-header';
+//      header.style.fontWeight = 'bold';
+//      header.style.textAlign = 'center';
+//      header.style.padding = '5px';
+//      header.textContent = String.fromCharCode(64 + c);
+//      grid.appendChild(header);
+//    }
+//
+//    for (let r = 1; r <= rows; r++) {
+//      // encabezado fila
+//      const rowHeader = document.createElement('div');
+//      rowHeader.className = 'schema-header';
+//      rowHeader.style.fontWeight = 'bold';
+//      rowHeader.style.textAlign = 'center';
+//      rowHeader.style.padding = '5px';
+//      rowHeader.textContent = r;
+//      grid.appendChild(rowHeader);
+//
+//      for (let c = 1; c <= cols; c++) {
+//        const cell = document.createElement('div');
+//        cell.className = 'schema-cell';
+//        cell.style.border = '1px solid #ccc';
+//        cell.style.minWidth = '80px';
+//        cell.style.minHeight = '40px';
+//        cell.style.display = 'flex';
+//        cell.style.alignItems = 'center';
+//        cell.style.justifyContent = 'center';
+//        cell.style.fontSize = '0.8em';
+//        cell.style.textAlign = 'center';
+//        cell.dataset.col = String.fromCharCode(64 + c);
+//        cell.dataset.row = r;
+//        cell.style.padding = '5px';
+//        cell.style.wordBreak = 'break-word';
+//
+//        // evento click en celda
+//        cell.addEventListener('click', () => {
+//          if (type === 'rack') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const box = samples.find(s => s.rack === selectedRack && (s.rackCol + s.rackRow) === key)?.box;
+//            if (box) {
+//              boxSelect.value = box;
+//              selectedBox = box;
+//              drawBoxSchema(selectedBox);
+//              applyFilters();
+//            }
+//          } else if (type === 'box') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const sample = samples.find(s => s.box === selectedBox && (s.boxCol + s.boxRow) === key);
+//            if (sample) {
+//              boxInfo.textContent = `Name: ${sample.name}\nStrain: ${sample.strain}\nDescription: ${sample.description}`;
+//            } else {
+//              boxInfo.textContent = ''; /* Limpiar si no hay muestra */
+//            }
+//          }
+//        });
+//
+//        // tooltip al pasar ratón
+//        cell.title = '';
+//
+//        grid.appendChild(cell);
+//      }
+//    }
+//
+//    container.appendChild(grid);
+//  }
+//
+//  function drawRackSchema(rackId) {
+//    createGrid(rackSchema, 4, 4, 'rack');
+//    rackInfo.textContent = '';
+//    if (!rackId) return;
+//
+//    const rackSamples = samples.filter(s => s.rack === rackId);
+//    rackInfo.textContent = `Rack: ${rackId}`;
+//
+//    const map = {};
+//    rackSamples.forEach(s => {
+//      const label = s.rackCol + s.rackRow;
+//      map[label] = s.box;
+//    });
+//
+//    rackSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Caja ${map[key]}`;
+//        cell.title = `Caja ${map[key]}`;
+//      } else {
+//        cell.textContent = ''; /* Limpiar celdas vacías */
+//        cell.title = '';
+//      }
+//    });
+//  }
+//
+//  function drawBoxSchema(boxId) {
+//    createGrid(boxSchema, 9, 9, 'box');
+//    boxInfo.textContent = '';
+//    if (!boxId) return;
+//
+//    const boxSamples = samples.filter(s => s.box === boxId);
+//    if (boxSamples.length > 0) {
+//      // No es necesario acceder al primer elemento aquí, la información se mostrará al hacer clic en la celda
+//    }
+//
+//    const map = {};
+//    const tooltips = {};
+//    boxSamples.forEach(s => {
+//      const label = s.boxCol + s.boxRow;
+//      map[label] = s.id;
+//      tooltips[label] = s.strain;
+//    });
+//
+//    boxSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Muestra Id ${map[key]}`;
+//        cell.title = `Strain: ${tooltips[key]}`;
+//      } else {
+//        cell.textContent = ''; /* Limpiar celdas vacías */
+//        cell.title = '';
+//      }
+//    });
+//  }
+//
+//  function updateBoxSelect(rackId) {
+//    boxSelect.innerHTML = '<option value="">-- Selecciona una caja --</option>';
+//    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))];
+//    boxesInRack.forEach(box => {
+//      const opt = document.createElement('option');
+//      opt.value = box;
+//      opt.textContent = box;
+//      boxSelect.appendChild(opt);
+//    });
+//  }
+//
+//  function applyFilters() {
+//    const rows = table.tBodies[0].rows;
+//    for (let row of rows) {
+//      const rackMatch = !selectedRack || row.dataset.rack === selectedRack;
+//      const boxMatch = !selectedBox || row.dataset.box === selectedBox;
+//      row.style.display = (rackMatch && boxMatch) ? '' : 'none';
+//    }
+//  }
+//
+//  rackSelect.addEventListener('change', () => {
+//    selectedRack = rackSelect.value;
+//    selectedBox = '';
+//    boxSelect.value = '';
+//    drawRackSchema(selectedRack);
+//    drawBoxSchema('');
+//    updateBoxSelect(selectedRack);
+//    applyFilters();
+//  });
+//
+//  boxSelect.addEventListener('change', () => {
+//    selectedBox = boxSelect.value;
+//    drawBoxSchema(selectedBox);
+//    applyFilters();
+//  });
+//
+//  // INIT: vacíos
+//  createGrid(rackSchema, 4, 4, 'rack');
+//  createGrid(boxSchema, 9, 9, 'box');
+//});
+
+
+//document.addEventListener('DOMContentLoaded', () => {
+//  const table = document.getElementById('sample-table');
+//  const rackSchema = document.getElementById('rack-schema');
+//  const boxSchema = document.getElementById('box-schema');
+//  const rackSelect = document.getElementById('rack-select');
+//  const boxSelect = document.getElementById('box-select');
+//  const rackInfo = document.getElementById('rack-info');
+//  const boxInfo = document.getElementById('box-info');
+//
+//  let selectedRack = '';
+//  let selectedBox = '';
+//
+//  function createGrid(container, cols, rows, type) {
+//    container.innerHTML = '';
+//
+//    const grid = document.createElement('div');
+//    grid.className = 'schema-grid';
+//    grid.style.display = 'grid';
+//    grid.style.gridTemplateColumns = `min-content repeat(${cols}, min-content)`;
+//    grid.style.gridTemplateRows = `min-content repeat(${rows}, min-content)`;
+//    grid.style.gap = '2px';
+//
+//    // Encabezados columnas
+//    const emptyHeader = document.createElement('div');
+//    grid.appendChild(emptyHeader);
+//    for (let c = 1; c <= cols; c++) {
+//      const header = document.createElement('div');
+//      header.className = 'schema-header';
+//      header.style.fontWeight = 'bold';
+//      header.style.textAlign = 'center';
+//      header.style.padding = '5px';
+//      header.textContent = String.fromCharCode(64 + c);
+//      grid.appendChild(header);
+//    }
+//
+//    for (let r = 1; r <= rows; r++) {
+//      // encabezado fila
+//      const rowHeader = document.createElement('div');
+//      rowHeader.className = 'schema-header';
+//      rowHeader.style.fontWeight = 'bold';
+//      rowHeader.style.textAlign = 'center';
+//      rowHeader.style.padding = '5px';
+//      rowHeader.textContent = r;
+//      grid.appendChild(rowHeader);
+//
+//      for (let c = 1; c <= cols; c++) {
+//        const cell = document.createElement('div');
+//        cell.className = 'schema-cell';
+//        cell.style.border = '1px solid #ccc';
+//        cell.style.minWidth = '80px';
+//        cell.style.minHeight = '40px';
+//        cell.style.display = 'flex';
+//        cell.style.alignItems = 'center';
+//        cell.style.justifyContent = 'center';
+//        cell.style.fontSize = '0.8em';
+//        cell.style.textAlign = 'center';
+//        cell.dataset.col = String.fromCharCode(64 + c);
+//        cell.dataset.row = r;
+//        cell.style.padding = '5px';
+//        cell.style.wordBreak = 'break-word';
+//
+//        // evento click en celda
+//        cell.addEventListener('click', () => {
+//          if (type === 'rack') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const box = samples.find(s => s.rack === selectedRack && (s.rackCol + s.rackRow) === key)?.box;
+//            if (box) {
+//              boxSelect.value = box;
+//              selectedBox = box;
+//              drawBoxSchema(selectedBox);
+//              applyFilters();
+//            }
+//          } else if (type === 'box') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const sample = samples.find(s => s.box === selectedBox && (s.boxCol + s.boxRow) === key);
+//            if (sample) {
+//              boxInfo.textContent = `Name: ${sample.name}\nStrain: ${sample.strain}\nDescription: ${sample.description}`;
+//            }
+//          }
+//        });
+//
+//        // tooltip al pasar ratón
+//        cell.title = '';
+//
+//        grid.appendChild(cell);
+//      }
+//    }
+//
+//    container.appendChild(grid);
+//  }
+//
+//  function drawRackSchema(rackId) {
+//    createGrid(rackSchema, 4, 4, 'rack');
+//    rackInfo.textContent = '';
+//    if (!rackId) return;
+//
+//    const rackSamples = samples.filter(s => s.rack === rackId);
+//    rackInfo.textContent = `Rack: ${rackId}`;
+//
+//    const map = {};
+//    rackSamples.forEach(s => {
+//      const label = s.rackCol + s.rackRow;
+//      map[label] = s.box;
+//    });
+//
+//    rackSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Caja ${map[key]}`;
+//        cell.title = `Caja ${map[key]}`;
+//      }
+//    });
+//  }
+//
+//  function drawBoxSchema(boxId) {
+//    createGrid(boxSchema, 9, 9, 'box');
+//    boxInfo.textContent = '';
+//    if (!boxId) return;
+//
+//    const boxSamples = samples.filter(s => s.box === boxId);
+//    if (boxSamples.length > 0) {
+//      const { name, strain, description } = boxSamples[0];
+//      boxInfo.textContent = `Name: ${name}\nStrain: ${strain}\nDescription: ${description}`;
+//    }
+//
+//    const map = {};
+//    const tooltips = {};
+//    boxSamples.forEach(s => {
+//      const label = s.boxCol + s.boxRow;
+//      map[label] = s.id;
+//      tooltips[label] = s.strain;
+//    });
+//
+//    boxSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Muestra Id ${map[key]}`;
+//        cell.title = `Strain: ${tooltips[key]}`;
+//      }
+//    });
+//  }
+//
+//  function updateBoxSelect(rackId) {
+//    boxSelect.innerHTML = '<option value="">-- Selecciona una caja --</option>';
+//    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))];
+//    boxesInRack.forEach(box => {
+//      const opt = document.createElement('option');
+//      opt.value = box;
+//      opt.textContent = box;
+//      boxSelect.appendChild(opt);
+//    });
+//  }
+//
+//  function applyFilters() {
+//    const rows = table.tBodies[0].rows;
+//    for (let row of rows) {
+//      const rackMatch = !selectedRack || row.dataset.rack === selectedRack;
+//      const boxMatch = !selectedBox || row.dataset.box === selectedBox;
+//      row.style.display = (rackMatch && boxMatch) ? '' : 'none';
+//    }
+//  }
+//
+//  rackSelect.addEventListener('change', () => {
+//    selectedRack = rackSelect.value;
+//    selectedBox = '';
+//    boxSelect.value = '';
+//    drawRackSchema(selectedRack);
+//    drawBoxSchema('');
+//    updateBoxSelect(selectedRack);
+//    applyFilters();
+//  });
+//
+//  boxSelect.addEventListener('change', () => {
+//    selectedBox = boxSelect.value;
+//    drawBoxSchema(selectedBox);
+//    applyFilters();
+//  });
+//
+//  // INIT: vacíos
+//  createGrid(rackSchema, 4, 4, 'rack');
+//  createGrid(boxSchema, 9, 9, 'box');
+//});
+
+
+//document.addEventListener('DOMContentLoaded', () => {
+//  const table = document.getElementById('sample-table');
+//  const rackSchema = document.getElementById('rack-schema');
+//  const boxSchema = document.getElementById('box-schema');
+//  const rackSelect = document.getElementById('rack-select');
+//  const boxSelect = document.getElementById('box-select');
+//  const rackInfo = document.getElementById('rack-info');
+//  const boxInfo = document.getElementById('box-info');
+//
+//  let selectedRack = '';
+//  let selectedBox = '';
+//
+//  function createGrid(container, cols, rows, type) {
+//    container.innerHTML = '';
+//
+//    const grid = document.createElement('div');
+//    grid.className = 'schema-grid';
+//    grid.style.display = 'grid';
+//    grid.style.gridTemplateColumns = `40px repeat(${cols}, auto)`;
+//    grid.style.gridTemplateRows = `30px repeat(${rows}, auto)`;
+//    grid.style.gap = '2px';
+//
+//    // Encabezados columnas
+//    for (let c = 0; c <= cols; c++) {
+//      const header = document.createElement('div');
+//      header.className = 'schema-header';
+//      header.style.fontWeight = 'bold';
+//      header.style.textAlign = 'center';
+//      header.style.padding = '2px';
+//      if (c > 0) header.textContent = String.fromCharCode(64 + c);
+//      grid.appendChild(header);
+//    }
+//
+//    for (let r = 1; r <= rows; r++) {
+//      // encabezado fila
+//      const rowHeader = document.createElement('div');
+//      rowHeader.className = 'schema-header';
+//      rowHeader.style.fontWeight = 'bold';
+//      rowHeader.style.textAlign = 'center';
+//      rowHeader.style.padding = '2px';
+//      rowHeader.textContent = r;
+//      grid.appendChild(rowHeader);
+//
+//      for (let c = 1; c <= cols; c++) {
+//        const cell = document.createElement('div');
+//        cell.className = 'schema-cell';
+//        cell.style.border = '1px solid #ccc';
+//        cell.style.minWidth = '80px';
+//        cell.style.minHeight = '40px';
+//        cell.style.display = 'flex';
+//        cell.style.alignItems = 'center';
+//        cell.style.justifyContent = 'center';
+//        cell.style.fontSize = '0.8em';
+//        cell.style.textAlign = 'center';
+//        cell.dataset.col = String.fromCharCode(64 + c);
+//        cell.dataset.row = r;
+//
+//        // evento click en celda
+//        cell.addEventListener('click', () => {
+//          if (type === 'rack') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const box = samples.find(s => s.rack === selectedRack && (s.rackCol + s.rackRow) === key)?.box;
+//            if (box) {
+//              boxSelect.value = box;
+//              selectedBox = box;
+//              drawBoxSchema(selectedBox);
+//              applyFilters();
+//            }
+//          } else if (type === 'box') {
+//            const key = cell.dataset.col + cell.dataset.row;
+//            const sample = samples.find(s => s.box === selectedBox && (s.boxCol + s.boxRow) === key);
+//            if (sample) {
+//              boxInfo.textContent = `Name: ${sample.name}\nStrain: ${sample.strain}\nDescription: ${sample.description}`;
+//            }
+//          }
+//        });
+//
+//        // tooltip al pasar ratón
+//        cell.title = '';
+//
+//        grid.appendChild(cell);
+//      }
+//    }
+//
+//    container.appendChild(grid);
+//  }
+//
+//  function drawRackSchema(rackId) {
+//    createGrid(rackSchema, 4, 4, 'rack');
+//    rackInfo.textContent = '';
+//    if (!rackId) return;
+//
+//    const rackSamples = samples.filter(s => s.rack === rackId);
+//    rackInfo.textContent = `Rack: ${rackId}`;
+//
+//    const map = {};
+//    rackSamples.forEach(s => {
+//      const label = s.rackCol + s.rackRow;
+//      map[label] = s.box;
+//    });
+//
+//    rackSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Caja ${map[key]}`;
+//        cell.title = `Caja ${map[key]}`;
+//      }
+//    });
+//  }
+//
+//  function drawBoxSchema(boxId) {
+//    createGrid(boxSchema, 9, 9, 'box');
+//    boxInfo.textContent = '';
+//    if (!boxId) return;
+//
+//    const boxSamples = samples.filter(s => s.box === boxId);
+//    if (boxSamples.length > 0) {
+//      const { name, strain, description } = boxSamples[0];
+//      boxInfo.textContent = `Name: ${name}\nStrain: ${strain}\nDescription: ${description}`;
+//    }
+//
+//    const map = {};
+//    const tooltips = {};
+//    boxSamples.forEach(s => {
+//      const label = s.boxCol + s.boxRow;
+//      map[label] = s.id;
+//      tooltips[label] = s.strain;
+//    });
+//
+//    boxSchema.querySelectorAll('.schema-cell').forEach(cell => {
+//      const key = cell.dataset.col + cell.dataset.row;
+//      if (map[key]) {
+//        cell.textContent = `Muestra Id ${map[key]}`;
+//        cell.title = `Strain: ${tooltips[key]}`;
+//      }
+//    });
+//  }
+//
+//  function updateBoxSelect(rackId) {
+//    boxSelect.innerHTML = '<option value="">-- Selecciona una caja --</option>';
+//    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))];
+//    boxesInRack.forEach(box => {
+//      const opt = document.createElement('option');
+//      opt.value = box;
+//      opt.textContent = box;
+//      boxSelect.appendChild(opt);
+//    });
+//  }
+//
+//  function applyFilters() {
+//    const rows = table.tBodies[0].rows;
+//    for (let row of rows) {
+//      const rackMatch = !selectedRack || row.dataset.rack === selectedRack;
+//      const boxMatch = !selectedBox || row.dataset.box === selectedBox;
+//      row.style.display = (rackMatch && boxMatch) ? '' : 'none';
+//    }
+//  }
+//
+//  rackSelect.addEventListener('change', () => {
+//    selectedRack = rackSelect.value;
+//    selectedBox = '';
+//    boxSelect.value = '';
+//    drawRackSchema(selectedRack);
+//    drawBoxSchema('');
+//    updateBoxSelect(selectedRack);
+//    applyFilters();
+//  });
+//
+//  boxSelect.addEventListener('change', () => {
+//    selectedBox = boxSelect.value;
+//    drawBoxSchema(selectedBox);
+//    applyFilters();
+//  });
+//
+//  // INIT: vacíos
+//  createGrid(rackSchema, 4, 4, 'rack');
+//  createGrid(boxSchema, 9, 9, 'box');
+//});
+
+
+
+//document.addEventListener('DOMContentLoaded', () => {
+//  const table = document.getElementById('sample-table');
+//  const rackSchema = document.getElementById('rack-schema');
+//  const boxSchema = document.getElementById('box-schema');
+//  const rackSelect = document.getElementById('rack-select');
+//  const boxSelect = document.getElementById('box-select');
+//  const rackInfo = document.getElementById('rack-info');
+//  const boxInfo = document.getElementById('box-info');
+//
+//  let selectedRack = '';
+//  let selectedBox = '';
+//
+//  function clearGrid(container, cols, rows) {
+//    container.innerHTML = '';
+//    for (let r = 1; r <= rows; r++) {
+//      for (let c = 0; c < cols; c++) {
+//        const cell = document.createElement('div');
+//        cell.className = 'schema-cell';
+//        container.appendChild(cell);
+//      }
+//    }
+//  }
+//
+//  function drawRackSchema(rackId) {
+//    clearGrid(rackSchema, 4, 4);
+//    rackInfo.textContent = '';
+//    if (!rackId) return;
+//
+//    // Filtrar muestras de este rack
+//    const rackSamples = samples.filter(s => s.rack === rackId);
+//    rackInfo.textContent = `Rack: ${rackId}`;
+//
+//    const map = {};
+//    rackSamples.forEach(s => {
+//      const label = s.rackCol + s.rackRow;
+//      map[label] = s.box;
+//    });
+//
+//    rackSchema.querySelectorAll('.schema-cell').forEach((cell, i) => {
+//      const col = String.fromCharCode(65 + (i % 4));
+//      const row = 1 + Math.floor(i / 4);
+//      const key = col + row;
+//      if (map[key]) cell.textContent = `Caja ${map[key]}`;
+//    });
+//  }
+//
+//  function drawBoxSchema(boxId) {
+//    clearGrid(boxSchema, 9, 9);
+//    boxInfo.textContent = '';
+//    if (!boxId) return;
+//
+//    const boxSamples = samples.filter(s => s.box === boxId);
+//    if (boxSamples.length > 0) {
+//      const { name, strain, description } = boxSamples[0];
+//      boxInfo.textContent = `Name: ${name}\nStrain: ${strain}\nDescription: ${description}`;
+//    }
+//
+//    const map = {};
+//    boxSamples.forEach(s => {
+//      const label = s.boxCol + s.boxRow;
+//      map[label] = s.id;
+//    });
+//
+//    boxSchema.querySelectorAll('.schema-cell').forEach((cell, i) => {
+//      const col = String.fromCharCode(65 + (i % 9));
+//      const row = 1 + Math.floor(i / 9);
+//      const key = col + row;
+//      if (map[key]) cell.textContent = `Muestra Id ${map[key]}`;
+//    });
+//  }
+//
+//  function updateBoxSelect(rackId) {
+//    boxSelect.innerHTML = '<option value="">-- Selecciona una caja --</option>';
+//    const boxesInRack = [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))];
+//    boxesInRack.forEach(box => {
+//      const opt = document.createElement('option');
+//      opt.value = box;
+//      opt.textContent = box;
+//      boxSelect.appendChild(opt);
+//    });
+//  }
+//
+//  function applyFilters() {
+//    const rows = table.tBodies[0].rows;
+//    for (let row of rows) {
+//      const rackMatch = !selectedRack || row.dataset.rack === selectedRack;
+//      const boxMatch = !selectedBox || row.dataset.box === selectedBox;
+//      row.style.display = (rackMatch && boxMatch) ? '' : 'none';
+//    }
+//  }
+//
+//  rackSelect.addEventListener('change', () => {
+//    selectedRack = rackSelect.value;
+//    selectedBox = ''; // reset caja al cambiar rack
+//    boxSelect.value = '';
+//    drawRackSchema(selectedRack);
+//    drawBoxSchema('');
+//    updateBoxSelect(selectedRack);
+//    applyFilters();
+//  });
+//
+//  boxSelect.addEventListener('change', () => {
+//    selectedBox = boxSelect.value;
+//    drawBoxSchema(selectedBox);
+//    applyFilters();
+//  });
+//
+//  // INIT: todo vacío
+//  clearGrid(rackSchema, 4, 4);
+//  clearGrid(boxSchema, 9, 9);
+//});
 
 
 
