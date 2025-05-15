@@ -125,7 +125,17 @@ DATABASES = {
     #     'HOST': 'arpbig_psdb',
     #     'PORT': '',
     # }
-
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
+    #     'USER': 'fernando',
+    #     'PASSWORD': 'Orgullovalor',
+    #     # 'USER': 'root',
+    #     # 'PASSWORD': 'Orgullovalor',
+    #     'HOST': '127.0.0.1',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
+    #     "connect_timeout": 180,
+    #     'PORT': '3306', # 3306
+    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
@@ -133,9 +143,9 @@ DATABASES = {
         'PASSWORD': 'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
-        'HOST': '127.0.0.1',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
+        'HOST': '165.22.89.54',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
         "connect_timeout": 180,
-        'PORT': '3306', # 3306
+        'PORT': '3306',  # 3306
     }
 }
 
