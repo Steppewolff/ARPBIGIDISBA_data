@@ -6,84 +6,48 @@
 
 {% block head %}
 <script src="/static/js/admin_js.js"></script>
-<script>
-  const samples = [
-    {% for s in table.data %}
-    {
-      id: {{ s.id }},
-      rack: "{{ s.rack }}",
-      rackRow: "{{ s.rack_row }}",
-      rackCol: "{{ s.rack_col }}",
-      box: "{{ s.box }}",
-      boxRow: "{{ s.box_row }}",
-      boxCol: "{{ s.box_col }}",
-      name: "{{ s.name|escapejs }}",
-      strain: "{{ s.strain|escapejs }}",
-      description: "{{ s.description|escapejs }}"
-    },
-    {% endfor %}
-  ];
-</script>
+<script src="{% static 'bank/js/freezer.js' %}" defer></script>
+{{ samples|json_script:"samples-data" }}
+
 <style>
-  .container_strain {
+.container_strain {
     display: flex;
     flex-wrap: wrap;
-    gap: 40px; /* más espacio entre columnas */
-  }
-
-  .left {
-    flex: 1 1 45%;
-    overflow-x: auto;
-    border-right: 2px solid #ccc;
-    padding-right: 20px;
-  }
-
-  .right {
-    flex: 1 1 45%;
-    min-width: 300px;
-  }
-
-  .schema-container {
-    margin-bottom: 20px;
-  }
-
-  .schema-selector {
-    display: block;
-    margin-bottom: 5px;
-  }
-
-  .schema-grid {
-    display: grid;
-    border: 1px solid #ddd;
-  }
-
-  .schema-header {
-    font-weight: bold;
-    text-align: center;
-    padding: 5px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-  }
-
-  .schema-cell {
-    border: 1px solid #999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 0.8em;
-    text-align: center;
-    padding: 5px;
-    word-break: break-word;
-    min-width: 30px;
-    min-height: 30px;
-  }
-
-  .info-text {
-    margin-top: 10px;
-    white-space: pre-line; /* Para respetar los saltos de línea */
-  }
+    gap: 40px;
+}
+.schema-container { margin: 20px 0; }
+.schema {
+  margin: 20px 0;
+  overflow-x: auto;
+  min-height: 150px;
+}
+.schema-cell,
+.schema-header {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75em;
+}
+.schema-header {
+  font-weight: bold;
+  background-color: #eee;
+}
+.schema-grid {
+  display: grid;
+  gap: 2px;
+}
+.info-text {
+  white-space: pre-wrap;
+  background: #f0f0f0;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+.highlight {
+  background-color: yellow;
+}
 </style>
 {% endblock %}
 
@@ -120,27 +84,29 @@
       {% render_table table %}
     </div>
 
-    <div class="right">
-      <div class="schema-container">
-        <label for="rack-select" class="schema-selector">Seleccionar Rack:</label>
-        <select id="rack-select">
-          <option value="">Todos</option>
-          {% for rack in all_racks %}
+    <!-- Selectores y esquemas -->
+    <div class="schema-container">
+      <label for="rack-select">Selecciona Rack:</label>
+      <select id="rack-select">
+        <option value="">Todos</option>
+        {% for rack in all_racks %}
           <option value="{{ rack }}">{{ rack }}</option>
-          {% endfor %}
-        </select>
-        <div id="rack-schema"></div>
-        <div id="rack-info" class="info-text"></div>
-      </div>
+        {% endfor %}
+      </select>
+      <div id="rack-schema" class="schema"></div>
+      <div id="rack-info" class="info-text"></div>
+    </div>
 
-      <div class="schema-container">
-        <label for="box-select" class="schema-selector">Seleccionar Caja:</label>
-        <select id="box-select">
-          <option value="">Todos</option>
-        </select>
-        <div id="box-schema"></div>
-        <div id="box-info" class="info-text"></div>
-      </div>
+    <div class="schema-container">
+      <label for="box-select">Selecciona Caja:</label>
+      <select id="box-select">
+        <option value="">Todos</option>
+        {% for box in all_boxes %}
+          <option value="{{ box }}">{{ box }}</option>
+        {% endfor %}
+      </select>
+      <div id="box-schema" class="schema"></div>
+      <div id="box-info" class="info-text"></div>
     </div>
   </div>
 </div>

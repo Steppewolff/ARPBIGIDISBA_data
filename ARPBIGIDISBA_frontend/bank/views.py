@@ -12,12 +12,21 @@ def freezer_view(request):
     table = SampleTable(filter.qs)
     RequestConfig(request, paginate={'per_page': 20}).configure(table)
 
+    # Datos serializables para el JS
+    sample_data = list(
+        filter.qs.values(
+            'id', 'strain', 'clone', 'box', 'box_row', 'box_col',
+            'rack', 'rack_row', 'rack_col', 'description', 'name'
+        )
+    )
+
     # Selectores para racks y boxes
     context = {
         'filter': filter,
         'table': table,
-        'all_racks': Sample.objects.values_list('rack', flat=True).distinct().order_by('rack'),
-        'all_boxes': Sample.objects.values_list('box', flat=True).distinct().order_by('box'),
+        'samples': sample_data,  # <- esto es lo importante para el json_script
+        'all_racks': queryset.values_list('rack', flat=True).distinct().order_by('rack'),
+        'all_boxes': queryset.values_list('box', flat=True).distinct().order_by('box'),
     }
 
     return render(request, 'strain_bank2.html', context)

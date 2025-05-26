@@ -7,55 +7,39 @@
 {% block head %}
 <script src="/static/js/admin_js.js"></script>
 <script src="{% static 'bank/js/freezer.js' %}" defer></script>
-    <script>
-      const samples = [
-        {% for s in table.data %}
-        {
-          id: {{ s.id }},
-          rack: "{{ s.rack }}",
-          rackRow: "{{ s.rack_row }}",
-          rackCol: "{{ s.rack_col }}",
-          box: "{{ s.box }}",
-          boxRow: "{{ s.box_row }}",
-          boxCol: "{{ s.box_col }}",
-          name: "{{ s.name|escapejs }}",
-          strain: "{{ s.strain|escapejs }}",
-          description: "{{ s.description|escapejs }}"
-        },
-        {% endfor %}
-      ];
-    </script>
+{{ table.data|json_script:"samples-data" }}
+
     <style>
     .container_strain {
         display: flex;
         flex-wrap: wrap;
         gap: 40px; /* más espacio entre columnas */
     }
-    .left {
-        flex: 1 1 45%;
-        overflow-x: auto;
-        border-right: 2px solid #ccc;
-        padding-right: 20px;
-    }
-    .right {
-        flex: 1 1 45%;
-        min-width: 300px;
-    }
+    .schema-container { margin: 20px 0; }
     .schema {
-        border: 1px solid #ddd;
-        margin: 20px 0;
-        display: grid;
-        gap: 2px;
+      margin: 20px 0;
+      overflow-x: auto;
+      min-height: 150px;
     }
-    .schema-cell {
-        width: 30px;
-        height: 30px;
-        border: 1px solid #999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
+    .schema-cell,
+    .schema-header {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.75em;
     }
+    .schema-header {
+      font-weight: bold;
+      background-color: #eee;
+    }
+    .schema-grid {
+      display: grid;
+      gap: 2px;
+    }
+    .info-text { white-space: pre-wrap; background:#f0f0f0; padding:5px; border:1px solid #ccc; }
     .highlight {
         background-color: yellow;
     }
@@ -85,8 +69,6 @@
 
     <!-- !PAGE CONTENT! -->
     <div class="w3-padding"> <!--container_strain-->
-<!--         style="display:flex; flex-wrap: wrap; gap: 40px;"-->
-
         <!-- Tabla con filtros -->
         <div class="w3-container">
             <form method="get" class="filter-form">
@@ -105,98 +87,26 @@
 
         <!-- Selects, esquemas y texto -->
 
-        <div class="right">
-            <div class="schema-container">
-                <label for="rack-select" class="schema-selector">Seleccionar Rack:</label>
-                <select id="rack-select">
-                    <option value="">Todos</option>
-                    {% for rack in all_racks %}
-                        <option value="{{ rack }}">{{ rack }}</option>
-                    {% endfor %}
-                </select>
-                <div id="rack-schema" class="schema" style="grid-template-columns: repeat(5, 30px); grid-template-rows: repeat(5, 30px);">
-                    <div class="schema-cell header"></div>
-                    {% for col in 'ABCD' %}
-                        <div class="schema-cell header">{{ col }}</div>
-                    {% endfor %}
-                    {% for row in '1234' %}
-                        <div class="schema-cell header">{{ row }}</div>
-                        {% for col in 'ABCD' %}
-                            <div class="schema-cell rack-cell" data-rack-pos="{{ col }}{{ row }}"></div>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-                <div id="rack-info" class="info-text"></div>
-            </div>
+      <div class="schema-container">
+        <label for="rack-select">Selecciona Rack:</label>
+        <select id="rack-select">
+          <option value="">Todos</option>
+          {% for rack in all_racks %}<option value="{{ rack }}">{{ rack }}</option>{% endfor %}
+        </select>
+        <div id="rack-schema" class="schema"></div>
+        <div id="rack-info" class="info-text"></div>
+      </div>
 
-            <div class="schema-container">
-                <label for="box-select" class="schema-selector">Seleccionar Caja:</label>
-                <select id="box-select">
-                    <option value="">Todos</option>
-                    {% for box in all_boxes %}
-                        <option value="{{ box }}">{{ box }}</option>
-                    {% endfor %}
-                </select>
-                <div id="box-schema" class="schema" style="grid-template-columns: repeat(10, 20px); grid-template-rows: repeat(10, 20px);">
-                    <div class="schema-cell header"></div>
-                    {% for col in 'ABCDEFGHI' %}
-                        <div class="schema-cell header">{{ col }}</div>
-                    {% endfor %}
-                    {% for row in '123456789' %}
-                        <div class="schema-cell header">{{ row }}</div>
-                        {% for col in 'ABCDEFGHI' %}
-                            <div class="schema-cell box-cell" data-box-pos="{{ col }}{{ row }}"></div>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-                <div id="box-info" class="info-text"></div>
-            </div>
-        </div>
-
-
-
-
-
-
-
-
-<!--     <div class="right">-->
-<!--      <div>-->
-<!--        <label for="freezer-select">Seleccionar congelador:</label>-->
-<!--        <select id="freezer-select">-->
-<!--          <option value="F">Congelador F</option>-->
-<!--          <option value="I">Congelador I</option>-->
-<!--        </select>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Rack schema &ndash;&gt;-->
-<!--      <div>-->
-<!--        <h4>Rack</h4>-->
-<!--        <select id="rack-select">-->
-<!--          {% for rack in racks %}-->
-<!--            <option value="{{ rack }}">{{ rack }}</option>-->
-<!--          {% endfor %}-->
-<!--        </select>-->
-<!--        <div id="rack-scheme" class="schema" style="grid-template-columns: repeat(4, 30px); grid-template-rows: repeat(4, 30px);">-->
-<!--          &lt;!&ndash; JS llenará las celdas &ndash;&gt;-->
-<!--        </div>-->
-<!--        <div id="rack-info"></div>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Caja schema &ndash;&gt;-->
-<!--      <div>-->
-<!--        <h4>Caja</h4>-->
-<!--        <select id="box-select">-->
-<!--          {% for box in boxes %}-->
-<!--            <option value="{{ box }}">{{ box }}</option>-->
-<!--          {% endfor %}-->
-<!--        </select>-->
-<!--        <div id="box-scheme" class="schema" style="grid-template-columns: repeat(9, 30px); grid-template-rows: repeat(9, 30px);">-->
-<!--          &lt;!&ndash; JS llenará las celdas &ndash;&gt;-->
-<!--        </div>-->
-<!--        <div id="box-info"></div>-->
-<!--      </div>-->
-<!--    </div>-->
-   </div>
+      <div class="schema-container">
+        <label for="box-select">Selecciona Caja:</label>
+        <select id="box-select">
+          <option value="">Todos</option>
+          {% for box in all_boxes %}<option value="{{ box }}">{{ box }}</option>{% endfor %}
+        </select>
+        <div id="all_boxes">{{ all_boxes }}</div>
+        <div id="box-schema" class="schema"></div>
+        <div id="box-info" class="info-text"></div>
+      </div>
+    </div>
 </div>
 {% endblock %}
