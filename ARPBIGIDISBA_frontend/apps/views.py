@@ -55,7 +55,6 @@ def load_scores(json_file):
         scores = json.load(f)
     return scores
 
-
 def load_csv(uploaded_file):
     """Carga los registros del archivo CSV en una lista de filas."""
     records = []
@@ -68,13 +67,6 @@ def load_csv(uploaded_file):
     for row in reader:
         records.append(row)
     return records
-
-    # with open(csv_file, newline="") as f:
-    #     reader = csv.reader(f)
-    #     for row in reader:
-    #         # Se espera que el archivo tenga 14 columnas
-    #         records.append(row)
-    # return records
 
 def amr_score_prediction(request):
     if request.method == 'POST' and 'variantCallingFile' in request.FILES:

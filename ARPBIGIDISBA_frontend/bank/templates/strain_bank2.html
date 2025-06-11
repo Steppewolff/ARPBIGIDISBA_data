@@ -31,6 +31,11 @@
   align-items: center;
   font-size: 0.75em;
 }
+.schema-cell.selected {
+  background-color: #ffc107 !important; /* naranja claro */
+  color: #212529;
+  font-weight: bold;
+}
 .schema-header {
   font-weight: bold;
   background-color: #eee;
@@ -93,8 +98,10 @@
           <option value="{{ rack }}">{{ rack }}</option>
         {% endfor %}
       </select>
-      <div id="rack-schema" class="schema"></div>
-      <div id="rack-info" class="info-text"></div>
+      <div class="container_strain">
+        <div id="rack-schema" class="schema"></div>
+        <div id="rack-info" class="info-text" style="min-width: 300px;"></div>
+      </div>
     </div>
 
     <div class="schema-container">
@@ -105,8 +112,10 @@
           <option value="{{ box }}">{{ box }}</option>
         {% endfor %}
       </select>
-      <div id="box-schema" class="schema"></div>
-      <div id="box-info" class="info-text"></div>
+      <div class="container_strain">
+        <div id="box-schema" class="schema"></div>
+        <div id="box-info" class="info-text" style="min-width: 300px;"></div>
+      </div>
     </div>
   </div>
 </div>

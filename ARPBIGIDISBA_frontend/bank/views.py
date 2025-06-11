@@ -15,7 +15,7 @@ def freezer_view(request):
     # Datos serializables para el JS
     sample_data = list(
         filter.qs.values(
-            'id', 'strain', 'clone', 'box', 'box_row', 'box_col',
+            'id', 'strain', 'species', 'clone', 'box', 'box_row', 'box_col',
             'rack', 'rack_row', 'rack_col', 'description', 'name'
         )
     )
