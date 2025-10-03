@@ -139,9 +139,64 @@
 
 }( jQuery ));
 
-$(document).ready(function($) {
-   $('.results').doubleScroll({resetOnWindowResize: true});
-});
+//$(document).ready(function($) {
+//   $('.results').doubleScroll({resetOnWindowResize: true});
+//});
+
+// --- robust initialization for DoubleScroll function ---
+(function($){
+
+  function refreshDoubleScrollOnce($el) {
+    if (!$el || $el.length === 0) return;
+    // eliminar wrapper previo si existe
+    $el.prev('.doubleScroll-scroll-wrapper').remove();
+    // quitar handlers antiguos
+    $el.off('scroll.doubleScroll');
+    // re-inicializar
+    $el.doubleScroll({ resetOnWindowResize: true });
+  }
+
+  function refreshDoubleScroll() {
+    var $results = $('.results');
+    refreshDoubleScrollOnce($results);
+  }
+
+  // 1) Inicializar cuando la página terminó de cargar completamente
+  $(window).on('load', function(){
+    refreshDoubleScroll();
+
+    // Reintento rápido (por si el DOM cambia justo después del load)
+    window.requestAnimationFrame(refreshDoubleScroll);
+    setTimeout(refreshDoubleScroll, 100);
+  });
+
+  // 2) Si .results está dentro de un collapse de Bootstrap
+  $(document).on('shown.bs.collapse', function() {
+    $('.results:visible').each(function(){
+      refreshDoubleScrollOnce($(this));
+    });
+  });
+
+  // 3) Si .results está dentro de tabs de Bootstrap
+  $(document).on('shown.bs.tab', function() {
+    $('.results:visible').each(function(){
+      refreshDoubleScrollOnce($(this));
+    });
+  });
+
+  // 4) Observar cambios dinámicos dentro de .results (ej. django_tables2_column_shifter)
+  var resultsNode = document.querySelector('.results');
+  if (resultsNode) {
+    var mo = new MutationObserver(function(){
+      if (window._ds_debounce) clearTimeout(window._ds_debounce);
+      window._ds_debounce = setTimeout(function(){
+        refreshDoubleScrollOnce($(resultsNode));
+      }, 50);
+    });
+    mo.observe(resultsNode, { childList: true, subtree: true, attributes: true });
+  }
+
+})(jQuery);
 
 function abrir_modal(url)
 {

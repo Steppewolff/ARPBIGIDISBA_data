@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django_tables2 import SingleTableView, SingleTableMixin, RequestConfig
 from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
+from import_export.admin import ExportMixin
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
@@ -47,14 +49,40 @@ def busqueda(request):
                        'mic_form': mic_form,
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
-class ResultadosListView(SingleTableMixin, FilterView): #LoginRequiredMixin,
+class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequiredMixin,
     table_class = CombinedTable
     model = MetadataGeneral
     template_name = 'resultados.html'
     filterset_class = MultiFilter
 
+    # Presets for custom exportations
+    column_presets = {"mepram_only": ["isolate_name", "species", "isolate_source", "isolation_date"],
+                      "mic_only": ["isolate_name", "species", "isolation_date", "pip", "pip_clinical_category", "fep", "fep_clinical_category", "caz", "caz_clinical_category", "ctz", "ctz_clinical_category", "imi", "imi_clinical_category", "mer", "mer_clinical_category", "azt", "azt_clinical_category", "cip", "cip_clinical_category"],
+                      "all": None}
+
     def mra_classification(self):
         pass
+
+    def create_export(self, export_format):
+        # Crear la tabla (con filtros/applicable queryset)
+        table = self.get_table(**self.get_table_kwargs())
+
+        # Leer excluded_columns desde GET (plugin añade excluded_columns=col1,col2)
+        excluded_param = self.request.GET.get('excluded_columns', '')
+        if excluded_param:
+            raw = [c.strip() for c in excluded_param.split(',') if c.strip()]
+        else:
+            raw = []
+
+        # Validar y normalizar contra los nombres reales de columnas de la tabla
+        all_cols = list(table.columns.names())
+        exclude = [c for c in raw if c in all_cols]
+
+        # Crear exporter pasando exclude_columns (si exclude está vacío pasar None)
+        exclude_arg = exclude if exclude else None
+        exporter = TableExport(export_format, table=table, exclude_columns=exclude_arg)
+
+        return exporter
 
     def get_context_data(self, **kwargs):
         verbose_used = self.request.session.get('verbose_used', {})
@@ -77,19 +105,37 @@ class ResultadosListView(SingleTableMixin, FilterView): #LoginRequiredMixin,
 
     def get_table(self, **kwargs):
         qs=self.get_queryset()
-        table = self.table_class(data=qs, **kwargs)
-
+        table = self.table_class(data=qs, request=self.request, **kwargs)
         RequestConfig(self.request).configure(table)
+
         return table
 
     def get(self, request, *args, **kwargs):
         export_format = request.GET.get('_export', None)
         export_mic_format = request.GET.get('_export_mic', None)
+        preset = request.GET.get('preset', None)
 
-        # Exporta la tabla principal (CombinedTable)
+        # If the get request has a preset variable, export only those columns
+        if preset and TableExport.is_valid_format(export_format):
+            table = self.get_table()
+            visible_columns = self.column_presets.get(preset, None)
+            if visible_columns is None:
+                return HttpResponseBadRequest("Preset not found ")
+
+            all_cols = list(table.columns.names())
+            exclude = [c for c in all_cols if c not in visible_columns]
+
+            exporter = TableExport(export_format, table, exclude_columns=(exclude if exclude else None))
+            return exporter.response(f'arpbig_data_export_{preset}.{export_format}')
+
+        # Exportation of the whole table (CombinedTable)
         if TableExport.is_valid_format(export_format):
             table = self.get_table()
-            exporter = TableExport(export_format, table)
+            # exporter = TableExport(export_format, table)
+            excluded_columns_param = self.request.GET.get('excluded_columns', '')  # cadena vacía si no existe
+            excluded_columns = excluded_columns_param.split(',') if excluded_columns_param else None
+
+            exporter = TableExport(export_format, table, exclude_columns=excluded_columns)
             return exporter.response('arpbig_data_export.{}'.format(export_format))
 
         # Exporta la tabla de MIC (mic_table)
@@ -227,6 +273,9 @@ class ResultadosListView(SingleTableMixin, FilterView): #LoginRequiredMixin,
 
             context['mic_table'] = MicTable(data=qs_mic)
             RequestConfig(request).configure(context['mic_table'])
+
+        table_obj = self.get_table()
+        context['table'] = table_obj
 
         return render(request, 'resultados.html', context=context)
 

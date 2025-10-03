@@ -11,6 +11,7 @@
     {% block head %}
     <script src="/static/js/admin_js.js"></script>
     <script type="text/javascript" src="{% static 'django_tables2_column_shifter/js/django_tables2_column_shifter.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'home/js/exporter.js' %}"></script>
     {% endblock %}
 
     {% block title %}
@@ -29,13 +30,13 @@
 
       <!-- Header -->
         <div class="w3-container" style="margin-top:10px" id="showcase">
-          <h1 class="w3-jumbo"><b>Resultados</b></h1>
-          <h3 class="w3-text-red"><b>Base de datos ARPBIG IdISBa</b></h3>
+          <h1 class="w3-jumbo"><b>Results</b></h1>
+          <h3 class="w3-text-red"><b>Database ARPBIG IdISBa</b></h3>
           <hr style="width:50px;border:5px solid red" class="w3-round">
         </div>
 
         <!-- Parámetros búsqueda -->
-        <h2 title="Resumen de parámetros introducidos">Parámetros de la búsqueda</h2>
+        <h2 title="Summary of search parameters used">Search parameters used</h2>
         <div class="w3-container">
             {% for parameter, value in verbose_used.items %}
                 <p><b>{{ parameter }} : </b> {{ value }}</p>
@@ -43,7 +44,7 @@
         </div>
 
         <!-- Table Results -->
-        <h2>Resultados de la búsqueda</h2>
+        <h2>Search results</h2>
         <div class="w3-container">
 
                 <div class="accordion" id="accordion_filter">
@@ -52,7 +53,7 @@
                     <div class="card-header accordion-heading" id="headingFilterOne">
                       <h5 class="mb-0">
                         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseFilterOne" aria-expanded="true" aria-controls="collapseFilterOne" data-parent="#accordion_filter" href="#collapseFilterOne">
-                          Filtrar resultados
+                          Results filtering
                         </button>
                       </h5>
                     </div>
@@ -98,7 +99,7 @@
                     <div class="card-header accordion-heading" id="headingClinicalCat">
                       <h5 class="mb-0">
                         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseClinicalCat" aria-expanded="true" aria-controls="collapseClinicalCat" data-parent="#accordion_filter" href="#collapseClinicalCat">
-                          Versiones de Categorías Clínicas
+                          Clinical categories versions used
                         </button>
                       </h5>
                     </div>
@@ -107,7 +108,7 @@
                           <div class="form-group col-md-6 mb-0">
                             <form action="{% url 'resultados' %}#mic_table" method="POST" id="amr_clas_results">
                                 {% csrf_token %}
-                                <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+                                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>
 
                                 <select name="breakpoint_table_acc" id="breakpoint_table_acc">
                                 {% for table in breakpoints_tables %}:
@@ -120,42 +121,59 @@
                                 </select>
 
                                 <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">
-                                <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
+                                <input type="submit" value="Select breakpoint version" class="btn btn-primary">
                             </form>
                           </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
-                  <form method="GET">
-                      <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
-                      <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
-                      <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
-                  </form>
-                </div>
             {% render_table table %}
+            <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
+              <form method="GET">
+                  <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to CSV format</a>
+                  <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to XLSX format</a>
+                  <a href='{% export_url "json" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to JSON format</a>
+
+                  <!-- Dropdown estilo botón -->
+                  <div class="dropdown d-none d-sm-inline-block">
+                    <button class="btn btn-sm btn-secondary shadow-sm dropdown-toggle"
+                            type="button"
+                            id="exportDropdown"
+                            data-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Select one of the custom exports below">
+                      Custom export
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                      <li><a class="dropdown-item" href="{% url 'resultados' %}?_export=csv&preset=mepram_only" data-value="mepram" title="Fields needed for MePRAM data model exportation">MePRAM data model</a></li>
+                      <li><a class="dropdown-item" href="{% url 'resultados' %}?_export=xlsx&preset=mic_only" data-value="mic" title="Only MIC related fields">MIC only</a></li>
+                    </ul>
+                  </div>
+                  <!-- <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Custom export</a> -->
+
+              </form>
+            </div>
         </div>
 
         {% if selected_table %}
         <div class="w3-container">
             <h2 id="mic_table">Tabla de Mic</h2>
-            <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
-              <form method="GET">
-                  <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>
-                  <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>
-                  <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>
-              </form>
-            </div>
         </div>
         <div class="w3-container">
             {% render_table mic_table %}
         </div>
-
+        <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
+          <form method="GET">
+              <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to CSV format</a>
+              <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar to XLSX format</a>
+              <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar to TXT format</a>
+          </form>
+        </div>
         <div class="w3-container">
             <form action="{% url 'resultados' %}#mic_table" method="POST">
                 {% csrf_token %}
-                <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>
 
                 <select name="breakpoint_table_down" id="breakpoint_table_down">
                 {% for table in breakpoints_tables %}:
@@ -171,7 +189,7 @@
                 <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
                 <!-- Botón para descargar la tabla de breakpoints usada como referencia -->
                 <a href="{% static selected_filepath %}" class="btn btn-success" download>
-                  Descargar tabla de la versión
+                  Download breakpoint table version
                 </a>
             </form>
         </div>

@@ -65,27 +65,27 @@ class GroupedSelect(forms.Select):
 class MultiFilter(filters.FilterSet):
     OPCIONES_FILTRO = obtener_opciones_filtro()
 
-    isolate_name = filters.ModelChoiceFilter(field_name='Nombre aislado', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Nombre del aislado')
-    species = filters.ModelChoiceFilter(field_name='Especie aislado', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Especie')
-    project_name = filters.ModelChoiceFilter(field_name='Nombre proyecto', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Proyecto')
-    isolate_source = filters.ModelChoiceFilter(field_name='isolate_source', queryset=MetadataGeneral.objects.values_list('isolate_source', flat=True).distinct(), to_field_name='isolate_source', label='Origen del aislado')
+    isolate_name = filters.ModelChoiceFilter(field_name='Nombre aislado', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
+    species = filters.ModelChoiceFilter(field_name='Especie aislado', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
+    project_name = filters.ModelChoiceFilter(field_name='Nombre proyecto', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
+    isolate_source = filters.ModelChoiceFilter(field_name='isolate_source', queryset=MetadataGeneral.objects.values_list('isolate_source', flat=True).distinct(), to_field_name='isolate_source', label='Isolate origin')
 
-    isolation_date__gt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='gte', label='Desde (fecha)')
-    isolation_date__lt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='lte', label='Hasta (fecha)')
+    isolation_date__gt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='gte', label='From (date)')
+    isolation_date__lt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='lte', label='To (date)')
 
     incluir = filters.MultipleChoiceFilter(
         choices=OPCIONES_FILTRO,
         # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect1'}),
         method='filtrar_incluir',
-        label="Mutaciones presentes"
+        label="Present mutations"
     )
     excluir = filters.MultipleChoiceFilter(
         choices=OPCIONES_FILTRO,
         # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect2'}),
         method='filtrar_excluir',
-        label="Mutaciones ausentes"
+        label="Absent mutations"
     )
 
     def filtrar_incluir(self, queryset, name, value):

@@ -17,6 +17,7 @@ class Sample(models.Model):
     box = models.CharField(max_length=10, blank=True, null=True)
     box_row = models.CharField(max_length=2, blank=True, null=True)
     box_col = models.CharField(max_length=2, blank=True, null=True)
+    freezer = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.rack}{self.rack_row}{self.rack_col})"

@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'django_filters',
     'django_tables2_column_shifter',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
-    'channels',  # Necesario para que Dash funcione con Django
+    'channels',
+    'import_export',# Necesario para que Dash funcione con Django
 
     # Project Apps
     'home',
@@ -143,7 +144,7 @@ DATABASES = {
         'PASSWORD': 'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
-        'HOST': '165.22.89.54',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
+        'HOST': '127.0.0.1',  # 'db',, arpbig_ps, os.environ.get('DB_HOST'), '165.22.89.54',
         "connect_timeout": 180,
         'PORT': '3306',  # 3306
     }

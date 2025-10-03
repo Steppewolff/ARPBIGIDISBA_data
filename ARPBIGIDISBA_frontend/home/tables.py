@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from django_tables2.export.views import ExportMixin
 from django.db.models import Field
-from django_tables2_column_shifter.tables import ColumnShiftTableBootstrap4Responsive, ColumnShiftTable, ColumnShiftTableBootstrap5Responsive
+from django_tables2_column_shifter.tables import ColumnShiftTableBootstrap4Responsive, ColumnShiftTableBootstrap4, ColumnShiftTable, ColumnShiftTableBootstrap5Responsive
 
 from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral, MetadataClinic, FilePath
 
@@ -26,12 +26,12 @@ def create_dynamic_table(*models):
 
                 pass
 
-            attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap5.html', 'exclude' : ('clinic_id', 'isolate_id',), 'export_formats' : '["csv", "xlsx", "txt"]', 'attrs': {
-                'class': 'table table-dark table-striped table-hover table-responsive results'}})
+        attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap4.html', 'exclude' : ('clinic_id', 'isolate_id',), 'export_formats' : ["csv", "xlsx", "txt"], 'attrs': {
+            'class': 'table table-dark table-striped table-hover table-responsive results'}})
 
-            pass
+        pass
 
-    return type('CombinedTable', (ColumnShiftTableBootstrap4Responsive, ExportMixin, ColumnShiftTable, tables.Table), attrs)
+    return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs) # ColumnShiftTableBootstrap4Responsive, ExportMixin
 
 
 CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)
