@@ -7,6 +7,8 @@ from django_filters.views import FilterView
 from import_export.admin import ExportMixin
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 import re
@@ -17,11 +19,15 @@ from .tables import CombinedTable, MicTable
 from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
 
+class MyLoginView(LoginView):
+    pass
 
 # Create your views here.
 # @login_required
 def home(request):
     return render(request, 'home.html')
+
+
 
 # @login_required
 def busqueda(request):

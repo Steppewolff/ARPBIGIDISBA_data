@@ -73,6 +73,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'home.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_plotly_dash.middleware.BaseMiddleware',
@@ -172,6 +173,20 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/accounts/login/'  # URL a donde se redirige si el usuario no está autenticado
 LOGIN_REDIRECT_URL = '/'  # Página a donde se redirige después de iniciar sesión
 LOGOUT_REDIRECT_URL = '/'  # Página tras cerrar sesión
+
+# Nombres de vistas públicas para middleware autentication
+LOGIN_NOT_REQUIRED_URLNAMES = [
+    'login',
+    'logout',
+    'home',
+]
+
+# paths exactos para vistas públicas para middleware autentication
+LOGIN_NOT_REQUIRED_PATHS = [
+    '/accounts/login/',
+    '/accounts/logout/',
+    '/',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
