@@ -164,6 +164,42 @@ hr{height: 3px; background-color: #f44336; border:0;border-top:1px solid #f44336
 .message li{padding: 1em; width: 100%; line-height: 1em;}
 .message li.warning {background-color: #ffec99; color}
 .dropdown-menu{background-color: #f44336; max-height: 300px; overflow-y: auto; top: 100%; left: 0; right: 0; z-index: 1050;}
+.w3-sidebar .separador {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 12px;
+  margin: 16px 0;
+  color: inherit;
+  background: transparent;
+}
+
+/* Las líneas a los lados */
+.w3-sidebar .separador::before,
+.w3-sidebar .separador::after {
+  content: "";
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 0;
+  border-bottom: 2px dashed rgba(255,255,255,0.85);
+}
+
+/* Icono centrado */
+.w3-sidebar .separador .icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 1.1rem;
+  color: #fff;
+  line-height: 1;
+  z-index: 2;
+}
+.icono {font-size: 1.2rem; color: #ffffff;}
 
 /* Colors */
 .w3-amber,.w3-hover-amber:hover{color:#000!important;background-color:#ffc107!important}
@@ -253,4 +289,13 @@ hr{height: 3px; background-color: #f44336; border:0;border-top:1px solid #f44336
 
 /* ids */
 #navlogo {position:absolute; bottom:0;}
-#arpbig_logo{margin-bottom: 10px;}
+#navlogo img {
+  max-width: 20%;   /* ancho máximo */
+  max-height: 20%;  /* alto máximo */
+  width: auto;       /* mantiene proporción */
+  height: auto;      /* mantiene proporción */
+  margin-right: 10px; /* espacio entre logos */
+  vertical-align: middle; /* alinea mejor con texto si lo hubiera */
+}
+#arpbig_logo {margin-bottom: 10px;}
+#showcase {padding: 2em 0 0 0 !important;}

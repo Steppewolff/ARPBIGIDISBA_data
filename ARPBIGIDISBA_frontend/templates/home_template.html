@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <link rel="icon" href="{% static 'img/arpbig-high-resolution-logo-black-transparent(2).ico' %}" type="image/x-icon">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
@@ -44,6 +44,21 @@
       <div class="w3-container">
         <h3 class="w3-padding-16"><b>ARPBIGIDISBA<br>Database</b></h3>
       </div>
+
+      <div style="background-color: white; color: rgb(244, 67, 54); padding: 0.5em;">
+      {% if user.is_authenticated %}
+          <p>Wellcome, {{ user.username }}!</p>
+          <a href="{% url 'logout' %}"><button>Log out</button></a>
+      {% else %}
+          <p>You must be logged in to navigate the platform</p>
+          <a href="{% url 'login' %}"><button>Log in</button></a>
+      {% endif %}
+      </div>
+
+      <div class="separador">
+        <span class="icono"><i class="fa-solid fa-bacterium"></i></span>
+      </div>
+
       <div class="w3-bar-block">
         <a href="/" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Home</a>
         <a href="/busqueda" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Advanced search</a>
@@ -56,7 +71,7 @@
 
 <!--        <a href="/contacto" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Contacto</a>-->
       </div>
-      <div id="navlogo" class="w3-padding-24">
+      <div id="navlogo" class="w3-padding-16">
         <a href="https://www.idisba.es/es"><img src="{% static 'img/Logo_IdISBa_Propio_100px.png' %}" alt="Idisba logo"></a>
         <a href="https://www.hospitalsonespases.es/"><img src="{% static 'img/logo_SonEspases-1-e1632156413397.png' %}" alt="HUSE logo"></a>
       </div>
