@@ -26,6 +26,7 @@ xlrd = "*"
 openpyxl = "*"
 reportlab = "*"
 django-jazzmin = "*"
+django-multiselectfield = "*"
 
 [dev-packages]
 
