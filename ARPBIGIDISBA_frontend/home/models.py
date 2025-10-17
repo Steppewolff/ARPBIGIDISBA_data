@@ -5,7 +5,11 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = True` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+from random import choices
+
+import multiselectfield
 from django.db import models
+from multiselectfield import MultiSelectField
 
 class AcquiredResistome(models.Model):
     acquired_resistome_id = models.AutoField(primary_key=True)
@@ -374,6 +378,50 @@ class MutationalResistome(models.Model):
     class Meta:
         managed = True
         db_table = 'mutational_resistome'
+
+REFERENCE_STRAIN_OPTIONS=(
+    ('GCF_000006765.1', 'PAO1_GCF_000006765.1'),
+    ('GCF_000014625.1', 'PA14_GCF_000014625.1'),
+    ('-', 'N/A'),
+    ('OT', 'Other'),
+)
+
+FUNCTION_OPTIONS=(
+    ('AR', 'Antibiotic resistance'),
+    ('HYP', 'Hypermutation'),
+    ('-', 'N/A'),
+    ('OT', 'Other'),
+)
+
+SUBSET_OPTIONS=(
+    ('BASIC', 'Basic resistome'),
+    ('CR', 'Cefiderocol resistance'),
+    ('MLST', 'Locus for MLST identification'),
+    ('-', 'N/A'),
+    ('OT', 'Other'),
+)
+
+class InterestGenes(models.Model):
+    interest_genes_id = models.AutoField(primary_key=True)
+    locus = models.CharField(max_length=20, blank=True, null=True)
+    reference_strain = models.CharField(max_length=100, choices=REFERENCE_STRAIN_OPTIONS, blank=True, null=True)
+    start_position = models.IntegerField(blank=True, null=True)
+    end_position = models.IntegerField(blank=True, null=True)
+    official_name = models.CharField(max_length=20, blank=True, null=True)
+    synonym_name = models.CharField(max_length=20, blank=True, null=True)
+    pbp_name = models.CharField(max_length=20, blank=True, null=True)
+    function = models.CharField(max_length=255, choices=FUNCTION_OPTIONS, blank=True, null=True)
+    subset = multiselectfield.MultiSelectField(max_length=100, choices=SUBSET_OPTIONS, blank=True, null=True)
+    polymorphisms = models.JSONField(blank=True, null=True, db_comment="Known polymorphisms, in JSON format")
+    allele = models.CharField(max_length=100, blank=True, null=True, db_comment="Allele and (strain reference)")
+    species = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'genes_of_interest'
+        verbose_name = 'Gene of interest'
+        verbose_name_plural = 'Genes of interest'
+
 
 ATB_SUSCEPTIBILITY_METHOD_CHOICES = (
     ('DD', 'Disc diffusion (halo diameter in mm.)'),

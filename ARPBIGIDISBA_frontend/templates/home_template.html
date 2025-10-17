@@ -24,10 +24,10 @@
 
 
     <style>
-      body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif}
-      body {font-size:16px;}
-      .w3-half img{margin-bottom:-6px;margin-top:16px;opacity:0.8;cursor:pointer}
-      .w3-half img:hover{opacity:1}
+      body,h1,h2,h3,h4,h5 {font-family: "Poppins", sans-serif; }
+      body {font-size: 16px; }
+      .w3-half img{margin-bottom:-6px; margin-top:16px; opacity:0.8; cursor: pointer; }
+      .w3-half img:hover{opacity:1; }
     </style>
     {% block head %}
 
@@ -45,13 +45,16 @@
         <h3 class="w3-padding-16"><b>ARPBIGIDISBA<br>Database</b></h3>
       </div>
 
-      <div style="background-color: white; color: rgb(244, 67, 54); padding: 0.5em;">
+      <div class="user-box">
       {% if user.is_authenticated %}
-          <p>Wellcome, {{ user.username }}!</p>
-          <a href="{% url 'logout' %}"><button>Log out</button></a>
+          <p>Welcome, {{ user.username }}!</p>
+          <div class="button-row">
+            <a href="{% url 'logout' %}"><button class="btn btn-danger btn-sm">Log out</button></a>
+            <a href="/admin"><button class="btn btn-light text-danger border-danger btn-sm">Go to DB Admin</button></a>
+          </div>
       {% else %}
           <p>You must be logged in to navigate the platform</p>
-          <a href="{% url 'login' %}"><button>Log in</button></a>
+          <a href="{% url 'login' %}"><button class="btn btn-success btn-sm">Log in</button></a>
       {% endif %}
       </div>
 

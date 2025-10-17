@@ -1,8 +1,13 @@
 from django.contrib import admin
 from .custom_admin import custom_admin_site  # Importamos el Admin personalizado
 from advanced_filters.admin import AdminAdvancedFiltersMixin
+from django import forms
+try:
+    from multiselectfield import MultiSelectField as _MSF
+except Exception:
+    _MSF = None
 
-from .models import AcquiredResistome, Assembler, FilePath, FlowcellKit, Hospital, HypermutationGene, InvitroSerotype, \
+from .models import AcquiredResistome, Assembler, FilePath, FlowcellKit, Hospital, HypermutationGene, InterestGenes, InvitroSerotype, \
     LocusMlst, MetadataClinic, MetadataGeneral, Mic, MutationalResistome, PhenotypicData, SampleType, SequenceAnalysis, \
     SequencingInfo, SequencingLibrary, SequencingPlatform, SequencingTechnology, VirulenceGene
 
@@ -29,13 +34,7 @@ class ModeloRelacionadFilePath(admin.TabularInline):  # o StackedInline
 @admin.register(MetadataGeneral)
 class ModeloPrincipalAdmin(admin.ModelAdmin):
     inlines = [ModeloRelacionadoMetadataClinic, ModeloRelacionadPhenotypicData, ModeloRelacionadSequenceAnalysis, ModeloRelacionadMic, ModeloRelacionadFilePath]
-    # list_display = ('campo1', 'campo2', 'get_otro_campo')
 
-    # def get_otro_campo(self, obj):
-    #     # Si la relación es OneToOne o existe un único objeto relacionado,
-    #     # podemos acceder directamente
-    #     return obj.modelorelacionado.campo
-    # get_otro_campo.short_description = 'Campo Relacionado'
 
 class AcquiredResistomeAdmin(admin.ModelAdmin):
     list_display = [field.name for field in AcquiredResistome._meta.fields]  # Mostrar todos los campos
@@ -47,6 +46,66 @@ class AssemblerAdmin(admin.ModelAdmin):
 
 class FilePathAdmin(admin.ModelAdmin):
     list_display = [field.name for field in FilePath._meta.fields]  # Mostrar todos los campos
+
+# This dictionary maps subset codes to their descriptions in InterestGenesAdmin, it is necessary for displaying the subset field in a human-readable format due to it is a multiselect field, different from the others.
+SUBSET_MAP = {
+    'BASIC': 'Basic resistome',
+    'CR': 'Cefiderocol resistance',
+    'MLST': 'Locus for MLST identification',
+    '-': 'N/A',
+    'OT': 'Other',
+}
+
+@admin.register(InterestGenes)
+class InterestGenesAdmin(admin.ModelAdmin):
+    # Construimos dinámicamente list_display colocando display_subset en la posición deseada.
+    def _build_list_display(self):
+        # Todos los campos del modelo (nombre)
+        fields = [f.name for f in InterestGenes._meta.fields]
+        # Si el campo 'subset' existe en fields, lo quitamos (no queremos mostrar raw subset)
+        if 'subset' in fields:
+            fields.remove('subset')
+
+        # Determinar índices objetivo
+        func_idx = None
+        poly_idx = None
+        if 'function' in fields:
+            func_idx = fields.index('function') + 1  # queremos después de 'function'
+        if 'polymorphisms' in fields:
+            poly_idx = fields.index('polymorphisms')  # queremos antes de 'polymorphisms'
+
+        # Calcular lugar de inserción
+        if func_idx is not None and poly_idx is not None:
+            insert_at = min(func_idx, poly_idx)
+        elif func_idx is not None:
+            insert_at = func_idx
+        elif poly_idx is not None:
+            insert_at = poly_idx
+        else:
+            insert_at = len(fields)  # al final si ninguno existe
+
+        # Insertar la columna de display en la posición calculada
+        fields.insert(insert_at, 'display_subset')
+        return fields
+
+    list_display = property(_build_list_display)  # se evalúa al cargar la clase/admin
+
+    def display_subset(self, obj):
+        """Muestra las etiquetas legibles del multiselect en el listado."""
+        val = getattr(obj, 'subset', None)
+        if not val:
+            return '-'
+        if isinstance(val, (list, tuple)):
+            labels = [SUBSET_MAP.get(k, k) for k in val]
+            return ', '.join(labels) if labels else '-'
+        if isinstance(val, str):
+            keys = [k.strip() for k in val.split(',') if k.strip()]
+            labels = [SUBSET_MAP.get(k, k) for k in keys]
+            return ', '.join(labels) if labels else '-'
+        return str(val)
+
+    display_subset.short_description = 'Subset'
+    display_subset.admin_order_field = 'subset'
 
 
 class FlowcellKitAdmin(admin.ModelAdmin):
@@ -165,6 +224,7 @@ admin.site.register(FlowcellKit, FlowcellKitAdmin)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(HypermutationGene, HypermutationGeneAdmin)
 admin.site.register(InvitroSerotype, InvitroSerotypeAdmin)
+# admin.site.register(InterestGenes, InterestGenesAdmin)
 admin.site.register(LocusMlst, LocusMlstAdmin)
 admin.site.register(MetadataClinic, MetadataClinicAdmin)
 # admin.site.register(MetadataGeneral, MetadataGeneralAdmin)
