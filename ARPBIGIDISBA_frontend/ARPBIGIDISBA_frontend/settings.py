@@ -178,14 +178,12 @@ LOGOUT_REDIRECT_URL = '/'  # Página tras cerrar sesión
 LOGIN_NOT_REQUIRED_URLNAMES = [
     'login',
     'logout',
-    'home',
 ]
 
 # paths exactos para vistas públicas para middleware autentication
 LOGIN_NOT_REQUIRED_PATHS = [
     '/accounts/login/',
     '/accounts/logout/',
-    '/',
 ]
 
 # Internationalization

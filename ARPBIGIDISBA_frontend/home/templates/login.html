@@ -1,0 +1,46 @@
+{% extends "home_template.html" %}
+{% load static %}
+
+    {% block title %}
+    <!-- Top menu on small screens -->
+    <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+      <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+      <span>Base de datos ARPBIG</span>
+    </header>
+
+    {% endblock %}
+
+    {% block content %}
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+
+      <div style="margin-top: 3rem;">
+
+        <!-- Header -->
+        <div class="w3-container" style="margin-top:10px" id="showcase">
+          <h1 class="w3-jumbo w3-text-iscii-blue"><b>Session login</b></h1>
+          <p class="w3-xlarge w3-text-iscii-blue"><b>For ARPBIGIDISBA members access. Please, log in to access the platform</b></p>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">Login</button>
+        </form>
+
+
+        <p style="margin-top:3rem">Are you looking for our public website? Please, click the link below</p>
+        <a href="{% static 'img/Logo_arpbig_fondo_transparente_colores_blanco_letras_blanco.png' %}"><h3>Antibiotic Resistance and Pathogenicity of Bacterial Infections Research Group</h3></a>
+
+        <a href="https://arpbigidisba.com" target="_blank">
+          <img src="{% static 'img/Logo_arpbig_fondo_transparente_colores.png' %}" alt="Logo" width="500">
+        </a>
+
+      </div>
+
+
+    <!-- End page content -->
+    </div>
+
+    {% endblock %}

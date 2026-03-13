@@ -20,7 +20,7 @@ from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, Seq
 from .filters import MultiFilter
 
 class MyLoginView(LoginView):
-    pass
+    template_name = 'login.html'
 
 # Create your views here.
 # @login_required
