@@ -268,11 +268,15 @@ JAZZMIN_SETTINGS = {
     # Links to put along the top menu
     "topmenu_links": [
 
+
         # Url that gets reversed (Permissions can be added)
         {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "ARPBIG web", "url": "https://arpbigidisba.com", "new_window": True},
+        {"name": "PRO environment ARPBIG", "url": "https://db.arpbigidisba.com", "new_window": True},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "PRE environment ARPBIG", "url": "https://predb.arpbigidisba.com", "new_window": True},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
         {"name": "Modelos", "app": "home"},
