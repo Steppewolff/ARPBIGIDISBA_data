@@ -171,6 +171,7 @@ class FilePath(models.Model):
     fastq_files_names = models.JSONField(blank=True, null=True, verbose_name="FASTQ file/s name/s", db_comment="Name of the FASTQ files of the isolate, separated by comma if more than one")
     denovo_assembly_path = models.CharField(max_length=255, blank=True, null=True, verbose_name="De novo files path", db_comment="Path to the folder where de novo files of the isolate are stored")
     denovo_assembly_ena_url = models.CharField(max_length=255, blank=True, null=True, verbose_name="ENA de novo file url", db_comment="Path to the endpoint in ENA database where assembly file of the isolate is stored")
+    denovo_fastq_ena_url = models.JSONField(blank=True, null=True, verbose_name="ENA FASTQ url", db_comment="JSON with paths to endpoints in ENA database where FASTQ files of the isolate are stored")
     assembler = models.ForeignKey(Assembler, models.DO_NOTHING, db_column='assembler_id', blank=True, null=True, db_comment="Ensamblador utilizado")
 
     class Meta:
