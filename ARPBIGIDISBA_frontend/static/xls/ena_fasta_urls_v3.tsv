@@ -1,0 +1,1492 @@
+assembly_name	ena_accession	fasta_url	fastq_url
+01-001			
+01-002			
+01-008			
+01-009			
+03-002			
+03-005			
+04-008			
+04-017			
+04-024			
+04-025			
+06-001			
+06-014			
+06-025			
+06-026			
+06-027			
+06-028			
+06-035			
+06-036			
+06-042			
+07-001			
+07-002			
+07-004			
+07-016			
+07-017			
+09-001			
+09-007			
+09-011			
+09-012			
+09-013			
+10-001			
+10-009			
+10-017			
+10-019			
+10-021			
+10-023			
+12-001			
+12-003			
+12-005			
+12-012			
+12-014			
+12-017			
+12-018			
+15-001			
+15-002			
+AND01-001	GCA_900683395	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900683395?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3417145/ERR3417145_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3417145/ERR3417145_2.fastq.gz""]"
+AND01-004			
+AND01-005			
+AND01-006			
+AND01-008			
+AND01-009			
+AND01-010			
+AND01-011			
+AND01-012			
+AND01-013			
+AND01-015			
+AND01-016	GCA_900706705	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900706705?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418499/ERR3418499_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418499/ERR3418499_2.fastq.gz""]"
+AND01-019			
+AND01-020	GCA_900706935	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900706935?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418500/ERR3418500_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418500/ERR3418500_2.fastq.gz""]"
+AND01-021			
+AND01-022			
+AND01-023			
+AND01-024			
+AND01-027			
+AND01-028			
+AND01-029			
+AND01-030	GCA_900707075	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707075?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3417346/ERR3417346_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3417346/ERR3417346_2.fastq.gz""]"
+AND01-031			
+AND01-032			
+AND01-034			
+AND01-035			
+AND01-036			
+AND01-037			
+AND01-038	GCA_900707065	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707065?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418501/ERR3418501_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418501/ERR3418501_2.fastq.gz""]"
+AND01-040	GCA_900707045	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707045?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418634/ERR3418634_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418634/ERR3418634_2.fastq.gz""]"
+AND02-001	GCA_900707085	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707085?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418502/ERR3418502_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418502/ERR3418502_2.fastq.gz""]"
+AND02-002			
+AND02-003			
+AND02-006			
+AND02-007			
+AND02-008			
+AND02-009			
+AND02-013			
+AND02-014			
+AND02-015			
+AND02-016	GCA_900707095	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707095?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418503/ERR3418503_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418503/ERR3418503_2.fastq.gz""]"
+AND02-018			
+AND02-019			
+AND02-021			
+AND02-023	GCA_900707115	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707115?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3417384/ERR3417384_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3417384/ERR3417384_2.fastq.gz""]"
+AND02-024			
+AND02-025			
+AND02-027			
+AND02-028			
+AND02-029			
+AND02-031			
+AND02-032			
+AND02-033			
+AND02-034			
+AND02-035			
+AND02-036			
+AND02-037A			
+AND02-039			
+AND02-040			
+AND02-041			
+AND03-001			
+AND03-003			
+AND03-009			
+AND03-012			
+AND03-014			
+AND03-015			
+AND03-016			
+AND03-017			
+AND03-018			
+AND03-024			
+AND03-025			
+AND03-027			
+AND03-028			
+AND03-029			
+AND03-031			
+AND03-033			
+AND03-035			
+AND03-036			
+AND03-037			
+AND03-039			
+AND03-040			
+AND03-041	GCA_900707105	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707105?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418504/ERR3418504_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418504/ERR3418504_2.fastq.gz""]"
+AND03-042			
+AND03-043			
+AND03-044			
+AND03-045			
+AND03-046			
+AND03-048			
+AND03-049			
+AND03-050	GCA_900707135	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707135?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3417506/ERR3417506_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3417506/ERR3417506_2.fastq.gz""]"
+AND04-001			
+AND04-002			
+AND04-003	GCA_900707125	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707125?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418505/ERR3418505_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418505/ERR3418505_2.fastq.gz""]"
+AND04-004A			
+AND04-005			
+AND04-007			
+AND04-008			
+AND04-009			
+AND04-010			
+AND04-011			
+AND04-015			
+AND04-016	GCA_900707155	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707155?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418506/ERR3418506_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418506/ERR3418506_2.fastq.gz""]"
+AND04-017			
+AND04-018			
+AND04-020			
+AND04-024			
+AND04-027			
+AND04-028			
+AND04-029			
+AND04-030			
+AND04-032			
+AND04-033			
+AND04-034			
+AND04-035			
+AND04-037	GCA_900707145	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707145?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418507/ERR3418507_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418507/ERR3418507_2.fastq.gz""]"
+AND04-038			
+AND04-039			
+AND04-043			
+AND04-044			
+AND04-049			
+AND05-004			
+AND05-005			
+AND05-008			
+AND05-009			
+AND05-012			
+AND05-013			
+AND05-016			
+AND05-018			
+AND05-022			
+AND05-023			
+AND05-025			
+AND05-033			
+AND05-038			
+AND05-039			
+AND05-041			
+AND05-045			
+AND05-051			
+AND06-001			
+AND06-002			
+AND06-003			
+AND06-006			
+AND06-007			
+AND06-008			
+AND06-010			
+AND06-013			
+AND06-014			
+AND06-015			
+AND06-016			
+AND06-017			
+AND06-018			
+AND06-019			
+AND06-020			
+AND06-021			
+AND06-022			
+AND06-023			
+AND06-024			
+AND06-025			
+AND06-026			
+AND06-027	GCA_900707185	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707185?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418508/ERR3418508_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418508/ERR3418508_2.fastq.gz""]"
+AND06-028			
+AND06-029			
+AND06-030			
+AND06-031			
+AND06-032			
+AND06-033	GCA_900707165	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707165?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418555/ERR3418555_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418555/ERR3418555_2.fastq.gz""]"
+AND06-034	GCA_900707175	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707175?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3417507/ERR3417507_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3417507/ERR3417507_2.fastq.gz""]"
+AND06-035			
+AND07-001			
+AND07-002			
+AND07-003			
+AND07-005			
+AND07-006			
+AND07-007	GCA_900707195	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707195?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418556/ERR3418556_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418556/ERR3418556_2.fastq.gz""]"
+AND07-008			
+AND07-010			
+AND07-011			
+AND07-012			
+AND07-015			
+AND07-016			
+AND07-017	GCA_900707205	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707205?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418635/ERR3418635_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418635/ERR3418635_2.fastq.gz""]"
+AND07-019			
+AND07-021			
+AND07-022			
+AND07-023			
+AND07-024			
+AND07-027	GCA_900707225	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707225?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418557/ERR3418557_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418557/ERR3418557_2.fastq.gz""]"
+AND07-028			
+AND07-029			
+AND07-031			
+AND07-032			
+AND07-034			
+AND07-036			
+AND07-038			
+AND07-039			
+AND07-040			
+AND07-043			
+AND07-044			
+ARA01-001			
+ARA01-002			
+ARA01-003			
+ARA01-006			
+ARA01-009			
+ARA01-012			
+ARA01-014			
+ARA01-015	GCA_900707335	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707335?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3417508/ERR3417508_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3417508/ERR3417508_2.fastq.gz""]"
+ARA01-018			
+ARA01-020			
+ARA01-021			
+ARA01-022			
+ARA01-023			
+ARA01-024			
+ARA01-027			
+ARA01-028			
+ARA01-030			
+ARA01-031			
+ARA01-033			
+ARA01-034			
+ARA01-036			
+ARA01-037	GCA_900707215	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707215?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418558/ERR3418558_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418558/ERR3418558_2.fastq.gz""]"
+ARA01-038			
+ARA01-040			
+ARA01-041			
+ARA01-044			
+ARA01-045	GCA_900707235	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707235?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418559/ERR3418559_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418559/ERR3418559_2.fastq.gz""]"
+ARA01-046			
+ARA01-049	GCA_900707345	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707345?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418572/ERR3418572_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418572/ERR3418572_2.fastq.gz""]"
+ARA01-050			
+ARA02-001			
+ARA02-002			
+ARA02-005			
+ARA02-006			
+ARA02-007			
+ARA02-008			
+ARA02-009	GCA_900707245	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707245?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3417509/ERR3417509_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3417509/ERR3417509_2.fastq.gz""]"
+ARA02-010			
+ARA02-011			
+ARA02-013			
+ARA02-014			
+ARA02-015	GCA_900707255	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707255?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418573/ERR3418573_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418573/ERR3418573_2.fastq.gz""]"
+ARA02-016			
+ARA02-017	GCA_900707375	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707375?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3417510/ERR3417510_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3417510/ERR3417510_2.fastq.gz""]"
+ARA02-018			
+ARA02-019			
+ARA02-021			
+ARA02-022			
+ARA02-023			
+ARA02-024			
+ARA02-029	GCA_900707275	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707275?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418574/ERR3418574_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418574/ERR3418574_2.fastq.gz""]"
+ARA02-033			
+ARA02-034			
+ARA02-035			
+ARA02-036			
+ARA02-037			
+ARA02-038			
+ARA02-039			
+ARA02-040	GCA_900707265	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707265?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418575/ERR3418575_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418575/ERR3418575_2.fastq.gz""]"
+ARA02-041			
+ARA03-001			
+ARA03-002			
+ARA03-003			
+ARA03-004			
+ARA03-005			
+ARA03-006			
+ARA03-007			
+ARA03-008	GCA_900707305	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707305?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418576/ERR3418576_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418576/ERR3418576_2.fastq.gz""]"
+ARA03-009			
+ARA03-010			
+ARA03-011			
+ARA03-012			
+ARA03-013			
+ARA03-014			
+ARA03-015			
+ARA03-016			
+ARA03-017			
+AST01-001			
+AST01-003			
+AST01-005			
+AST01-006			
+AST01-007	GCA_900707285	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707285?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3417511/ERR3417511_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3417511/ERR3417511_2.fastq.gz""]"
+AST01-008			
+AST01-009			
+AST01-010			
+AST01-011			
+AST01-013			
+AST01-014			
+AST01-015			
+AST01-016			
+AST01-018			
+AST01-019			
+AST01-023			
+AST01-024			
+AST01-025	GCA_900707315	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707315?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418577/ERR3418577_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418577/ERR3418577_2.fastq.gz""]"
+AST01-026	GCA_900707295	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707295?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418578/ERR3418578_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418578/ERR3418578_2.fastq.gz""]"
+AST01-029			
+AST01-033			
+AST01-034			
+AST01-036			
+AST01-037			
+AST01-038			
+AST01-039			
+AST01-040			
+AST01-042	GCA_900707415	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707415?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418579/ERR3418579_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418579/ERR3418579_2.fastq.gz""]"
+AST01-044			
+AST01-045			
+BAL01-001			
+BAL01-003	GCA_900707325	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707325?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3417512/ERR3417512_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3417512/ERR3417512_2.fastq.gz""]"
+BAL01-004			
+BAL01-005			
+BAL01-006			
+BAL01-007			
+BAL01-012			
+BAL01-013	GCA_900707365	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707365?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418580/ERR3418580_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418580/ERR3418580_2.fastq.gz""]"
+BAL01-014			
+BAL01-017			
+BAL01-019			
+BAL01-020			
+BAL01-025			
+BAL01-029			
+BAL01-031			
+BAL01-032			
+BAL01-033			
+BAL01-034	GCA_900707355	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707355?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418582/ERR3418582_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418582/ERR3418582_2.fastq.gz""]"
+BAL01-036			
+BAL01-043			
+BAL01-044			
+BAL01-048			
+BAL01-049			
+BAL01-050			
+BAL01-051			
+BAL01-052			
+BAL01-053			
+BAL02-001			
+BAL02-005			
+BAL02-006			
+BAL02-009			
+BAL02-010			
+BAL02-012			
+BAL02-013	GCA_900707385	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707385?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418636/ERR3418636_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418636/ERR3418636_2.fastq.gz""]"
+BAL02-014			
+BAL02-015	GCA_900707395	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707395?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418583/ERR3418583_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418583/ERR3418583_2.fastq.gz""]"
+BAL02-017			
+BAL02-019			
+BAL02-020			
+BAL02-022			
+BAL02-023	GCA_900707405	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707405?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418637/ERR3418637_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418637/ERR3418637_2.fastq.gz""]"
+BAL02-024			
+BAL02-025			
+BAL02-027			
+BAL02-028			
+BAL02-029			
+BAL02-030			
+BAL02-031			
+BAL02-032			
+BAL02-033			
+BAL02-034			
+BAL02-036			
+BAL02-037			
+BAL02-038			
+BAL02-040			
+BAL02-041			
+BAL02-044			
+BAL03-001			
+BAL03-002	GCA_900707535	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707535?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418584/ERR3418584_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418584/ERR3418584_2.fastq.gz""]"
+BAL03-003	GCA_900707545	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707545?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418588/ERR3418588_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418588/ERR3418588_2.fastq.gz""]"
+BAL03-006			
+BAL03-007			
+BAL03-009			
+BAL03-010			
+BAL03-012			
+BAL03-013			
+BAL03-014			
+BAL03-015			
+BAL03-020			
+BAL03-021			
+BAL03-022			
+BAL03-023			
+BAL03-026			
+BAL03-028	GCA_900707435	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707435?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418638/ERR3418638_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418638/ERR3418638_2.fastq.gz""]"
+BAL03-029			
+BAL03-031			
+BAL03-032			
+BAL03-036			
+BAL03-037			
+BAL03-039			
+BAL03-040			
+BAL03-041			
+BAL03-042			
+BAL03-043			
+BAL03-047			
+BAL03-048			
+BAL03-050			
+BAL04-001			
+BAL04-002			
+BAL04-003	GCA_900707525	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707525?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418585/ERR3418585_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418585/ERR3418585_2.fastq.gz""]"
+BAL04-004			
+BAL04-005			
+BAL04-006			
+BAL04-007			
+BAL04-008			
+BAL04-009			
+BAL04-010			
+BAL04-011			
+BAL04-012			
+BAL04-013			
+BAL04-015	GCA_900707555	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707555?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418586/ERR3418586_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418586/ERR3418586_2.fastq.gz""]"
+BAL04-016			
+BAL04-017			
+BAL04-018			
+BAL04-019			
+BAL04-020			
+BAL04-021			
+BAL04-022			
+BAL04-023			
+BAL04-024			
+BAL04-025			
+BAL04-026			
+BAL04-027	GCA_900707675	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707675?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418587/ERR3418587_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418587/ERR3418587_2.fastq.gz""]"
+BAL04-028			
+BAL04-029			
+BAL04-030			
+BAL04-031			
+CAN01-001			
+CAN01-002			
+CAN01-003	GCA_900707575	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707575?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418589/ERR3418589_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418589/ERR3418589_2.fastq.gz""]"
+CAN01-004	GCA_900707445	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707445?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418590/ERR3418590_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418590/ERR3418590_2.fastq.gz""]"
+CAN01-005			
+CAN01-006			
+CAN01-007			
+CAN01-008			
+CAN01-009			
+CAN01-010			
+CAN01-013			
+CAN01-014			
+CAN01-015			
+CAN01-016			
+CAN01-017	GCA_900707475	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707475?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418591/ERR3418591_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418591/ERR3418591_2.fastq.gz""]"
+CAN01-021			
+CAN01-025	GCA_900707615	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707615?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418592/ERR3418592_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418592/ERR3418592_2.fastq.gz""]"
+CAN01-026	GCA_900707465	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707465?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418639/ERR3418639_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418639/ERR3418639_2.fastq.gz""]"
+CAN01-027			
+CAN01-028	GCA_900707455	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707455?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418593/ERR3418593_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418593/ERR3418593_2.fastq.gz""]"
+CAN01-029			
+CAN01-030			
+CAN01-031			
+CAN01-032			
+CAN01-033			
+CAN01-034			
+CAN01-037	GCA_900707485	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707485?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418594/ERR3418594_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418594/ERR3418594_2.fastq.gz""]"
+CAN01-038	GCA_900707495	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707495?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418595/ERR3418595_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418595/ERR3418595_2.fastq.gz""]"
+CAN01-039	GCA_900707505	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707505?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418596/ERR3418596_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418596/ERR3418596_2.fastq.gz""]"
+CAN01-040			
+CAT01-001	GCA_900707515	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707515?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418493/ERR3418493_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418493/ERR3418493_2.fastq.gz""]"
+CAT01-003			
+CAT01-004			
+CAT01-005			
+CAT01-007			
+CAT01-008			
+CAT01-009			
+CAT01-010			
+CAT01-011			
+CAT01-013			
+CAT01-014			
+CAT01-015	GCA_900707685	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707685?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418597/ERR3418597_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418597/ERR3418597_2.fastq.gz""]"
+CAT01-017			
+CAT01-019			
+CAT01-021			
+CAT01-022			
+CAT01-023			
+CAT01-025			
+CAT01-026			
+CAT01-027			
+CAT01-029			
+CAT01-030			
+CAT01-031			
+CAT01-032			
+CAT01-033			
+CAT01-034			
+CAT01-035			
+CAT01-036			
+CAT01-037			
+CAT01-038			
+CAT02-001			
+CAT02-002			
+CAT02-003			
+CAT02-004			
+CAT02-005			
+CAT02-006			
+CAT02-007	GCA_900707565	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707565?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418598/ERR3418598_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418598/ERR3418598_2.fastq.gz""]"
+CAT02-008			
+CAT02-009			
+CAT02-010			
+CAT02-011			
+CAT02-012	GCA_900707595	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707595?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418640/ERR3418640_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418640/ERR3418640_2.fastq.gz""]"
+CAT02-013			
+CAT02-014			
+CAT02-015	GCA_900707585	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707585?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418599/ERR3418599_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418599/ERR3418599_2.fastq.gz""]"
+CAT02-016			
+CAT02-017			
+CAT02-018	GCA_900707605	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707605?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418600/ERR3418600_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418600/ERR3418600_2.fastq.gz""]"
+CAT02-019			
+CAT02-020	GCA_900707625	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707625?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418601/ERR3418601_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418601/ERR3418601_2.fastq.gz""]"
+CAT02-021			
+CAT02-022			
+CAT02-023			
+CAT02-024			
+CAT02-025			
+CAT02-026			
+CAT02-027			
+CAT02-028			
+CAT02-029			
+CAT02-030			
+CAT03-001			
+CAT03-002			
+CAT03-004	GCA_900707635	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707635?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418610/ERR3418610_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418610/ERR3418610_2.fastq.gz""]"
+CAT03-005			
+CAT03-006			
+CAT03-007			
+CAT03-008			
+CAT03-009			
+CAT03-010			
+CAT03-011			
+CAT03-012			
+CAT03-013			
+CAT03-014			
+CAT03-015			
+CAT03-016			
+CAT03-017			
+CAT03-018			
+CAT03-019			
+CAT03-020			
+CAT03-021			
+CAT03-022			
+CAT03-023			
+CAT03-024			
+CAT03-025			
+CAT03-026			
+CAT03-027			
+CAT03-028			
+CAT03-029			
+CAT03-031			
+CAT04-001	GCA_900707645	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707645?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418611/ERR3418611_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418611/ERR3418611_2.fastq.gz""]"
+CAT04-002			
+CAT04-003			
+CAT04-004			
+CAT04-005			
+CAT04-007			
+CAT04-008			
+CAT04-009			
+CAT04-010			
+CAT04-011			
+CAT04-012			
+CAT04-013			
+CAT04-014			
+CAT04-015			
+CAT04-016	GCA_900707665	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707665?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418612/ERR3418612_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418612/ERR3418612_2.fastq.gz""]"
+CAT04-017			
+CAT04-018			
+CAT04-019			
+CAT04-020			
+CAT04-021			
+CAT04-022			
+CAT04-023			
+CAT04-024			
+CAT04-025			
+CAT04-026			
+CAT04-028			
+CAT04-029			
+CAT04-030			
+CAT04-031			
+CAT04-032	GCA_900707655	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707655?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418613/ERR3418613_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418613/ERR3418613_2.fastq.gz""]"
+CAT05-001	GCA_900707815	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707815?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418615/ERR3418615_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418615/ERR3418615_2.fastq.gz""]"
+CAT05-002			
+CAT05-003			
+CAT05-004	GCA_900707795	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707795?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418616/ERR3418616_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418616/ERR3418616_2.fastq.gz""]"
+CAT05-005	GCA_900707715	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707715?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418642/ERR3418642_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418642/ERR3418642_2.fastq.gz""]"
+CAT05-006			
+CAT05-007			
+CAT05-008	GCA_900707695	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707695?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418643/ERR3418643_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418643/ERR3418643_2.fastq.gz""]"
+CAT05-009			
+CAT05-010			
+CAT05-011			
+CAT05-012			
+CAT05-013			
+CAT05-014			
+CAT05-015			
+CAT05-016			
+CAT05-017			
+CAT05-018			
+CAT05-019	GCA_900707705	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707705?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418644/ERR3418644_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418644/ERR3418644_2.fastq.gz""]"
+CAT05-020			
+CAT05-021			
+CAT05-022			
+CAT05-023			
+CAT05-024			
+CAT05-025			
+CAT05-026			
+CAT05-027			
+CAT05-028			
+CAT05-030			
+CAT05-031			
+CAT06-001			
+CAT06-004			
+CAT06-005			
+CAT06-008	GCA_900707725	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707725?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418617/ERR3418617_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418617/ERR3418617_2.fastq.gz""]"
+CAT06-009			
+CAT06-010			
+CAT06-011			
+CAT06-012			
+CAT06-013			
+CAT06-014			
+CAT06-015			
+CAT06-016	GCA_900707755	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707755?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418618/ERR3418618_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418618/ERR3418618_2.fastq.gz""]"
+CAT06-017			
+CAT06-018			
+CAT06-019	GCA_900707735	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707735?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418619/ERR3418619_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418619/ERR3418619_2.fastq.gz""]"
+CAT06-020			
+CAT06-021	GCA_900707765	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707765?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418645/ERR3418645_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418645/ERR3418645_2.fastq.gz""]"
+CAT06-022	GCA_900707745	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707745?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418646/ERR3418646_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418646/ERR3418646_2.fastq.gz""]"
+CAT06-023	GCA_900707785	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707785?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418852/ERR3418852_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418852/ERR3418852_2.fastq.gz""]"
+CAT06-024			
+CAT06-025			
+CAT06-026			
+CAT06-027			
+CAT06-028			
+CAT06-029			
+CAT06-030			
+CAT06-031			
+CAT06-032			
+CAT06-033			
+CAT07-001			
+CAT07-002			
+CAT07-003			
+CAT07-004			
+CAT07-005			
+CAT07-006			
+CAT07-007			
+CAT07-008			
+CAT07-010			
+CAT07-011			
+CAT07-014			
+CAT07-015			
+CAT07-017			
+CAT07-019			
+CAT07-020			
+CAT07-023			
+CAT07-025			
+CAT07-026			
+CAT07-027			
+CAT07-028			
+CAT08-013			
+CAT08-014			
+CAT08-015			
+CAT08-016			
+CAT08-017			
+CAT08-018			
+CAT08-019			
+CAT08-020	GCA_900707775	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707775?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418620/ERR3418620_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418620/ERR3418620_2.fastq.gz""]"
+CAT08-021			
+CAT08-022			
+CAT08-023			
+CAT08-024			
+CAT08-025	GCA_900707805	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707805?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418621/ERR3418621_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418621/ERR3418621_2.fastq.gz""]"
+CAT08-026	GCA_900707865	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707865?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418622/ERR3418622_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418622/ERR3418622_2.fastq.gz""]"
+CAT08-027			
+CAT08-028			
+CAT08-029			
+CAT08-030			
+CAT08-031			
+CAT08-032			
+CAT08-033			
+CAT08-034	GCA_900707845	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707845?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418623/ERR3418623_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418623/ERR3418623_2.fastq.gz""]"
+CAT08-035			
+CAT08-036			
+CAT08-037			
+CAT08-038			
+CAT08-039			
+CAT08-040			
+CAT08-041			
+CAT08-042			
+CAT09-001	GCA_900707835	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707835?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418624/ERR3418624_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418624/ERR3418624_2.fastq.gz""]"
+CAT09-002			
+CAT09-003			
+CAT09-004			
+CAT09-005			
+CAT09-006			
+CAT09-007			
+CAT09-008			
+CAT09-009	GCA_900707825	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707825?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418625/ERR3418625_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418625/ERR3418625_2.fastq.gz""]"
+CAT09-010			
+CAT09-011			
+CAT09-012			
+CAT09-013			
+CAT09-014			
+CAT09-015			
+CAT09-017			
+CAT09-018	GCA_900707855	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707855?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418626/ERR3418626_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418626/ERR3418626_2.fastq.gz""]"
+CAT09-019			
+CAT09-020			
+CAT09-021			
+CAT09-022			
+CAT09-023			
+CAT09-024			
+CAT09-025			
+CAT09-026	GCA_900707875	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707875?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418853/ERR3418853_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418853/ERR3418853_2.fastq.gz""]"
+CAT09-027	GCA_900707885	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707885?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418627/ERR3418627_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418627/ERR3418627_2.fastq.gz""]"
+CAT09-028	GCA_900707895	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707895?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418854/ERR3418854_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418854/ERR3418854_2.fastq.gz""]"
+CAT09-029			
+CAT09-030			
+CAT09-031			
+CLE01-002			
+CLE01-003			
+CLE01-006			
+CLE01-007			
+CLE01-008			
+CLE01-009			
+CLE02-001			
+CLE02-002	GCA_900707905	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707905?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3417513/ERR3417513_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3417513/ERR3417513_2.fastq.gz""]"
+CLE02-004			
+CLE02-006	GCA_900707935	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707935?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418628/ERR3418628_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418628/ERR3418628_2.fastq.gz""]"
+CLE02-008			
+CLE02-010			
+CLE02-011			
+CLE02-015			
+CLE02-016	GCA_900707945	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707945?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418629/ERR3418629_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418629/ERR3418629_2.fastq.gz""]"
+CLE02-016A			
+CLE02-017			
+CLE02-020			
+CLE02-021			
+CLE02-022			
+CLE02-026			
+CLE02-027			
+CLE02-030			
+CLE02-032	GCA_900707925	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707925?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418630/ERR3418630_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418630/ERR3418630_2.fastq.gz""]"
+CLE02-036			
+CLE02-038			
+CLE02-039			
+CLE02-042			
+CLE02-043			
+CLE02-045			
+CLE02-047			
+CLE02-049			
+CLE02-051			
+CLE02-052			
+CLE02-053			
+CLE02-054			
+CLE02-055	GCA_900707955	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707955?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418496/ERR3418496_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418496/ERR3418496_2.fastq.gz""]"
+CLE03-001			
+CLE03-003			
+CLE03-004			
+CLE03-005			
+CLE03-006			
+CLE03-007			
+CLE03-008			
+CLE03-009			
+CLE03-010			
+CLE03-012			
+CLE03-013			
+CLE03-014			
+CLE03-015			
+CLE03-016			
+CLE03-018			
+CLE03-019			
+CLE03-021			
+CLE03-022	GCA_900707915	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707915?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418631/ERR3418631_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418631/ERR3418631_2.fastq.gz""]"
+CLE03-023	GCA_900707965	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707965?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418457/ERR3418457_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418457/ERR3418457_2.fastq.gz""]"
+CLE03-025			
+CLE03-026			
+CLE03-027			
+CLE03-029			
+CLE03-030			
+CLM01-001			
+CLM01-002			
+CLM01-003			
+CLM01-004			
+CLM01-006			
+CLM01-007			
+CLM01-008			
+CLM01-009			
+CLM01-011			
+CLM01-012			
+CLM01-014			
+CLM01-015			
+CLM01-018			
+CLM01-019			
+CLM01-020			
+CLM01-021			
+CLM01-022			
+CLM01-023			
+CLM01-024			
+CLM01-025			
+CLM01-030			
+CLM01-031			
+CLM01-032			
+CLM01-033			
+CLM01-034			
+CLM01-036			
+CLM01-037			
+CLM01-038			
+CLM01-039			
+CLM01-040			
+CLM02-004			
+CLM02-005	GCA_900707985	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707985?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3417527/ERR3417527_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3417527/ERR3417527_2.fastq.gz""]"
+CLM02-013			
+CLM02-014			
+CLM02-016			
+CLM02-017	GCA_900707975	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707975?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3417898/ERR3417898_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3417898/ERR3417898_2.fastq.gz""]"
+CLM02-018			
+CLM02-019			
+CLM02-020			
+CLM02-021			
+CLM02-022			
+CLM02-023			
+CLM02-025			
+CLM02-026			
+CLM02-027			
+CLM02-028			
+CLM02-031			
+CLM02-032			
+CLM02-033			
+CLM02-034			
+CLM02-036			
+CLM02-037			
+CLM02-038			
+CLM02-039			
+CLM02-040			
+CLM02-041			
+CLM02-043	GCA_900708015	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708015?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418019/ERR3418019_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418019/ERR3418019_2.fastq.gz""]"
+CLM02-045			
+CLM02-046	GCA_900708025	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708025?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418020/ERR3418020_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418020/ERR3418020_2.fastq.gz""]"
+CLM02-048			
+CVA01-001			
+CVA01-002	GCA_900707995	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900707995?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418021/ERR3418021_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418021/ERR3418021_2.fastq.gz""]"
+CVA01-005			
+CVA01-006	GCA_900708005	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708005?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418494/ERR3418494_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418494/ERR3418494_2.fastq.gz""]"
+CVA01-007			
+CVA01-009			
+CVA01-010			
+CVA01-011			
+CVA01-015			
+CVA01-016			
+CVA01-017			
+CVA01-018			
+CVA01-020			
+CVA01-024			
+CVA01-027			
+CVA01-029	GCA_900708035	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708035?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418022/ERR3418022_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418022/ERR3418022_2.fastq.gz""]"
+CVA01-032			
+CVA01-033	GCA_900708065	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708065?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418023/ERR3418023_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418023/ERR3418023_2.fastq.gz""]"
+CVA01-034			
+CVA01-035	GCA_900708055	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708055?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418632/ERR3418632_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418632/ERR3418632_2.fastq.gz""]"
+CVA01-036			
+CVA01-038			
+CVA01-040			
+CVA01-045			
+CVA01-046			
+CVA01-047			
+CVA01-049			
+CVA01-050			
+CVA01-051			
+CVA01-052			
+CVA02-001			
+CVA02-002			
+CVA02-003			
+CVA02-005	GCA_900708045	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708045?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418024/ERR3418024_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418024/ERR3418024_2.fastq.gz""]"
+CVA02-008			
+CVA02-009			
+CVA02-010			
+CVA02-011			
+CVA02-012			
+CVA02-013			
+CVA02-014			
+CVA02-015			
+CVA02-017	GCA_900708085	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708085?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418855/ERR3418855_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418855/ERR3418855_2.fastq.gz""]"
+CVA02-018	GCA_900708075	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708075?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418025/ERR3418025_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418025/ERR3418025_2.fastq.gz""]"
+CVA02-019	GCA_900708095	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708095?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418026/ERR3418026_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418026/ERR3418026_2.fastq.gz""]"
+CVA02-020	GCA_900708105	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708105?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418633/ERR3418633_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418633/ERR3418633_2.fastq.gz""]"
+CVA02-021			
+CVA02-022			
+CVA02-023	GCA_900708115	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708115?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418027/ERR3418027_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418027/ERR3418027_2.fastq.gz""]"
+CVA02-024			
+CVA02-027			
+CVA02-028			
+CVA02-029			
+CVA02-031			
+CVA02-033			
+CVA02-034			
+CVA02-035			
+CVA02-036			
+CVA02-037			
+CVA02-038			
+CVA03-001			
+CVA03-002			
+CVA03-004	GCA_900708155	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708155?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418028/ERR3418028_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418028/ERR3418028_2.fastq.gz""]"
+CVA03-006			
+CVA03-007			
+CVA03-008			
+CVA03-009			
+CVA03-011			
+CVA03-012			
+CVA03-013			
+CVA03-018			
+CVA03-019	GCA_900708145	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708145?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418029/ERR3418029_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418029/ERR3418029_2.fastq.gz""]"
+CVA03-020			
+CVA03-021			
+CVA03-022			
+CVA03-023			
+CVA03-024	GCA_900708135	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708135?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418030/ERR3418030_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418030/ERR3418030_2.fastq.gz""]"
+CVA03-025	GCA_900708125	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708125?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418435/ERR3418435_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418435/ERR3418435_2.fastq.gz""]"
+CVA03-027			
+CVA03-029			
+CVA03-031			
+CVA03-033	GCA_900708165	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708165?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418458/ERR3418458_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418458/ERR3418458_2.fastq.gz""]"
+CVA03-034			
+CVA03-035			
+CVA03-036			
+CVA03-038			
+CVA03-039			
+CVA03-041			
+CVA03-043			
+CVA03-044			
+EXT01-001			
+EXT01-003			
+EXT01-004			
+EXT01-005			
+EXT01-006			
+EXT01-008	GCA_900708195	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708195?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418436/ERR3418436_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418436/ERR3418436_2.fastq.gz""]"
+EXT01-009			
+EXT01-010	GCA_900708175	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708175?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418892/ERR3418892_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418892/ERR3418892_2.fastq.gz""]"
+EXT01-011			
+EXT01-014			
+EXT01-016			
+EXT01-017			
+EXT01-019			
+EXT01-020			
+EXT01-022			
+EXT01-023			
+EXT01-024	GCA_900708185	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708185?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418437/ERR3418437_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418437/ERR3418437_2.fastq.gz""]"
+EXT01-026	GCA_900708215	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708215?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418438/ERR3418438_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418438/ERR3418438_2.fastq.gz""]"
+EXT01-027			
+EXT01-031			
+EXT01-034			
+EXT01-035			
+EXT01-036			
+EXT01-038			
+EXT01-039			
+EXT01-040			
+EXT01-041			
+EXT01-042			
+EXT01-043			
+EXT01-044			
+GAL01-001			
+GAL01-002			
+GAL01-003			
+GAL01-008			
+GAL01-012			
+GAL01-013			
+GAL01-017			
+GAL01-020			
+GAL01-021			
+GAL01-022			
+GAL01-029	GCA_900708205	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708205?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418439/ERR3418439_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418439/ERR3418439_2.fastq.gz""]"
+GAL01-030	GCA_900708245	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708245?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418440/ERR3418440_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418440/ERR3418440_2.fastq.gz""]"
+GAL01-031			
+GAL01-032			
+GAL01-041			
+GAL01-043			
+GAL01-045			
+GAL02-001			
+GAL02-002			
+GAL02-004			
+GAL02-006			
+GAL02-008			
+GAL02-009			
+GAL02-010			
+GAL02-011	GCA_900708235	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708235?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418441/ERR3418441_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418441/ERR3418441_2.fastq.gz""]"
+GAL02-012			
+GAL02-014			
+GAL02-015			
+GAL02-017			
+GAL02-018			
+GAL02-019	GCA_900708265	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708265?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418442/ERR3418442_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418442/ERR3418442_2.fastq.gz""]"
+GAL02-022	GCA_900708225	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708225?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418443/ERR3418443_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418443/ERR3418443_2.fastq.gz""]"
+GAL02-024			
+GAL02-026			
+GAL02-027			
+GAL02-032			
+GAL02-036			
+GAL02-037			
+GAL02-039			
+GAL02-040			
+GAL02-044			
+GAL02-045			
+GAL02-046			
+GAL02-048			
+GAL02-049			
+GAL02-054			
+GAL02-055			
+GAL03-001			
+GAL03-002			
+GAL03-003			
+GAL03-004			
+GAL03-005			
+GAL03-006			
+GAL03-007			
+GAL03-008			
+GAL03-009			
+GAL03-010			
+GAL03-011			
+GAL03-012			
+GAL03-013	GCA_900708255	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708255?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418444/ERR3418444_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418444/ERR3418444_2.fastq.gz""]"
+GAL03-014			
+GAL03-015			
+GAL03-016			
+GAL03-017			
+GAL03-018			
+GAL03-019	GCA_900708285	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708285?download=true	
+GAL03-020			
+GAL03-022			
+GAL03-023			
+GAL03-024			
+GAL03-026			
+GAL03-027			
+GAL03-028			
+GAL03-029			
+GAL03-031			
+GAL03-032			
+GAL03-033			
+GAL04-001			
+GAL04-002			
+GAL04-004			
+GAL04-005			
+GAL04-006			
+GAL04-007			
+GAL04-008			
+GAL04-009			
+GAL04-010			
+GAL04-014			
+GAL04-015			
+GAL04-016			
+GAL04-017			
+GAL04-019			
+GAL04-020			
+GAL04-023			
+GAL04-025			
+GAL04-028			
+GAL04-031			
+GAL04-037			
+GAL04-038			
+GAL04-039			
+GAL04-040			
+GAL04-041	GCA_900708275	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708275?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418445/ERR3418445_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418445/ERR3418445_2.fastq.gz""]"
+GAL04-042	GCA_900708295	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708295?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418446/ERR3418446_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418446/ERR3418446_2.fastq.gz""]"
+GAL04-043			
+GAL04-044	GCA_900708315	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708315?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418447/ERR3418447_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418447/ERR3418447_2.fastq.gz""]"
+GAL04-045			
+GAL04-046			
+GAL04-047			
+GAL05-002			
+GAL05-003	GCA_900708305	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708305?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418448/ERR3418448_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418448/ERR3418448_2.fastq.gz""]"
+GAL05-004			
+GAL05-005			
+GAL05-008			
+GAL05-011			
+GAL05-012			
+GAL05-013			
+GAL05-014	GCA_900708345	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708345?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418449/ERR3418449_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418449/ERR3418449_2.fastq.gz""]"
+GAL05-015			
+GAL05-016			
+GAL05-017			
+GAL05-021			
+GAL05-022			
+GAL05-023			
+GAL05-024			
+GAL05-025			
+GAL05-026			
+GAL05-027			
+GAL05-028			
+GAL05-029			
+GAL05-030			
+GAL05-033			
+GAL05-034			
+GAL05-035			
+GAL05-036			
+GAL05-037			
+GAL05-038			
+GAL05-039			
+GAL06-001			
+GAL06-002	GCA_900708355	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708355?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418893/ERR3418893_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418893/ERR3418893_2.fastq.gz""]"
+GAL06-003			
+GAL06-004	GCA_900708325	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708325?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418929/ERR3418929_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418929/ERR3418929_2.fastq.gz""]"
+GAL06-005			
+GAL06-007	GCA_900708335	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708335?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418450/ERR3418450_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418450/ERR3418450_2.fastq.gz""]"
+GAL06-009			
+GAL06-011			
+GAL06-013			
+GAL06-014			
+GAL06-015	GCA_900708385	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708385?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418451/ERR3418451_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418451/ERR3418451_2.fastq.gz""]"
+GAL06-016			
+GAL06-019			
+GAL06-021			
+GAL06-022			
+GAL06-025			
+GAL06-026			
+GAL06-028			
+GAL06-029			
+GAL06-030			
+GAL06-031			
+GAL06-032			
+GAL06-033	GCA_900708395	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708395?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418497/ERR3418497_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418497/ERR3418497_2.fastq.gz""]"
+GAL06-034	GCA_900708365	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708365?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418452/ERR3418452_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418452/ERR3418452_2.fastq.gz""]"
+GAL06-035			
+GAL06-036			
+GAL06-037			
+GAL06-038	GCA_900708375	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708375?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418453/ERR3418453_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418453/ERR3418453_2.fastq.gz""]"
+GAL06-039			
+GAL06-040			
+ICA01-001	GCA_900708425	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708425?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418454/ERR3418454_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418454/ERR3418454_2.fastq.gz""]"
+ICA01-002			
+ICA01-003			
+ICA01-004			
+ICA01-005			
+ICA01-006			
+ICA01-007			
+ICA01-008			
+ICA01-009			
+ICA01-010			
+ICA01-011			
+ICA01-012			
+ICA01-013	GCA_900708415	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708415?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418459/ERR3418459_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418459/ERR3418459_2.fastq.gz""]"
+ICA01-014			
+ICA01-015			
+ICA01-016			
+ICA01-017			
+ICA01-020			
+ICA01-021			
+ICA01-022			
+ICA01-027			
+ICA01-028			
+ICA01-030	GCA_900708405	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708405?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418455/ERR3418455_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418455/ERR3418455_2.fastq.gz""]"
+ICA01-031	GCA_900708455	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708455?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418456/ERR3418456_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418456/ERR3418456_2.fastq.gz""]"
+ICA01-032			
+ICA01-033			
+ICA01-034	GCA_900708445	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708445?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418460/ERR3418460_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418460/ERR3418460_2.fastq.gz""]"
+ICA01-035			
+ICA01-038			
+ICA01-039			
+LRJ01-002			
+LRJ01-005			
+LRJ01-009			
+LRJ01-010			
+LRJ01-012			
+LRJ01-013			
+LRJ01-014			
+LRJ01-018			
+LRJ01-020			
+LRJ01-021			
+LRJ01-022			
+LRJ01-026			
+LRJ01-027			
+LRJ01-030			
+LRJ01-032			
+LRJ01-035			
+LRJ01-036			
+LRJ01-037			
+LRJ01-042			
+LRJ01-045			
+LRJ01-046			
+LRJ01-047			
+LRJ01-048			
+LRJ01-049			
+LRJ01-050			
+LRJ01-051			
+LRJ01-052			
+LRJ01-053			
+LRJ01-054			
+LRJ01-055			
+MAD01-001			
+MAD01-002			
+MAD01-003			
+MAD01-004			
+MAD01-005			
+MAD01-007			
+MAD01-010			
+MAD01-011			
+MAD01-012			
+MAD01-013	GCA_900708435	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708435?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418461/ERR3418461_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418461/ERR3418461_2.fastq.gz""]"
+MAD01-014			
+MAD01-015			
+MAD01-016			
+MAD01-018			
+MAD01-019			
+MAD01-021	GCA_900708475	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708475?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418462/ERR3418462_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418462/ERR3418462_2.fastq.gz""]"
+MAD01-022			
+MAD01-023			
+MAD01-024			
+MAD01-025			
+MAD01-026			
+MAD01-027			
+MAD01-028			
+MAD01-029			
+MAD01-030			
+MAD01-031			
+MAD01-033			
+MAD01-034			
+MAD01-035			
+MAD01-038			
+MAD02-001			
+MAD02-002			
+MAD02-004			
+MAD02-005	GCA_900708465	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708465?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418463/ERR3418463_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418463/ERR3418463_2.fastq.gz""]"
+MAD02-006	GCA_900708485	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708485?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418464/ERR3418464_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418464/ERR3418464_2.fastq.gz""]"
+MAD02-007	GCA_900708605	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708605?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418465/ERR3418465_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418465/ERR3418465_2.fastq.gz""]"
+MAD02-008			
+MAD02-009	GCA_900708495	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708495?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418466/ERR3418466_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418466/ERR3418466_2.fastq.gz""]"
+MAD02-010			
+MAD02-012	GCA_900708645	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708645?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418467/ERR3418467_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418467/ERR3418467_2.fastq.gz""]"
+MAD02-013	GCA_900708515	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708515?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418468/ERR3418468_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418468/ERR3418468_2.fastq.gz""]"
+MAD02-014	GCA_900708505	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708505?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418469/ERR3418469_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418469/ERR3418469_2.fastq.gz""]"
+MAD02-015			
+MAD02-016			
+MAD02-017			
+MAD02-018			
+MAD02-021	GCA_900708535	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708535?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418498/ERR3418498_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418498/ERR3418498_2.fastq.gz""]"
+MAD02-022			
+MAD02-023			
+MAD02-024			
+MAD02-025	GCA_900708525	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708525?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418930/ERR3418930_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418930/ERR3418930_2.fastq.gz""]"
+MAD02-026			
+MAD02-027			
+MAD02-028			
+MAD02-030			
+MAD02-031			
+MAD02-032			
+MAD02-033			
+MAD02-034			
+MAD02-035	GCA_900708545	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708545?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418470/ERR3418470_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418470/ERR3418470_2.fastq.gz""]"
+MAD03-001	GCA_900708565	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708565?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418471/ERR3418471_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418471/ERR3418471_2.fastq.gz""]"
+MAD03-002			
+MAD03-004			
+MAD03-005			
+MAD03-006			
+MAD03-007			
+MAD03-008			
+MAD03-009			
+MAD03-010	GCA_900708555	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708555?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418472/ERR3418472_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418472/ERR3418472_2.fastq.gz""]"
+MAD03-011			
+MAD03-012			
+MAD03-013			
+MAD03-014			
+MAD03-016			
+MAD03-017			
+MAD03-018			
+MAD03-019			
+MAD03-020			
+MAD03-021			
+MAD03-022			
+MAD03-023			
+MAD03-028			
+MAD03-029			
+MAD03-030			
+MAD03-031			
+MAD03-032			
+MAD03-033	GCA_900708575	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708575?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418476/ERR3418476_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418476/ERR3418476_2.fastq.gz""]"
+MAD03-034			
+MAD03-038	GCA_900708585	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708585?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418931/ERR3418931_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418931/ERR3418931_2.fastq.gz""]"
+MAD03-039			
+MAD04-001			
+MAD04-002			
+MAD04-003			
+MAD04-004			
+MAD04-005	GCA_900708595	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708595?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418477/ERR3418477_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/007/ERR3418477/ERR3418477_2.fastq.gz""]"
+MAD04-008	GCA_900708625	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708625?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418975/ERR3418975_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418975/ERR3418975_2.fastq.gz""]"
+MAD04-009			
+MAD04-010	GCA_900708615	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708615?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418478/ERR3418478_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418478/ERR3418478_2.fastq.gz""]"
+MAD04-011	GCA_900708635	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708635?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418976/ERR3418976_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418976/ERR3418976_2.fastq.gz""]"
+MAD04-012			
+MAD04-013			
+MAD04-014	GCA_900708665	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708665?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418978/ERR3418978_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418978/ERR3418978_2.fastq.gz""]"
+MAD04-016	GCA_900708655	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708655?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418979/ERR3418979_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418979/ERR3418979_2.fastq.gz""]"
+MAD04-017			
+MAD04-018			
+MAD04-020			
+MAD04-021			
+MAD04-025			
+MAD04-026			
+MAD04-027			
+MAD04-028	GCA_900708675	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708675?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418980/ERR3418980_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418980/ERR3418980_2.fastq.gz""]"
+MAD04-029			
+MAD04-030			
+MAD04-031			
+MAD04-034			
+MAD04-035			
+MAD04-036			
+MAD04-037			
+MAD04-038			
+MAD04-041	GCA_900708695	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708695?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418981/ERR3418981_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418981/ERR3418981_2.fastq.gz""]"
+MAD05-003			
+MAD05-006			
+MAD05-008			
+MAD05-009			
+MAD05-011			
+MAD05-013			
+MAD05-014			
+MAD05-015			
+MAD05-016			
+MAD05-017	GCA_900708685	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708685?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418479/ERR3418479_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418479/ERR3418479_2.fastq.gz""]"
+MAD05-018			
+MAD05-020	GCA_900708735	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708735?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418480/ERR3418480_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418480/ERR3418480_2.fastq.gz""]"
+MAD05-021			
+MAD05-022			
+MAD05-025			
+MAD05-026	GCA_900708745	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708745?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418481/ERR3418481_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418481/ERR3418481_2.fastq.gz""]"
+MAD05-026A			
+MAD05-027	GCA_900708705	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708705?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3419000/ERR3419000_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3419000/ERR3419000_2.fastq.gz""]"
+MAD05-028A			
+MAD05-030			
+MAD05-031			
+MAD05-032			
+MAD05-036			
+MAD05-037			
+MAD05-038			
+MAD05-040			
+MAD05-041	GCA_900708715	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708715?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418482/ERR3418482_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418482/ERR3418482_2.fastq.gz""]"
+MAD05-042			
+MAD05-043			
+MAD05-044			
+MAD05-045			
+MAD06-001			
+MAD06-002			
+MAD06-003			
+MAD06-004			
+MAD06-005			
+MAD06-006			
+MAD06-007			
+MAD06-008			
+MAD06-010			
+MAD06-011			
+MAD06-012			
+MAD06-014			
+MAD06-015			
+MAD06-016			
+MAD06-017	GCA_900708725	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708725?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418483/ERR3418483_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/003/ERR3418483/ERR3418483_2.fastq.gz""]"
+MAD06-018			
+MAD06-019			
+MAD06-023			
+MAD06-024			
+MAD06-025			
+MAD06-026			
+MAD06-027			
+MAD06-029			
+MAD06-030			
+MAD06-031			
+MAD06-033			
+MAD06-035			
+MAD06-036			
+MAD06-037			
+MAD06-040			
+MUR01-001			
+MUR01-002			
+MUR01-003			
+MUR01-004			
+MUR01-005			
+MUR01-006			
+MUR01-007			
+MUR01-008	GCA_900708755	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708755?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418484/ERR3418484_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/004/ERR3418484/ERR3418484_2.fastq.gz""]"
+MUR01-009	GCA_900708775	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708775?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418485/ERR3418485_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418485/ERR3418485_2.fastq.gz""]"
+MUR01-010			
+MUR01-011			
+MUR01-012			
+MUR01-013			
+MUR01-014			
+MUR01-015			
+MUR01-017			
+MUR01-018	GCA_900708765	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708765?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418486/ERR3418486_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/006/ERR3418486/ERR3418486_2.fastq.gz""]"
+MUR01-020			
+MUR01-022			
+MUR01-023			
+MUR01-024			
+MUR01-026	GCA_900708795	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708795?download=true	
+MUR01-027			
+MUR01-028			
+MUR01-029			
+MUR01-030			
+MUR01-031	GCA_900708785	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708785?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3419001/ERR3419001_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3419001/ERR3419001_2.fastq.gz""]"
+MUR01-032			
+MUR01-033	GCA_900708845	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708845?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3419002/ERR3419002_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3419002/ERR3419002_2.fastq.gz""]"
+MUR01-035			
+NAV01-001			
+NAV01-002			
+NAV01-003			
+NAV01-004			
+NAV01-005			
+NAV01-006			
+NAV01-007			
+NAV01-008			
+NAV01-009			
+NAV01-010			
+NAV01-011			
+NAV01-012	GCA_900708835	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708835?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418488/ERR3418488_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/008/ERR3418488/ERR3418488_2.fastq.gz""]"
+NAV01-013			
+NAV01-014			
+NAV01-015			
+NAV01-016			
+NAV01-018			
+NAV01-019			
+NAV01-020			
+NAV01-021	GCA_900708825	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708825?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418489/ERR3418489_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/009/ERR3418489/ERR3418489_2.fastq.gz""]"
+NAV01-023			
+NAV01-024			
+NAV01-025			
+NAV01-026			
+NAV01-027			
+NAV01-028			
+NAV01-029			
+NAV01-030			
+NAV01-031			
+NAV01-032			
+PVA01-003			
+PVA01-006			
+PVA01-007	GCA_900708805	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708805?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418495/ERR3418495_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/005/ERR3418495/ERR3418495_2.fastq.gz""]"
+PVA01-011			
+PVA01-012			
+PVA01-014			
+PVA01-017			
+PVA01-018			
+PVA01-019	GCA_900708815	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708815?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418490/ERR3418490_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/000/ERR3418490/ERR3418490_2.fastq.gz""]"
+PVA01-020			
+PVA01-021	GCA_900708875	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708875?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418491/ERR3418491_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3418491/ERR3418491_2.fastq.gz""]"
+PVA01-022			
+PVA01-023			
+PVA01-024			
+PVA01-025			
+PVA01-026			
+PVA01-028			
+PVA01-029			
+PVA01-032			
+PVA01-034			
+PVA01-035			
+PVA01-037			
+PVA01-038			
+PVA01-039			
+PVA01-040			
+PVA01-041	GCA_900708885	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708885?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418492/ERR3418492_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/002/ERR3418492/ERR3418492_2.fastq.gz""]"
+PVA01-042	GCA_900708855	https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_900708855?download=true	"[""ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3415741/ERR3415741_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR341/001/ERR3415741/ERR3415741_2.fastq.gz""]"
+PVA01-045			
+PVA01-046			
+PVA01-047			
