@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import freezer_view
 from . import views
 
 urlpatterns = [
-    # path('', freezer_view, name='freezer'),
-    path('strain_bank', views.freezer_view, name='strain_bank'),
+    path('strain_bank/', views.freezer_view, name='strain_bank'),
+    path('sample/<int:pk>/update/', views.sample_update_view, name='sample_update'),
+    path('sample/<int:pk>/delete/', views.sample_delete_view, name='sample_delete'),
 ]

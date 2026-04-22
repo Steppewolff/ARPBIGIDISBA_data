@@ -1,21 +1,71 @@
-// bank/static/bank/js/freezer.js
-
 document.addEventListener('DOMContentLoaded', () => {
-  // Leemos el JSON embebido
   const samples = JSON.parse(document.getElementById('samples-data').textContent);
 
-  const table          = document.getElementById('sample-table');
-  const rackSelect     = document.getElementById('rack-select');
-  const boxSelect      = document.getElementById('box-select');
-  const rackSchemaC    = document.getElementById('rack-schema');
-  const boxSchemaC     = document.getElementById('box-schema');
-  const rackInfo       = document.getElementById('rack-info');
-  const boxInfo        = document.getElementById('box-info');
+  const table       = document.getElementById('sample-table');
+  const rackSelect  = document.getElementById('rack-select');
+  const boxSelect   = document.getElementById('box-select');
+  const rackSchemaC = document.getElementById('rack-schema');
+  const boxSchemaC  = document.getElementById('box-schema');
+  const rackInfo    = document.getElementById('rack-info');
+  const boxInfo     = document.getElementById('box-info');
+
+  const backdrop    = document.getElementById('modal-backdrop');
+  const editModal   = document.getElementById('edit-modal');
+  const deleteModal = document.getElementById('delete-modal');
+  const editForm    = document.getElementById('edit-form');
+  const deleteForm  = document.getElementById('delete-form');
+
+  const editPk        = document.getElementById('edit-pk');
+  const editName      = document.getElementById('edit-name');
+  const editStrain    = document.getElementById('edit-strain');
+  const editSpecies   = document.getElementById('edit-species');
+  const editClone     = document.getElementById('edit-clone');
+  const editBox       = document.getElementById('edit-box');
+  const editRackRow   = document.getElementById('edit-rack-row');
+  const editRackCol   = document.getElementById('edit-rack-col');
+  const editBoxRow    = document.getElementById('edit-box-row');
+  const editBoxCol    = document.getElementById('edit-box-col');
+  const editDesc      = document.getElementById('edit-description');
+  const editCloseBtn  = document.getElementById('edit-close-btn');
+
+  const deleteCloseBtn = document.getElementById('delete-close-btn');
+  const deleteMessage  = document.getElementById('delete-message');
 
   let selectedRack = '';
   let selectedBox  = '';
 
-  // Crea una rejilla cols×rows dentro de "container", tipo 'rack' o 'box'
+  let currentEditSample = null;
+  let currentDeleteId = null;
+
+  function openModal(modal) {
+    backdrop.style.display = 'block';
+    modal.style.display = 'block';
+  }
+
+  function closeModal(modal) {
+    modal.style.display = 'none';
+    backdrop.style.display = 'none';
+  }
+
+  function colToLetter(val) {
+    const s = String(val).toUpperCase().trim();
+    if (/^\d+$/.test(s)) {
+      return String.fromCharCode(64 + parseInt(s, 10));
+    }
+    return s;
+  }
+
+  function rackKey(s) {
+    return colToLetter(s.rack_col) + String(s.rack_row).trim();
+  }
+
+  function boxKey(s) {
+    return colToLetter(s.box_col) + String(s.box_row).trim();
+  }
+
+  function sameRack(s, rackId) { return String(s.rack) === String(rackId); }
+  function sameBox(s, boxId)   { return String(s.box)  === String(boxId);  }
+
   function createGrid(container, cols, rows, type) {
     container.innerHTML = '';
     const grid = document.createElement('div');
@@ -23,30 +73,36 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.style.gridTemplateColumns = `min-content repeat(${cols}, min-content)`;
     grid.style.gridTemplateRows    = `min-content repeat(${rows}, min-content)`;
 
-    // Esquina vacía
-    grid.appendChild(document.createElement('div')).className = 'schema-header';
-    // Cabeceras de columnas
+    const corner = document.createElement('div');
+    corner.className = 'schema-header';
+    grid.appendChild(corner);
+
     for (let c = 1; c <= cols; c++) {
       const h = document.createElement('div');
       h.className = 'schema-header';
       h.textContent = String.fromCharCode(64 + c);
       grid.appendChild(h);
     }
-    // Filas
     for (let r = 1; r <= rows; r++) {
-      // Encabezado de fila
       const h = document.createElement('div');
       h.className = 'schema-header';
       h.textContent = r;
       grid.appendChild(h);
-
       for (let c = 1; c <= cols; c++) {
         const cell = document.createElement('div');
         cell.className = 'schema-cell';
         cell.dataset.col = String.fromCharCode(64 + c);
         cell.dataset.row = r;
-        // click handler
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('tabindex', '0');
+        cell.setAttribute('aria-label', `${type === 'rack' ? 'Rack' : 'Caja'} posición ${cell.dataset.col}${cell.dataset.row}`);
         cell.addEventListener('click', () => handleCellClick(cell, type));
+        cell.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCellClick(cell, type);
+          }
+        });
         grid.appendChild(cell);
       }
     }
@@ -54,124 +110,212 @@ document.addEventListener('DOMContentLoaded', () => {
     return grid;
   }
 
-function drawRackSchema(rackId) {
-  const grid = createGrid(rackSchemaC, 4, 4, 'rack');
-  rackInfo.textContent = rackId ? `Rack: ${rackId}` : '';
-  if (!rackId) return;
+  function drawRackSchema(rackId) {
+    const grid = createGrid(rackSchemaC, 4, 4, 'rack');
+    rackInfo.textContent = rackId ? `Rack seleccionado: ${rackId}\nHaz clic en una posición para ver su caja.` : 'Selecciona un rack para mostrar su contenido.';
+    if (!rackId) return;
 
-  // Normalizamos claves a formato "A1", "B2", etc.
-  const map = {};
-  samples.forEach(s => {
-    if (s.rack === rackId) {
-      console.log('rack match:', s.rack_col, s.rack_row, '→ box:', s.box);
-      const col = String(s.rack_col).toUpperCase().trim();
-      const row = String(s.rack_row).trim();
-      const key = col + row;
-      map[key] = s.box;
-    }
-  });
+    const map = {};
+    samples.forEach(s => {
+      if (sameRack(s, rackId) && !map[rackKey(s)]) {
+        map[rackKey(s)] = String(s.box);
+      }
+    });
 
-  grid.querySelectorAll('.schema-cell').forEach(cell => {
-    const key = cell.dataset.col + cell.dataset.row;
-    if (map[key]) {
-      cell.textContent = `Caja ${map[key]}`;
-      cell.title = `Caja ${map[key]}`;
-    } else {
-      cell.textContent = '';
-      cell.title = '';
-    }
-  });
-}
+    grid.querySelectorAll('.schema-cell').forEach(cell => {
+      const key = cell.dataset.col + cell.dataset.row;
+      cell.classList.remove('occupied', 'empty');
+      if (map[key]) {
+        cell.textContent = `Caja ${map[key]}`;
+        cell.title = `Caja ${map[key]}`;
+        cell.dataset.box = map[key];
+        cell.classList.add('occupied');
+      } else {
+        cell.textContent = '';
+        cell.title = 'Posición vacía';
+        cell.dataset.box = '';
+        cell.classList.add('empty');
+      }
+    });
+  }
 
   function drawBoxSchema(boxId) {
     const grid = createGrid(boxSchemaC, 9, 9, 'box');
-    boxInfo.textContent = '';
+    boxInfo.textContent = boxId ? `Caja seleccionada: ${boxId}\nHaz clic en una muestra para ver sus datos.` : 'Selecciona una caja para mostrar su contenido.';
     if (!boxId) return;
 
-    // Mapas para id, tooltip y info
-    const idMap      = {};
-    const tipMap     = {};
-    const infoMap    = {};
-    samples.filter(s => s.box === boxId).forEach(s => {
-      const key = s.box_col + s.box_row;
+    const idMap = {}, tipMap = {}, infoMap = {};
+    samples.filter(s => sameBox(s, boxId)).forEach(s => {
+      const key    = boxKey(s);
       idMap[key]   = s.id;
-      tipMap[key]  = s.strain;
+      tipMap[key]   = s.strain;
       infoMap[key] = s;
     });
 
     grid.querySelectorAll('.schema-cell').forEach(cell => {
       const key = cell.dataset.col + cell.dataset.row;
+      cell.classList.remove('occupied', 'empty');
       if (idMap[key]) {
         cell.textContent = `Id ${idMap[key]}`;
         cell.title = `Strain: ${tipMap[key]}`;
         cell.dataset.info = JSON.stringify(infoMap[key]);
+        cell.classList.add('occupied');
       } else {
         cell.textContent = '';
-        cell.title = '';
+        cell.title = 'Posición vacía';
         delete cell.dataset.info;
+        cell.classList.add('empty');
       }
     });
   }
 
   function updateBoxSelect(rackId) {
     boxSelect.innerHTML = '<option value="">Todos</option>';
-    let boxes = rackId
-      ? [...new Set(samples.filter(s => s.rack === rackId).map(s => s.box))]
-      : [...new Set(samples.map(s => s.box))];
+    const boxes = rackId
+      ? [...new Set(samples.filter(s => sameRack(s, rackId)).map(s => String(s.box)))]
+      : [...new Set(samples.map(s => String(s.box)))];
     boxes.sort().forEach(b => {
       const o = document.createElement('option');
-      o.value = b; o.textContent = b;
+      o.value = b;
+      o.textContent = b;
       boxSelect.appendChild(o);
     });
   }
 
   function applyFilters() {
     Array.from(table.tBodies[0].rows).forEach(row => {
-      const okRack = !selectedRack || row.dataset.rack === selectedRack;
-      const okBox  = !selectedBox  || row.dataset.box  === selectedBox;
+      const okRack = !selectedRack || row.dataset.rack === String(selectedRack);
+      const okBox  = !selectedBox  || row.dataset.box  === String(selectedBox);
       row.style.display = (okRack && okBox) ? '' : 'none';
     });
   }
 
   function handleCellClick(cell, type) {
-    // Eliminar selección previa
-    cell.parentElement.querySelectorAll('.schema-cell').forEach(c => c.classList.remove('selected'));
+    cell.parentElement.querySelectorAll('.schema-cell')
+      .forEach(c => c.classList.remove('selected'));
     cell.classList.add('selected');
 
     if (type === 'rack') {
-      const key = cell.dataset.col + cell.dataset.row;
-      const box = samples.find(s => s.rack===selectedRack && (s.rack_col+s.rack_row)===key)?.box;
-      selectedBox = box || '';
-      boxSelect.value = selectedBox;
-      drawBoxSchema(selectedBox);
+      const box = cell.dataset.box || '';
+
+      rackInfo.textContent = box
+        ? `Rack: ${selectedRack}\nCaja seleccionada: ${box}`
+        : `Rack: ${selectedRack}\n(posición vacía)`;
+
+      selectedBox = box;
+
+      if (box) {
+        const exists = Array.from(boxSelect.options).some(o => o.value === box);
+        if (!exists) {
+          const o = document.createElement('option');
+          o.value = box;
+          o.textContent = box;
+          boxSelect.appendChild(o);
+        }
+      }
+
+      boxSelect.value = box;
+      drawBoxSchema(box);
       applyFilters();
     } else {
       if (cell.dataset.info) {
         const s = JSON.parse(cell.dataset.info);
-        boxInfo.textContent = `Name: ${s.name}\nStrain: ${s.strain}\nDescription: ${s.description}`;
+        boxInfo.textContent =
+          `Name: ${s.name}\nStrain: ${s.strain}\nSpecies: ${s.species}\nClone: ${s.clone}\nDescription: ${s.description}`;
       } else {
         boxInfo.textContent = '';
       }
     }
   }
 
-  // Listeners
+  function openEditModal(sample) {
+    currentEditSample = sample;
+    editForm.action = `/sample/${sample.id}/update/`;
+
+    editPk.value = sample.id;
+    editName.value = sample.name || '';
+    editStrain.value = sample.strain || '';
+    editSpecies.value = sample.species || '';
+    editClone.value = sample.clone || '';
+    editBox.value = sample.box || '';
+    editRackRow.value = sample.rack_row || '';
+    editRackCol.value = sample.rack_col || '';
+    editBoxRow.value = sample.box_row || '';
+    editBoxCol.value = sample.box_col || '';
+    editDesc.value = sample.description || '';
+
+    openModal(editModal);
+  }
+
+  function openDeleteModal(sample) {
+    currentDeleteId = sample.id;
+    deleteForm.action = `/sample/${sample.id}/delete/`;
+    deleteMessage.textContent = `¿Seguro que quieres borrar el registro "${sample.name || sample.strain || sample.id}"?`;
+    openModal(deleteModal);
+  }
+
+//  document.addEventListener('click', (e) => {
+//    const editBtn = e.target.closest('.js-edit-sample');
+//    const deleteBtn = e.target.closest('.js-delete-sample');
+//
+//    if (editBtn) {
+//      const id = editBtn.dataset.id;
+//      const sample = samples.find(s => String(s.id) === String(id));
+//      if (sample) openEditModal(sample);
+//    }
+//
+//    if (deleteBtn) {
+//      const id = deleteBtn.dataset.id;
+//      const sample = samples.find(s => String(s.id) === String(id));
+//      if (sample) openDeleteModal(sample);
+//    }
+//  });
+
+//    const table = document.getElementById('sample-table');
+
+        if (table) {
+          table.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.js-edit-sample');
+            const deleteBtn = e.target.closest('.js-delete-sample');
+
+            if (editBtn) {
+              const id = editBtn.dataset.id;
+              const sample = samples.find(s => String(s.id) === String(id));
+              if (sample) openEditModal(sample);
+              return;
+            }
+
+            if (deleteBtn) {
+              const id = deleteBtn.dataset.id;
+              const sample = samples.find(s => String(s.id) === String(id));
+              if (sample) openDeleteModal(sample);
+            }
+          });
+        }
+
+      editCloseBtn.addEventListener('click', () => closeModal(editModal));
+      deleteCloseBtn.addEventListener('click', () => closeModal(deleteModal));
+      backdrop.addEventListener('click', () => {
+    closeModal(editModal);
+    closeModal(deleteModal);
+  });
+
   rackSelect.addEventListener('change', () => {
     selectedRack = rackSelect.value;
-    selectedBox  = '';
+    selectedBox = '';
     boxSelect.value = '';
     drawRackSchema(selectedRack);
     drawBoxSchema('');
     updateBoxSelect(selectedRack);
     applyFilters();
   });
+
   boxSelect.addEventListener('change', () => {
     selectedBox = boxSelect.value;
     drawBoxSchema(selectedBox);
     applyFilters();
   });
 
-  // Init
   drawRackSchema('');
   drawBoxSchema('');
   updateBoxSelect('');

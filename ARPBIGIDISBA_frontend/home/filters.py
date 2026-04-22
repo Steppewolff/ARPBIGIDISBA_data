@@ -65,9 +65,9 @@ class GroupedSelect(forms.Select):
 class MultiFilter(filters.FilterSet):
     OPCIONES_FILTRO = obtener_opciones_filtro()
 
-    isolate_name = filters.ModelChoiceFilter(field_name='Nombre aislado', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
-    species = filters.ModelChoiceFilter(field_name='Especie aislado', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
-    project_name = filters.ModelChoiceFilter(field_name='Nombre proyecto', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
+    isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
+    species = filters.ModelChoiceFilter(field_name='species', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
+    project_name = filters.ModelChoiceFilter(field_name='project_name', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
     isolate_source = filters.ModelChoiceFilter(field_name='isolate_source', queryset=MetadataGeneral.objects.values_list('isolate_source', flat=True).distinct(), to_field_name='isolate_source', label='Isolate origin')
 
     isolation_date__gt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='gte', label='From (date)')

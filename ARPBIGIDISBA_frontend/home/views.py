@@ -107,10 +107,51 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         context['filter'] = self.get_filterset(self.get_filterset_class())
         context['verbose_used'] = verbose_used
 
+        # Garantizar que 'table' siempre esté presente
+        if 'table' not in context or not hasattr(context['table'], 'columns'):
+            context['table'] = self.get_table()
+
+        # Añadir filtros de la vista filtrada para que aparezcan en /results
+        verbose_used = context.get('verbose_used', {}).copy()
+        # for key, value in self.request.GET.items():
+        #     if key in ['csrfmiddlewaretoken', 'page'] or not value:
+        #         continue
+        #     verbose_used[key.replace('_', ' ').capitalize()] = value
+
+        for key in self.request.GET.keys():
+            if key in ['csrfmiddlewaretoken', 'page']:
+                continue
+            values = [v for v in self.request.GET.getlist(key) if v]
+            if not values:
+                continue
+            if key in ('incluir', 'excluir'):
+                label = 'Include' if key == 'incluir' else 'Exclude'
+                # Construir mapa mutacion -> gen desde OPCIONES_FILTRO
+                gen_map = {}
+                for gen, subchoices in MultiFilter.OPCIONES_FILTRO:
+                    for mut, _ in subchoices:
+                        gen_map[mut] = gen
+                # Agrupar mutaciones seleccionadas por gen
+                gen_groups = {}
+                for mut in values:
+                    gen = gen_map.get(mut, 'Unknown')
+                    gen_groups.setdefault(gen, []).append(mut)
+                # Formato: PA0004 (D4N, S466Y, A103G), PA0315 (K44M)
+                display = ', '.join(
+                    f"{gen} ({', '.join(muts)})"
+                    for gen, muts in sorted(gen_groups.items())
+                )
+                verbose_used[label] = display
+            else:
+                verbose_used[key.replace('_', ' ').capitalize()] = values[0]
+
+        context['verbose_used'] = verbose_used
+
         return context
 
     def get_table(self, **kwargs):
-        qs=self.get_queryset()
+        # qs=self.get_queryset()
+        qs = getattr(self, 'object_list', self.get_queryset())
         table = self.table_class(data=qs, request=self.request, **kwargs)
         RequestConfig(self.request).configure(table)
 
@@ -123,6 +164,9 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
         # If the get request has a preset variable, export only those columns
         if preset and TableExport.is_valid_format(export_format):
+            # table = self.get_table()
+            filterset = self.get_filterset(self.get_filterset_class())
+            self.object_list = filterset.qs
             table = self.get_table()
             visible_columns = self.column_presets.get(preset, None)
             if visible_columns is None:
@@ -136,6 +180,9 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
         # Exportation of the whole table (CombinedTable)
         if TableExport.is_valid_format(export_format):
+            # table = self.get_table()
+            filterset = self.get_filterset(self.get_filterset_class())
+            self.object_list = filterset.qs
             table = self.get_table()
             # exporter = TableExport(export_format, table)
             excluded_columns_param = self.request.GET.get('excluded_columns', '')  # cadena vacía si no existe
@@ -238,47 +285,54 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         return "No se ha podido asignar valor S/I/R"
 
     def post(self, request, *args, **kwargs):
+        self.update_parameters(request)
+
         self.object_list = self.get_queryset()
         context = self.get_context_data(**kwargs)
         breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
         context["breakpoints_tables"] = breakpoints_tables
 
-        if request.method == "POST" and ('amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST):
-            if 'amr_clas_acc' in request.POST:
-                selected_table = request.POST.get('breakpoint_table_acc')
+        selected_table = None
 
-            elif 'amr_clas_down' in request.POST:
-                selected_table = request.POST.get('breakpoint_table_down')
+        # if request.method == "POST" and ('amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST):
+        if 'amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST:
+            selected_table = request.POST.get('breakpoint_table_acc')
 
-            selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
-                'mic_breakpoints', flat=True)
-            selected_filepath = BreakpointTable.objects.get(table_version_name=selected_table).filepath
+        elif 'amr_clas_down' in request.POST:
+            selected_table = request.POST.get('breakpoint_table_down')
 
+        selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
+            'mic_breakpoints', flat=True)
+        # selected_filepath = BreakpointTable.objects.get(table_version_name=selected_table).filepath
+        bp_obj = BreakpointTable.objects.filter(table_version_name=selected_table).first()
+        selected_filepath = bp_obj.filepath if bp_obj else None
 
-            qs_mic = context['qs_mic']
+        qs_mic = context['qs_mic']
 
-            if selected_breakpoints.exists():
-                bp_dict = selected_breakpoints.first()
+        bp_dict = {}
 
-            context["selected_table"] = selected_table
-            context["selected_breakpoints"] = selected_breakpoints
-            context["selected_filepath"] = selected_filepath
+        if selected_breakpoints.exists():
+            bp_dict = selected_breakpoints.first()
 
-            for record in qs_mic:
-                for ab in bp_dict:
-                    value = getattr(record, ab, None)
-                    bp = bp_dict.get(ab, {})
-                    if value == None:
-                        pass
-                    elif None in bp.values() or "-" in bp.values():
-                        clinical_category = "Sin breakpoints en esta versión"
-                        setattr(record, f"{ab}_clinical_category", clinical_category)
-                    else:
-                        clinical_category = self.compute_clinical_category(value, bp)
-                        setattr(record, f"{ab}_clinical_category", clinical_category)
+        context["selected_table"] = selected_table
+        context["selected_breakpoints"] = selected_breakpoints
+        context["selected_filepath"] = selected_filepath
 
-            context['mic_table'] = MicTable(data=qs_mic)
-            RequestConfig(request).configure(context['mic_table'])
+        for record in qs_mic:
+            for ab in bp_dict:
+                value = getattr(record, ab, None)
+                bp = bp_dict.get(ab, {})
+                if value == None:
+                    pass
+                elif None in bp.values() or "-" in bp.values():
+                    clinical_category = "Sin breakpoints en esta versión"
+                    setattr(record, f"{ab}_clinical_category", clinical_category)
+                else:
+                    clinical_category = self.compute_clinical_category(value, bp)
+                    setattr(record, f"{ab}_clinical_category", clinical_category)
+
+        context['mic_table'] = MicTable(data=qs_mic)
+        RequestConfig(request).configure(context['mic_table'])
 
         table_obj = self.get_table()
         context['table'] = table_obj
@@ -287,49 +341,84 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
     def update_parameters(self, request, *args, **kwargs):
         parameters = request.POST.copy()
-        parameters_used = request.session.get('parameters_used', {})
-        verbose_used = request.session.get('verbose_used', {})
+        parameters_used = {}  # ← empezar vacío siempre
+        verbose_used = {}  # ← empezar vacío siempre
+
         for parameter, value in parameters.items():
-            if parameter == 'csrfmiddlewaretoken' or value == 'none':
-                pass
-            elif value == '' :
-                if parameter in parameters_used:
-                    parameters_used.pop(parameter)
-                    for model in apps.get_models():
-                        for field in model._meta.get_fields():
-                            if field.name == parameter:
-                                new_name = field.verbose_name.capitalize()
-                                verbose_used.pop(new_name)
-                                break
-                else:
-                    pass
-            else:
-                for model in apps.get_models():
-                    for field in model._meta.get_fields():
-                        if field.name == parameter:
-                            new_name = field.verbose_name.capitalize()
-                            parameters_used[field.name] = value
-                            verbose_used[str(new_name)] = value
-                            if isinstance(field, ForeignKey):
-                                model_id = field.related_model._meta.pk.name
-                                value = field.related_model.objects.get(Q((model_id, value))).__str__()
-                                verbose_used[str(new_name)] = value
+            if parameter == 'csrfmiddlewaretoken' or value in ('', 'none'):
+                continue
+            for model in apps.get_models():
+                for field in model._meta.get_fields():
+                    if field.name == parameter:
+                        new_name = field.verbose_name.capitalize()
+                        parameters_used[field.name] = value
+                        verbose_used[str(new_name)] = value
+                        if isinstance(field, ForeignKey):
+                            model_id = field.related_model._meta.pk.name
+                            display_value = field.related_model.objects.get(
+                                Q((model_id, value))
+                            ).__str__()
+                            verbose_used[str(new_name)] = display_value
+                        break
 
-                            break
+        request.session['parameters_used'] = parameters_used
+        request.session['verbose_used'] = verbose_used
+        request.session.modified = True
 
-        self.request.session['parameters_used'] = parameters_used
-        self.request.session['verbose_used'] = verbose_used
+
+    # def update_parameters(self, request, *args, **kwargs):
+    #     parameters = request.POST.copy()
+    #     # parameters = (request.POST if request.method == "POST" else request.GET).copy()
+    #     parameters_used = request.session.get('parameters_used', {})
+    #     verbose_used = request.session.get('verbose_used', {})
+    #     # for parameter, value in parameters.items():
+    #
+    #     for parameter in set(parameters.keys()):
+    #         values = [v for v in parameters.getlist(parameter) if v and v != 'none']
+    #         if not values or parameter == 'csrfmiddlewaretoken':
+    #             continue
+    #         value = values[0]  # para el filtrado se sigue usando el primer valor
+    #         if parameter == 'csrfmiddlewaretoken' or value == 'none':
+    #             pass
+    #         elif value == '' :
+    #             if parameter in parameters_used:
+    #                 parameters_used.pop(parameter)
+    #                 for model in apps.get_models():
+    #                     for field in model._meta.get_fields():
+    #                         if field.name == parameter:
+    #                             new_name = field.verbose_name.capitalize()
+    #                             verbose_used.pop(new_name, None)
+    #                             break
+    #             else:
+    #                 pass
+    #         else:
+    #             for model in apps.get_models():
+    #                 for field in model._meta.get_fields():
+    #                     if field.name == parameter:
+    #                         new_name = field.verbose_name.capitalize()
+    #                         parameters_used[field.name] = value
+    #                         verbose_used[str(new_name)] = ', '.join(values)
+    #                         if isinstance(field, ForeignKey):
+    #                             model_id = field.related_model._meta.pk.name
+    #                             value = field.related_model.objects.get(Q((model_id, value))).__str__()
+    #                             verbose_used[str(new_name)] = ', '.join(values)
+    #
+    #                         break
+    #
+    #     self.request.session['parameters_used'] = parameters_used
+    #     self.request.session['verbose_used'] = verbose_used
+    #     self.request.session.modified = True
 
     def get_queryset(self, *args, **kwargs):
         qs = super(ResultadosListView, self).get_queryset(*args, **kwargs)
         metadatageneral_fields=[field.name for field in MetadataGeneral._meta.get_fields()]
-        self.update_parameters(self.request)
+        # self.update_parameters(self.request)
         filter_param = self.request.session.get('parameters_used', {})
         for filter, value in filter_param.items():
             if filter not in ['encoding', 'csrfmiddlewaretoken', '__len__'] and value != '':
 
                 if filter in metadatageneral_fields:
-                    kwargs = {f'{filter}': value}
+                    kwargs_filter = {f'{filter}': value}
 
                 else:
                     for model in apps.get_models():
@@ -339,15 +428,15 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
                     if 'comparison_' in str(filter):
                         filter_name = filter.replace('comparison_', '')
-                        kwargs = {f'{filter_model}__{filter_name}__{value}': filter_param.get(filter_name)}
+                        kwargs_filter = {f'{filter_model}__{filter_name}__{value}': filter_param.get(filter_name)}
 
                     elif filter_model in metadatageneral_fields:
-                        kwargs = {f'{filter_model}__{filter}': value}
+                        kwargs_filter = {f'{filter_model}__{filter}': value}
 
                     else:
                         kwargs = {f'metadataclinic__{filter_model}__{filter}': value}
 
-                qs = qs.filter(**kwargs)
+                qs = qs.filter(**kwargs_filter)
 
         qs = qs.filter().order_by("isolate_name")
 
