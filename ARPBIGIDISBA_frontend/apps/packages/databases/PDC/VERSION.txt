@@ -1,0 +1,5 @@
+PDC Database Version: 2025-06-03
+Curated by: ARPBIG Group
+
+Description:
+This database includes all Pseudomonas-derived cephalosporinase (PDC) allele variants retrieved from the NCBI Pathogen Detection Reference Gene Catalog as of June 3rd, 2025. 

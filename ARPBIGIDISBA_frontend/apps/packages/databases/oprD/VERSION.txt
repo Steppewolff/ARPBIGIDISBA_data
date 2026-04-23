@@ -1,0 +1,21 @@
+OprD Reference Database Version: 2025-06-03
+Curated by: ARPBIG Group
+
+Description:
+Reference *oprD* gene sequences from six well-characterized *Pseudomonas aeruginosa* strains used for BLAST-based integrity assessment within the PaREx pipeline.
+
+Strains included:
+- PAO1
+- LESB58
+- UCBP-PA14
+- MTB-1
+- FRD1
+- F23197
+
+Files:
+- oprd_refs.fasta: Contains reference nucleotide sequences labeled with strain ID and GenBank accession if available
+
+Purpose:
+Used by the `oprD_run` module of PaREx to detect structural disruptions or premature stop codons using the most appropriate reference.
+
+Maintainers: Estrella Rojo-Molinero, Matias Bonet

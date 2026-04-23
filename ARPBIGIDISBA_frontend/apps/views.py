@@ -78,8 +78,17 @@ def amr_score_prediction(request):
         # Cargar registros del CSV (se asume que el archivo tiene 14 columnas separadas por comas)
         records = load_csv(vc_file)
 
-        score_results = automatizacion_rp.main(scores_json, records)
+        # score_results = automatizacion_rp.main(scores_json, records)
+        #
+        # return render(request, 'amr_score_prediction.html', {'score_results': score_results})
+        score_results, score_eval_mutacional = automatizacion_rp.main(scores_json, records)
 
-        return render(request, 'amr_score_prediction.html', {'score_results': score_results})
+        return render(
+            request, 'amr_score_prediction.html', {
+                'score_results': score_results,
+                'score_eval_mutacional': score_eval_mutacional,
+                'score_eval_adquirida': {},
+            })
+
     else:
         return render(request, 'amr_score_prediction.html')

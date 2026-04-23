@@ -1,7 +1,423 @@
 {% extends "home_template.html" %}
+{% load amr_filters %}
 
     {% block head %}
     <script src="/static/js/admin_js.js"></script>
+    <style>
+      /* ── AMR Score Prediction – Modern styles ───────────────────────── */
+
+      .amr-main {
+        margin-left: 340px;
+        margin-right: 40px;
+        padding-bottom: 120px;
+      }
+
+      /* Page header */
+      .amr-page-header { padding: 20px 0 16px; }
+      .amr-page-header h1 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #00334c;
+        margin: 0 0 4px;
+      }
+      .amr-page-header .subtitle {
+        color: #c0392b;
+        font-weight: 600;
+        font-size: 15px;
+        margin: 0 0 10px;
+      }
+      .amr-page-header hr {
+        border: none;
+        border-top: 4px solid #00334c;
+        width: 50px;
+        margin: 0;
+        border-radius: 2px;
+      }
+
+      /* Cards */
+      .amr-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+        border: 1px solid #e4e8eb;
+        margin-bottom: 22px;
+        overflow: visible;
+      }
+      .amr-card-header {
+        background: #00334c;
+        color: #fff;
+        padding: 13px 20px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 10px 10px 0 0;
+      }
+      .amr-card-body { padding: 20px; }
+
+      /* Section labels inside cards */
+      .sec-label {
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #00334c;
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid rgba(0,51,76,0.15);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Tooltip icon */
+      .tip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        background: #00334c;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: help;
+        position: relative;
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      .tip::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.45;
+        white-space: normal;
+        width: 220px;
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s;
+        z-index: 200;
+        text-transform: none;
+        letter-spacing: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      }
+      .tip:hover::after { opacity: 1; }
+
+      /* Radio option rows */
+      .radio-opt {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 4px;
+        padding: 7px 8px;
+        border-radius: 6px;
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+      .radio-opt:hover { background: #f0f5f8; }
+      .radio-opt input[type="radio"] {
+        accent-color: #00334c;
+        width: 15px;
+        height: 15px;
+        margin-top: 2px;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+      .radio-opt label {
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        line-height: 1.4;
+      }
+      .file-sub {
+        margin: 2px 0 10px 31px;
+        font-size: 12px;
+      }
+
+      /* Text / number inputs */
+      .amr-input {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 13px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+        font-family: inherit;
+      }
+      .amr-input:focus {
+        border-color: #00334c;
+        box-shadow: 0 0 0 3px rgba(0,51,76,0.12);
+      }
+      .input-row { margin-bottom: 12px; }
+      .input-row > label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: #555;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+
+      /* Checkbox */
+      .check-opt {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        transition: background 0.15s;
+      }
+      .check-opt:hover { background: #f0f5f8; }
+      .check-opt input[type="checkbox"] {
+        accent-color: #00334c;
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+      }
+      .check-opt label {
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Vertical divider */
+      .v-div {
+        width: 1px;
+        background: #e4e8eb;
+        margin: 0 12px;
+        align-self: stretch;
+      }
+
+      /* Sections wrapper inside card */
+      .form-sections {
+        display: flex;
+        gap: 0;
+        flex-wrap: wrap;
+      }
+      .form-section-left {
+        flex: 2;
+        min-width: 300px;
+        border: 1px solid #e4e8eb;
+        border-radius: 8px;
+        padding: 16px;
+        margin-right: 16px;
+      }
+      .form-section-cols {
+        display: flex;
+        gap: 0;
+      }
+      .form-col {
+        flex: 1;
+        min-width: 140px;
+      }
+      .form-section-right {
+        flex: 1;
+        min-width: 180px;
+        border: 1px solid #e4e8eb;
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      /* Calculate button */
+      .btn-calc {
+        background: #00334c;
+        color: #fff;
+        border: none;
+        padding: 11px 36px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+        font-family: inherit;
+        letter-spacing: 0.2px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 3px 10px rgba(0,51,76,0.25);
+      }
+      .btn-calc:hover {
+        background: #00527a;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 14px rgba(0,51,76,0.3);
+      }
+      .btn-calc:active { transform: translateY(0); }
+
+      /* Results table */
+      .res-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .res-table thead th {
+        background: #00334c;
+        color: #fff;
+        padding: 11px 16px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .res-table thead th:first-child { text-align: left; padding-left: 20px; }
+      .res-table tbody tr { transition: background 0.12s; }
+      .res-table tbody tr:hover { background: #f5f8fa; }
+      .res-table tbody td {
+        padding: 11px 16px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+      }
+      .res-table tbody td:first-child {
+        text-align: left;
+        padding-left: 20px;
+        font-weight: 600;
+        color: #00334c;
+      }
+      .res-table tbody tr:last-child td { border-bottom: none; }
+
+      /* SIR badges */
+      .sir {
+        display: inline-block;
+        padding: 4px 18px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+      }
+      .sir-S { background: #d4edda; color: #155724; }
+      .sir-I { background: #fff3cd; color: #856404; }
+      .sir-R { background: #f8d7da; color: #721c24; }
+      .sir- { background: #f1f1f1; color: #555; }
+
+      /* Download button */
+      .btn-dl {
+        background: #fff;
+        color: #00334c;
+        border: 2px solid #00334c;
+        padding: 10px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-dl:hover { background: #00334c; color: #fff; }
+
+      /* Description text */
+      .amr-desc {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      /* ── Breakdown section ──────────────────────────────────────────── */
+      .breakdown-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+        padding: 20px;
+      }
+      .ab-breakdown-card {
+        border: 1px solid #e4e8eb;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .ab-breakdown-title {
+        background: #f0f5f8;
+        padding: 9px 14px;
+        font-weight: 700;
+        font-size: 14px;
+        color: #00334c;
+        border-bottom: 1px solid #e4e8eb;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .resistance-block { padding: 10px 14px; }
+      .resistance-block + .resistance-block {
+        border-top: 1px dashed #dde3e8;
+      }
+      .res-type-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .res-type-label.mutacional { color: #6a3c9f; }
+      .res-type-label.adquirida  { color: #c0392b; }
+      .gene-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 3px 0;
+        font-size: 12px;
+        color: #444;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      .gene-row:last-child { border-bottom: none; }
+      .gene-name { font-family: monospace; font-weight: 600; color: #00334c; }
+      .gene-score {
+        font-weight: 700;
+        font-size: 12px;
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .gene-score.pos { background: #fde8e8; color: #721c24; }
+      .gene-score.neg { background: #d4f4e3; color: #155724; }
+      .gene-score.zero { background: #f1f1f1; color: #777; }
+      .no-mutations {
+        font-size: 12px;
+        color: #aaa;
+        font-style: italic;
+        padding: 4px 0;
+      }
+      .subtotal-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 7px;
+        padding-top: 6px;
+        border-top: 2px solid #e4e8eb;
+        font-size: 12px;
+        font-weight: 700;
+        color: #333;
+      }
+      .breakdown-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 9px 14px;
+        border-top: 2px solid #00334c;
+        background: #f8fafc;
+        font-size: 13px;
+        font-weight: 700;
+        color: #00334c;
+      }
+    </style>
     {% endblock %}
 
     {% block title %}
@@ -13,111 +429,306 @@
     {% endblock %}
 
     {% block content %}
-    <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left:340px;margin-right:40px">
+    <div class="amr-main">
 
-      <!-- Header -->
+      <!-- Page header -->
       <div class="w3-container" style="margin-top:10px" id="showcase">
         <h1 class="w3-jumbo"><b>Web applications</b></h1>
-        <h4 class="w3-text-red"><b>Score AMR prediction</b></h4>
-        <hr style="width:50px;border:5px solid red" class="w3-round">
+        <h4 class=""><b>Score AMR prediction</b></h4>
+        <hr style="width:50px;border:5px solid #00334c" class="w3-round">
       </div>
-    </div>
-    <form style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; max-width: 900px; margin: auto; margin-bottom: 20px;" action="{% url 'amr_score_prediction' %}" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      <h4 style="margin-bottom: 20px;">Score AMR prediction:</h4>
-      <p style="margin-bottom: 20px;">This tool predicts the clinical category of a bacterial strain based on the presence of cromosomal and acquired gene variants in the genome. <strong>The tool can work using one of the below summary files as input OR raw data files as input in FASTQ format, but not both of them:</strong></p>
-      <table style="width: 100%; border-collapse: collapse;">
-        <tr>
-          <!-- Grupo izquierdo: Summary files y Parameters -->
-          <td style="border: 2px solid #333; padding: 10px; vertical-align: top; width: 66%;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <!-- Columna 1: Summary files -->
-                <td style="vertical-align: top; padding: 10px; border-right: 1px solid #ccc; width: 50%;">
-                  <div style="font-weight: bold; margin-bottom: 10px;">Summary files</div>
-                  <div style="margin-bottom: 10px;">
-                    <input type="radio" name="fileOption" id="totalpileup" value="totalpileup" style="margin-right: 5px;">
-                    <label for="totalpileup" style="margin-right: 10px;">Variant calling annotated file</label>
-                    <input type="file" id="variantCallingFile" name="variantCallingFile">
+
+      <form action="{% url 'amr_score_prediction' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- ── Input card ─────────────────────────────────────────────── -->
+        <div class="amr-card">
+          <div class="amr-card-header">
+            <i class="fa-solid fa-dna"></i>
+            Score AMR prediction
+          </div>
+          <div class="amr-card-body">
+
+            <p class="amr-desc">
+              This tool predicts the clinical category of a bacterial strain based on the presence
+              of chromosomal and acquired gene variants in the genome.
+              <strong>Mutational and/or acquired resistance scores are calculated independently — if only one
+              source of data is provided, only that part of the score will be computed.</strong>
+              Variant calling file (mutational) and acquired resistance source (FASTA or PaREx CSVs) are
+              independent: select one of each, both, or neither.
+            </p>
+
+            <div class="form-sections" style="align-items:stretch;">
+
+              <!-- ── LEFT: Summary file + FASTA ────────────────────────── -->
+              <div class="form-section-left" style="flex:2.2;">
+
+                <!-- Group 1: Variant file (mutational) -->
+                <div class="sec-label">
+                  Variant file
+                  <span class="tip" data-tip="Pre-processed chromosomal variant file used for mutational resistance scoring. Select one format or leave unselected if not available.">?</span>
+                </div>
+
+                <div class="radio-opt">
+                  <input type="radio" name="fileOption" id="totalpileup" value="totalpileup" onchange="amrToggleVariant()">
+                  <label for="totalpileup">
+                    Variant calling annotated file
+                    <span class="tip" data-tip="Annotated variant calling file generated by the ARPBIG pipeline (snpEff / SnpSift output). Used for mutational score calculation.">?</span>
+                  </label>
+                </div>
+                <div class="file-sub" id="input-totalpileup" style="display:none;">
+                  <input type="file" id="variantCallingFile" name="variantCallingFile">
+                </div>
+
+                <div class="radio-opt">
+                  <input type="radio" name="fileOption" id="snippy" value="snippy" onchange="amrToggleVariant()">
+                  <label for="snippy">
+                    Snippy snps.csv file
+                    <span class="tip" data-tip="The snps.csv output file from a Snippy variant calling run. Used for mutational score calculation.">?</span>
+                  </label>
+                </div>
+                <div class="file-sub" id="input-snippy" style="display:none;">
+                  <input type="file" name="snippyFile">
+                </div>
+
+                <!-- Divider between groups -->
+                <div style="border-top:1px dashed #ccd5db; margin:12px 0 10px;"></div>
+
+                <!-- Group 2: Acquired resistance source -->
+                <div class="sec-label">
+                  Acquired resistance source
+                  <span class="tip" data-tip="Provide one of the two sources below for acquired resistance scoring. You can provide either the assembly FASTA (PDC and OprD will be detected automatically via BLAST) or the pre-computed PaREx output CSVs. Select one or leave unselected if not available.">?</span>
+                </div>
+
+                <div class="radio-opt">
+                  <input type="radio" name="acquiredOption" id="opt-fasta" value="fasta" onchange="amrToggleAcquired()">
+                  <label for="opt-fasta">
+                    FASTA assembly file
+                    <span class="tip" data-tip="De novo assembly in FASTA format (e.g. SPAdes output). PDC variant and OprD status will be detected automatically by running BLAST internally.">?</span>
+                  </label>
+                </div>
+                <div class="file-sub" id="input-fasta" style="display:none;">
+                  <input type="file" name="fastaFile" accept=".fasta,.fa,.fna">
+                </div>
+
+                <div class="radio-opt">
+                  <input type="radio" name="acquiredOption" id="opt-parex" value="parex" onchange="amrToggleAcquired()">
+                  <label for="opt-parex">
+                    PaREx output files
+                    <span class="tip" data-tip="Pre-computed PaREx output: provide both the PDC results CSV and the OprD results CSV. These are semi-colon delimited files with columns sample_name, PDC/oprD, reference, bit_score, gaps, identity.">?</span>
+                  </label>
+                </div>
+                <div id="input-parex" style="display:none;">
+                  <div class="file-sub" style="margin-bottom:4px;">
+                    <label style="font-size:11px;color:#555;margin-bottom:2px;display:block;">PDC results CSV</label>
+                    <input type="file" name="pdcFile" accept=".csv">
                   </div>
-                  <div>
-                    <input type="radio" name="fileOption" id="snippy" value="snippy" style="margin-right: 5px;">
-                    <label for="snippy" style="margin-right: 10px;">Snippy snps.csv file</label>
-                    <input type="file" name="snippyFile">
+                  <div class="file-sub">
+                    <label style="font-size:11px;color:#555;margin-bottom:2px;display:block;">OprD results CSV</label>
+                    <input type="file" name="oprdFile" accept=".csv">
                   </div>
-                </td>
-                <!-- Columna 2: Parameters -->
-                <td style="vertical-align: top; padding: 10px; width: 50%;">
-                  <div style="font-weight: bold; margin-bottom: 10px;">Parameters</div>
-                  <div style="margin-bottom: 10px;">
-                    <label for="samplesNumber" style="display: block; margin-bottom: 5px;">Samples number</label>
-                    <input type="number" name="samplesNumber" id="samplesNumber" value="1" style="width: 100%;">
-                  </div>
-                  <div style="margin-bottom: 10px;">
-                    <input type="checkbox" name="acquiredGenes" id="acquiredGenes" style="margin-right: 5px;">
-                    <label for="acquiredGenes">File mock option</label>
-                  </div>
-                  <div>
-                    <label for="comments" style="display: block; margin-bottom: 5px;">Comments</label>
-                    <input type="text" name="comments" id="comments" style="width: 100%;">
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </td>
-          <!-- Grupo derecho: Raw data -->
-          <td style="border: 2px solid #333; padding: 10px; vertical-align: top; width: 34%;">
-            <div style="font-weight: bold; margin-bottom: 10px;">Raw data</div>
-            <div>
-              <label for="fastqFolder" style="display: block; margin-bottom: 5px;">FASTQ data folder</label>
-              <input type="file" name="fastqFolder" id="fastqFolder" webkitdirectory directory style="width: 100%;">
+                </div>
+
+              </div><!-- /.form-section-left -->
+
+              <div class="v-div"></div>
+
+              <!-- ── CENTRE: Raw data ───────────────────────────────────── -->
+              <div class="form-section-right" style="flex:1;">
+                <div class="sec-label">
+                  Raw data
+                  <span class="tip" data-tip="Provide raw FASTQ sequencing files. The full pipeline (variant calling + PDC/OprD detection) will run automatically. Cannot be combined with the summary files on the left.">?</span>
+                </div>
+                <div class="input-row">
+                  <label for="fastqFolder">FASTQ data folder</label>
+                  <input type="file" name="fastqFolder" id="fastqFolder"
+                         webkitdirectory directory style="font-size:12px; width:100%;">
+                </div>
+              </div>
+
+              <div class="v-div"></div>
+
+              <!-- ── RIGHT: Parameters ─────────────────────────────────── -->
+              <div class="form-section-right" style="flex:1;">
+                <div class="sec-label">Parameters</div>
+
+                <div class="input-row">
+                  <label for="samplesNumber">
+                    Samples number
+                    <span class="tip" data-tip="Number of samples to process in this run.">?</span>
+                  </label>
+                  <input class="amr-input" type="number" name="samplesNumber"
+                         id="samplesNumber" value="1" min="1" style="width:90px;">
+                </div>
+
+                <div class="check-opt">
+                  <input type="checkbox" name="acquiredGenes" id="acquiredGenes">
+                  <label for="acquiredGenes">
+                    File mock option
+                    <span class="tip" data-tip="Use mock / test data instead of a real input file.">?</span>
+                  </label>
+                </div>
+
+                <div class="input-row">
+                  <label for="comments">Comments</label>
+                  <input class="amr-input" type="text" name="comments"
+                         id="comments" placeholder="Optional notes…">
+                </div>
+              </div>
+
+            </div><!-- /.form-sections -->
+
+            <script>
+              function amrToggleVariant() {
+                var val = document.querySelector('input[name="fileOption"]:checked');
+                document.getElementById('input-totalpileup').style.display = (val && val.value === 'totalpileup') ? 'block' : 'none';
+                document.getElementById('input-snippy').style.display = (val && val.value === 'snippy') ? 'block' : 'none';
+              }
+              function amrToggleAcquired() {
+                var val = document.querySelector('input[name="acquiredOption"]:checked');
+                document.getElementById('input-fasta').style.display = (val && val.value === 'fasta') ? 'block' : 'none';
+                document.getElementById('input-parex').style.display = (val && val.value === 'parex') ? 'block' : 'none';
+              }
+            </script>
+
+            <!-- Calculate button -->
+            <div style="text-align:center; margin-top:22px;">
+              <input type="hidden" id="amr_score_calculation" name="amr_score_calculation">
+              <button type="submit" class="btn-calc">
+                <i class="fa-solid fa-calculator"></i> Calculate
+              </button>
             </div>
-          </td>
-        </tr>
-        <!-- Fila de resultados -->
-        <tr>
-          <td colspan="2" style="padding-top: 20px; text-align: center;">
-            <input type="hidden" id="amr_score_calculation" name="amr_score_calculation">
-            <input type="submit" value="Calculate" style="padding: 10px 20px; margin-bottom: 10px;">
-            <br>
-            <table style="width: 100%; border-collapse: collapse; margin: auto;">
-              <thead style="background-color: #FFDAB9;">
+
+          </div><!-- /.amr-card-body -->
+        </div><!-- /.amr-card -->
+
+        <!-- ── Breakdown card (only when data available) ─────────────── -->
+        {% if score_results %}
+        <div class="amr-card">
+          <div class="amr-card-header">
+            <i class="fa-solid fa-list-check"></i>
+            Score breakdown by antibiotic
+            <span class="tip" style="margin-left:4px;"
+              data-tip="Individual contribution of each gene condition to the final score, separated by resistance source.">?</span>
+          </div>
+
+          <div class="breakdown-grid">
+            {% for antibiotic, score in score_results.items %}
+            <div class="ab-breakdown-card">
+
+              <!-- Antibiotic header -->
+              <div class="ab-breakdown-title">
+                <i class="fa-solid fa-pills"></i>
+                {{ antibiotic }}
+              </div>
+
+              <!-- Mutacional block -->
+              <div class="resistance-block">
+                <div class="res-type-label mutacional">
+                  <i class="fa-solid fa-dna"></i> Mutational
+                  <span class="tip" data-tip="Chromosomal mutations that confer resistance through gene gain or loss of function.">?</span>
+                </div>
+                {% with mut_subtotal=0 %}
+                {% if score_eval_mutacional %}
+                  {% for entry in score_eval_mutacional|dict_get:antibiotic %}
+                    {% for gene, gscore in entry.items %}
+                    {% if gscore != 0 %}
+                    <div class="gene-row">
+                      <span class="gene-name">{{ gene }}</span>
+                      <span class="gene-score {% if gscore > 0 %}pos{% elif gscore < 0 %}neg{% else %}zero{% endif %}">
+                        {% if gscore > 0 %}+{% endif %}{{ gscore }}
+                      </span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                {% else %}
+                  <p class="no-mutations">No mutations detected</p>
+                {% endif %}
+                {% endwith %}
+              </div>
+
+              <!-- Adquirida block -->
+              <div class="resistance-block">
+                <div class="res-type-label adquirida">
+                  <i class="fa-solid fa-bacteria"></i> Acquired
+                  <span class="tip" data-tip="Horizontally acquired resistance genes (e.g. beta-lactamases, aminoglycoside-modifying enzymes).">?</span>
+                </div>
+                {% if score_eval_adquirida %}
+                  {% for entry in score_eval_adquirida|dict_get:antibiotic %}
+                    {% for gene, gscore in entry.items %}
+                    {% if gscore != 0 %}
+                    <div class="gene-row">
+                      <span class="gene-name">{{ gene }}</span>
+                      <span class="gene-score {% if gscore > 0 %}pos{% elif gscore < 0 %}neg{% else %}zero{% endif %}">
+                        {% if gscore > 0 %}+{% endif %}{{ gscore }}
+                      </span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                {% else %}
+                  <p class="no-mutations">No acquired genes detected</p>
+                {% endif %}
+              </div>
+
+              <!-- Total row -->
+              <div class="breakdown-total-row">
+                <span>Total score</span>
+                <span>{{ score.0 }}</span>
+              </div>
+
+            </div><!-- /.ab-breakdown-card -->
+            {% endfor %}
+          </div><!-- /.breakdown-grid -->
+        </div><!-- /.amr-card breakdown -->
+
+        <!-- ── Summary results table ──────────────────────────────────── -->
+        <div class="amr-card">
+          <div class="amr-card-header">
+            <i class="fa-solid fa-chart-bar"></i>
+            Prediction results summary
+          </div>
+          <div class="amr-card-body" style="padding:0;">
+            <table class="res-table">
+              <thead>
                 <tr>
-                  <th style="padding: 10px; border: 1px solid #ccc;">Antibiotic</th>
-                  <th style="padding: 10px; border: 1px solid #ccc;">Total score value</th>
-                  <th style="padding: 10px; border: 1px solid #ccc;">Predicted SIR <i>P. aeruginosa</i> phenotype</th>
+                  <th>Antibiotic</th>
+                  <th>Total score value</th>
+                  <th>Predicted SIR <em>P. aeruginosa</em> phenotype
+                    <span class="tip" style="margin-left:6px;"
+                      data-tip="S = Susceptible · I = Intermediate · R = Resistant. Thresholds: S ≤ 0.5 · 0.5 < I ≤ 1 · R > 1.">?</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {% for antibiotic, score in score_results.items %}
-                <tr style="background-color: #FFFFFF;">
-                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ antibiotic }}</td>
-                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center;">{{ score.0 }}</td>
-                  <td style="padding: 10px; border: 1px solid #ccc; text-align: center; background-color:
-                  {% if score.1 == 'S' %} #90EE9099 {% elif score.1 == 'I' %} #FFFF9999 {% elif score.1 == 'R' %} #FF999999 {% else %} white {% endif %};">{{ score.1 }}</td>
+                <tr>
+                  <td>{{ antibiotic }}</td>
+                  <td>{{ score.0 }}</td>
+                  <td><span class="sir sir-{{ score.1 }}">{{ score.1 }}</span></td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
-<!--            <br>-->
-<!--            <button type="button" style="padding: 10px 20px;">Download results</button>-->
-          </td>
-        </tr>
-      </table>
-    </form>
+          </div>
+        </div>
+        {% endif %}
 
-    <table style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; max-width: 900px; margin: auto; margin-bottom: 20px;">
-      <tr>
-        <td style="padding: 10px; border: 1px solid #ccc; background-color: #FFDAB9;">
-          Download obtained results
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" style="padding-top: 20px; text-align: center;">
-          <button type="button" style="padding: 10px 20px;">Download!!</button>
-        </td>
-      </tr>
-    </table>
+      </form>
 
+      <!-- ── Download card ──────────────────────────────────────────────── -->
+      <div class="amr-card">
+        <div class="amr-card-header">
+          <i class="fa-solid fa-download"></i>
+          Download results
+        </div>
+        <div class="amr-card-body" style="text-align:center;">
+          <button type="button" class="btn-dl">
+            <i class="fa-solid fa-file-arrow-down"></i> Download results
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /.amr-main -->
     {% endblock %}

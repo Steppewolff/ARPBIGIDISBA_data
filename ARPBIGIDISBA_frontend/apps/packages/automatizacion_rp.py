@@ -284,4 +284,4 @@ def main(scores_json, records):
         print(f"{ab}: {score}")
 
     # Devolver el score final por antibiótico
-    return score_results
+    return score_results, final_score_eval
