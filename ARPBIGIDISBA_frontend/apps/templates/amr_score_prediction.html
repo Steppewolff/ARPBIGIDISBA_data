@@ -672,6 +672,24 @@
                 {% endif %}
               </div>
 
+              <!-- β-lactamic resistance block: PA0958 (oprD) and PA4110 (PDC), always shown -->
+              <div class="resistance-block">
+                <div class="res-type-label" style="color:#1a5276;">
+                  <i class="fa-solid fa-shield-virus"></i> &beta;-lactamic resistance
+                  <span class="tip" data-tip="Scores from chromosomal β-lactam resistance determinants. oprD (PA0958): outer membrane porin — loss or alteration reduces carbapenem uptake. PDC (PA4110): AmpC β-lactamase variant — overexpression or structural variants increase hydrolysis. Always displayed, even if score is 0.">?</span>
+                </div>
+                {% for entry in score_eval_betalactamic|dict_get:antibiotic %}
+                  {% for gene, gscore in entry.items %}
+                  <div class="gene-row">
+                    <span class="gene-name" style="font-style:italic;">{{ gene }}</span>
+                    <span class="gene-score {% if gscore > 0 %}pos{% elif gscore < 0 %}neg{% else %}zero{% endif %}">
+                      {% if gscore > 0 %}+{% endif %}{{ gscore }}
+                    </span>
+                  </div>
+                  {% endfor %}
+                {% endfor %}
+              </div>
+
               <!-- Total row -->
               <div class="breakdown-total-row">
                 <span>Total score</span>

@@ -83,11 +83,36 @@ def amr_score_prediction(request):
         # return render(request, 'amr_score_prediction.html', {'score_results': score_results})
         score_results, score_eval_mutacional = automatizacion_rp.main(scores_json, records)
 
+        antibiotics = list(score_results.keys())
+
+        BETALACTAMIC_GENES = {"PA0958": "oprD", "PA4110": "PDC"}
+
+        betalac_by_ab = {}
+        mut_by_ab_filtered = {}
+        for ab in antibiotics:
+            betalac_by_ab[ab] = []
+            mut_by_ab_filtered[ab] = []
+            for entry in score_eval_mutacional.get(ab, []):
+                gene = list(entry.keys())[0]
+                if gene in BETALACTAMIC_GENES:
+                    # Renombrar la clave al nombre de display (oprD / PDC)
+                    betalac_by_ab[ab].append({BETALACTAMIC_GENES[gene]: list(entry.values())[0]})
+                else:
+                    mut_by_ab_filtered[ab].append(entry)
+
+        for ab in antibiotics:
+            genes_found = [list(e.keys())[0] for e in betalac_by_ab[ab]]
+            for display_name in ["oprD", "PDC"]:
+                if display_name not in genes_found:
+                    betalac_by_ab[ab].append({display_name: 0})
+
         return render(
             request, 'amr_score_prediction.html', {
                 'score_results': score_results,
-                'score_eval_mutacional': score_eval_mutacional,
-                'score_eval_adquirida': {},
+                'score_eval_mutacional': mut_by_ab_filtered,
+                'score_eval_adquirida': {ab: [] for ab in antibiotics},
+                'score_eval_betalactamic': betalac_by_ab,
+                'antibiotics': antibiotics,
             })
 
     else:
