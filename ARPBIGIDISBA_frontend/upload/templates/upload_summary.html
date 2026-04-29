@@ -2,9 +2,38 @@
 {% load static %}
 
     {% block head %}
-    <script src="/static/js/upload.js"></script>
+<!--    <script src="/static/js/upload.js"></script>-->
     <script src="/static/js/admin_js.js"></script>
-    <script>console.log("URL del modal:", "{% url 'upload_modal' %}");</script>
+    <script>console.log("URL del modal:", "{% url 'upload_modal' %}");
+
+        function abrir_modal(url) {
+            console.log("1. Botón pulsado, URL:", url);
+            console.log("2. jQuery:", typeof $ !== 'undefined');
+            console.log("3. Bootstrap modal:", typeof $.fn.modal !== 'undefined');
+
+            var $div = $('#upload_modal');
+            console.log("4. Div encontrado:", $div.length);
+
+            $div.load(url, function(response, status, xhr) {
+                console.log("5. Callback load ejecutado, status:", status, xhr.status);
+                if (status === "error") {
+                    console.error("Error HTTP:", xhr.status, xhr.statusText);
+                    return;
+                }
+                console.log("6. Respuesta (primeros 300 chars):", response.substring(0, 300));
+                try {
+                    $(this).modal({ backdrop: 'static', keyboard: false });
+                    $(this).modal('show');
+                    console.log("7. modal('show') llamado");
+                } catch(e) {
+                    console.error("Error Bootstrap modal:", e);
+                }
+            });
+            return false;
+        }
+    </script>
+
+    </script>
     {% endblock %}
 
     {% block title %}
@@ -96,7 +125,7 @@
           <input type="button" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('/upload_modal')">
       </div>
 
-      <div id="upload_modal" class="modal fade" role="dialog"></div>
+      <div id="upload_modal" class="modal fade" tabindex="-1" role="dialog"></div>
     </div>
 
     {% endblock %}

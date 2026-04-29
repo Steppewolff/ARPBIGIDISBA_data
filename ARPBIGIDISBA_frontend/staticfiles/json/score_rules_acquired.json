@@ -1,0 +1,318 @@
+{
+    "PDC": {
+        "CAZ": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "MER": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA2020": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "CIP": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA2020": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "C/T": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.25,
+            "doble_value": 0.25,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                }
+            }
+        }
+    },
+    "OPRD": {
+        "CAZ": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "MER": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA2020": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "CIP": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.5,
+            "doble_value": 0.5,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA2020": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.25,
+                    "doble_value": 0.5,
+                    "alleles": {
+                    }
+                }
+            }
+        },
+        "C/T": {
+            "mutation_type": "LOF",
+            "effect": "-",
+            "simple_value": 0.25,
+            "doble_value": 0.25,
+            "alleles": {
+            },
+            "regulators": "YES",
+            "loci": {
+                "PA0424": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                },
+                "PA3574": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                },
+                "PA3721": {
+                    "mutation_type": "LOF",
+                    "effect": "+",
+                    "simple_value": 0.125,
+                    "doble_value": 0.25,
+                    "alleles": {
+                    }
+                }
+            }
+        }
+    },
+}

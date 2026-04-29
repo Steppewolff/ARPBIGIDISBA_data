@@ -238,23 +238,52 @@ def summary(request):
     else:
         pass
 
-def eval_mandatory(request, all_fields):
-    mandatory_fields = request.session['mandatory_fields']
+# def eval_mandatory(request, all_fields):
+#     mandatory_fields = request.session['mandatory_fields']
+#
+#     # if 'isolate_name' not in dict(all_fields).values():
+#     if 'Isolate name' not in dict(all_fields).values():
+#         mandatory_fields['isolate_name'] = 0
+#         messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
+#     else:
+#         mandatory_fields['isolate_name'] = 1
+#
+#     # if 'project_name' not in dict(all_fields).values():
+#     if 'Project name' not in dict(all_fields).values():
+#         mandatory_fields['project_name'] = 0
+#         messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
+#     else:
+#         mandatory_fields['project_name'] = 1
+#
+#     request.session['mandatory_fields'] = mandatory_fields
+#
+#     return mandatory_fields
 
-    # if 'isolate_name' not in dict(all_fields).values():
+
+def eval_mandatory(request, all_fields):
+    mandatory_fields = {}
+
+    # Campo obligatorio: isolate_name
     if 'Isolate name' not in dict(all_fields).values():
         mandatory_fields['isolate_name'] = 0
-        messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
+        messages.warning(
+            request,
+            'No se ha seleccionado un campo para el nombre del aislado (isolate_name)'
+        )
     else:
         mandatory_fields['isolate_name'] = 1
 
-    # if 'project_name' not in dict(all_fields).values():
+    # Campo obligatorio: project_name
     if 'Project name' not in dict(all_fields).values():
         mandatory_fields['project_name'] = 0
-        messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
+        messages.warning(
+            request,
+            'No se ha seleccionado un campo para el ID del proyecto (project_name)'
+        )
     else:
         mandatory_fields['project_name'] = 1
 
+    # Guardar en sesión
     request.session['mandatory_fields'] = mandatory_fields
 
     return mandatory_fields
