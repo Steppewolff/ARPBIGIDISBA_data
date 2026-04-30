@@ -140,7 +140,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'psdb_pre',  # 'NAME': BASE_DIR / 'db.sqlite3',
         'USER': 'fernando',
         'PASSWORD': 'Orgullovalor',
         # 'USER': 'root',

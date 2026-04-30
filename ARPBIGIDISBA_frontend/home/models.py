@@ -264,16 +264,21 @@ class LocusMlst(models.Model):
 
 class MetadataGeneral(models.Model):
     isolate_id = models.AutoField(primary_key=True)
-    isolate_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Isolate name", db_comment="Isolate name in its project")
-    isolate_project_code = models.CharField(unique=True, max_length=50, blank=True, null=True, verbose_name="Project code", db_comment="Official project code")
+    isolate_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Isolate name", db_comment="Isolate name in its project")
+    isolate_project_code = models.CharField(unique=True, max_length=255, blank=True, null=True, verbose_name="Project code", db_comment="Official project code")
     species = models.CharField(max_length=255, blank=True, null=True, verbose_name="Species", db_comment="Isolate species")
-    project_name = models.CharField(max_length=255, blank=True, null=True, verbose_name="Project name", db_comment="Internal name of the project")
+    project_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Project name", db_comment="Internal name of the project")
     isolation_day = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention day", db_comment="Isolate obtention day")
     isolation_month = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention month", db_comment="Isolate obtention month")
     isolation_year = models.IntegerField(blank=True, null=True, verbose_name="Isolate obtention year", db_comment="Isolate obtention year")
     isolation_date = models.DateField(blank=True, null=True, verbose_name="Isolate obtention date", db_comment="Whole date of obtention of the isolate")
     isolate_source = models.CharField(max_length=255, blank=True, null=True, verbose_name="Isolate origin", db_comment="Clinic origin of the isolate")
     isolate_comments = models.CharField(max_length=255, blank=True, null=True, verbose_name="Isolate comments", db_comment="Comments about the isolate")
+
+    def save(self, *args, **kwargs):
+        if self.project_name and self.isolate_name:
+            self.isolate_project_code = f"{self.project_name}_{self.isolate_name}"
+        super().save(*args, **kwargs)
 
     class Meta:
         managed = True

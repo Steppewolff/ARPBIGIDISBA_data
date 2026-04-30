@@ -86,7 +86,7 @@
                     <label for="variable_{{ df_column }}" style="text-align: left;">{{ df_column }}</label>
                     <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" title="{{ df_column }}" style="float: right;">
                         {% for db_column in db_columns %}
-                            {% if db_column == 'Not write this in DB' %}
+                            {% if db_column == 'Do NOT write this in DB' %}
                                 <option value="option_{{ db_column }}" title="{{db_columns_helpers|get_item:db_column}}" selected="selected">{{ db_column }}</option>
                             {% else %}
                                 <option value="option_{{ db_column }}" title="{{db_columns_helpers|get_item:db_column}}">{{ db_column }}</option>

@@ -31,9 +31,43 @@
             });
             return false;
         }
+
+        function save_fk_mappings() {
+            var mappings = {};
+            document.querySelectorAll('.fk-select').forEach(function(sel) {
+                var idx = sel.dataset.idx;
+                var field = sel.dataset.field;
+                if (!mappings[idx]) mappings[idx] = {};
+                mappings[idx][field] = sel.value;
+            });
+
+            fetch("{% url 'fk_save' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify(mappings),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var status = document.getElementById('fk_save_status');
+                if (data.status === 'ok') {
+                    status.textContent = '✓ Guardado';
+                    status.style.color = 'green';
+                } else {
+                    status.textContent = '✗ Error: ' + data.message;
+                    status.style.color = 'red';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('save_fk_btn');
+            if (btn) btn.addEventListener('click', save_fk_mappings);
+        });
     </script>
 
-    </script>
     {% endblock %}
 
     {% block title %}
@@ -93,6 +127,50 @@
       <hr style="width:100%;">
 
       {% endif %}
+
+        {% if fk_table %}
+        <hr style="width:100%;">
+        <h4>Asignación de valores para campos de tablas relacionadas:</h4>
+        <div class="results" style="overflow-x: auto;">
+            <table class="table table-striped" id="fk_mapping_table">
+                <thead style="font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
+                    <tr>
+                        <th>Aislado</th>
+                        {% for fk_key, fk_info in fk_table.active_fk %}
+                            <th>{{ fk_info.label }} (valor archivo)</th>
+                            <th>{{ fk_info.label }} (valor BDD)</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fk_row in fk_table.rows %}
+                    <tr data-idx="{{ fk_row.idx }}">
+                        <td>{{ fk_row.isolate_name }}</td>
+                        {% for cell in fk_row.cells %}
+                            <td>{{ cell.raw_value }}</td>
+                            <td>
+                                <select class="fk-select"
+                                        data-idx="{{ fk_row.idx }}"
+                                        data-field="{{ cell.field_name }}">
+                                    <option value="">-- Seleccionar --</option>
+                                    {% for option in cell.options %}
+                                        <option value="{{ option.id }}">
+                                            {{ option.display }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+            <button class="btn btn-primary" id="save_fk_btn">Guardar asignación FK</button>
+            <span id="fk_save_status" style="margin-left:10px; align-self:center;"></span>
+        </div>
+        {% endif %}
 
       {% if amr_mutations %}
 
