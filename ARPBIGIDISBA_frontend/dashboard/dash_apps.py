@@ -82,19 +82,47 @@ app3.layout = html.Div([
 
 # Datos para el mapa
 # hospitals = list(MetadataClinic.objects.values_list('hospital_id__hospital_name'))
-hospitals = list(MetadataClinic.objects.values_list('hospital__hospital_name'))
-hospitals = [x[0] for x in hospitals]
-hospital_freq = Counter(hospitals)
-hospitals = list(hospital_freq.keys())
-# latitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_latitude').distinct())
-latitudes = list(MetadataClinic.objects.values_list('hospital__geo_latitude').distinct())
-latitudes = [x[0] for x in latitudes]
-# longitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_longitude').distinct())
-longitudes = list(MetadataClinic.objects.values_list('hospital__geo_longitude').distinct())
-longitudes = [x[0] for x in longitudes]
-frequencies = list(hospital_freq.values())
+# hospitals = list(MetadataClinic.objects.values_list('hospital__hospital_name'))
+# hospitals = [x[0] for x in hospitals]
+# hospital_freq = Counter(hospitals)
+# hospitals = list(hospital_freq.keys())
+# # latitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_latitude').distinct())
+# latitudes = list(MetadataClinic.objects.values_list('hospital__geo_latitude').distinct())
+# latitudes = [x[0] for x in latitudes]
+# # longitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_longitude').distinct())
+# longitudes = list(MetadataClinic.objects.values_list('hospital__geo_longitude').distinct())
+# longitudes = [x[0] for x in longitudes]
+# frequencies = list(hospital_freq.values())
+#
+# # cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
+#
+# df_map = pd.DataFrame({
+#     'Hospital': hospitals,
+#     'Latitud': latitudes,
+#     'Longitud': longitudes,
+#     'Total aislados': frequencies,
+#     'Color': hospitals
+# })
 
-# cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
+# Obtener nombre, lat y lon juntos y alineados por hospital
+hospital_data = (
+    MetadataClinic.objects
+    .exclude(hospital=None)
+    .values_list('hospital__hospital_name', 'hospital__geo_latitude', 'hospital__geo_longitude')
+)
+
+hospital_freq = Counter([x[0] for x in hospital_data])
+
+# Coordenadas únicas por hospital (primera aparición)
+seen = {}
+for name, lat, lon in hospital_data:
+    if name not in seen:
+        seen[name] = (lat, lon)
+
+hospitals   = list(seen.keys())
+latitudes   = [seen[h][0] for h in hospitals]
+longitudes  = [seen[h][1] for h in hospitals]
+frequencies = [hospital_freq[h] for h in hospitals]
 
 df_map = pd.DataFrame({
     'Hospital': hospitals,

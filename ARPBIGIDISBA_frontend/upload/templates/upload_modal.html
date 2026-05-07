@@ -7,13 +7,13 @@
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">¡¡ATENCIÓN!! Esta operación va a hacer cambios en la BDD</h5>
+            <h5 class="modal-title" id="modalLabel">WARNING!! This operation will apply changes in DB</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
         <div class="modal-body">
-            <h6>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</h6>
+            <h6>Verify the following warnings found evaluating your assignation proposal:</h6>
 
             {% if mandatory_fields %}
               {% if messages %}
@@ -27,7 +27,7 @@
 
             {% if common_isolates %}
             <div class="alert alert-warning" role="alert">
-                <p>Los siguientes aislados ya están en la BDD. Si todos los valores del registro son iguales no se escribirá nada:</p>
+                <p>Following isolate names are already in the DB. If all the values proposed are the same, this operation will not write anything:</p>
                 <ul>
                     {% for value in common_isolates %}
                         <li>{{ value }}</li>
@@ -38,7 +38,7 @@
 
         {% if duplicates %}
             <div class="alert alert-warning" role="alert">
-                <p>Las siguientes columnas del archivo de input se han asignado a más de un campo de la BDD. Es aconsejable revisar si es correcto:</p>
+                <p>The following columns in the input file have been assigned to more than one DB field. Review if the assignation is correct:</p>
                 <ul>
                     {% for value in duplicates %}
                         <li>{{ value }}</li>
@@ -47,33 +47,34 @@
             </div>
         {% endif %}
 
-        {% if difference_hospitals %}
-            <div class="alert alert-warning" role="alert">
-                <p>Los nombres de los siguientes hospitales no aparecen en la BDD, comprobar si están correctamente escritos:</p>
-                <ul>
-                    {% for value in difference_hospitals %}
-                        <li>{{ value }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+<!--        {% if difference_hospitals %}-->
+<!--            <div class="alert alert-warning" role="alert">-->
+<!--                <p>Name hospitales no aparecen en la BDD, comprobar si están correctamente escritos:</p>-->
+<!--                <ul>-->
+<!--                    {% for value in difference_hospitals %}-->
+<!--                        <li>{{ value }}</li>-->
+<!--                    {% endfor %}-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        {% endif %}-->
 
         </div>
         <div class="modal-footer">
             {% if mandatory_fields.isolate_name == 0 or mandatory_fields.project_name == 0 %}
-            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'" disabled>Escribir datos en BDD</button>
+            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}?uid={{ upload_id }}'" disabled>Write data to DB</button>
             {% else %}
-            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}'">Escribir datos en BDD</button>
+            <button type="button" class="btn btn-danger" onclick="location.href='{% url 'upload_confirm' %}?uid={{ upload_id }}'">Write data to DB</button>
+
             {% endif %}
-            <button type="button" class="btn btn-success" onclick="showDialog()">Revisar asignación de variables</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
+            <button type="button" class="btn btn-success" onclick="showDialog()">Review variables assignation</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
             <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
                 <p>Esta es la información del div que se puede mostrar u ocultar.</p>
             </div>
             <dialog id="myDialog" style="position: fixed; top: 10px; overflow: auto; max-height: calc(100vh - 20px)">
-                <p>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</p>
+                <p>Verify the following warnings found evaluating your assignation proposal:</p>
                 <form action="{% url 'upload_modal' %}" method="POST" id="upload_matches">
-                    <h4>Seleccione campo en la BDD para cada columna: </h4>
+                    <h4>Select DB field for each input file column: </h4>
                     {% csrf_token %}
                     {% for field in all_fields %}
                         <label for="{{ field.0 }}" style="text-align: left;">{{ field.0 }}</label>
@@ -92,7 +93,7 @@
                     <input type="submit" value="Modificar asignación" class="btn btn-primary">
                 </form>
 
-                <button onclick="closeDialog()">Volver</button>
+                <button onclick="closeDialog()">Back</button>
             </dialog>
         </div>
     </div>

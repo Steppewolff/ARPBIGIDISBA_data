@@ -19,17 +19,18 @@ def obtener_opciones_filtro():
             """
                 SELECT 
                     j.clave AS clave, 
-                    JSON_UNQUOTE(JSON_EXTRACT(s.mutational_resistome, CONCAT('$.', j.clave))) AS valor
+                    JSON_UNQUOTE(JSON_EXTRACT(s.mutational_resistome_muts, CONCAT('$."', j.clave, '"'))) AS valor
                 FROM sequence_analysis s
                 JOIN JSON_TABLE(
-                    JSON_KEYS(s.mutational_resistome), 
+                    JSON_KEYS(s.mutational_resistome_muts), 
                     "$[*]" COLUMNS (clave VARCHAR(255) PATH "$")
-                ) AS j;
+                ) AS j
+                WHERE s.mutational_resistome_muts IS NOT NULL;;
             """)
 
         opciones = {}
         for clave, valor in cursor.fetchall():
-            if clave:
+            if clave and valor:
                 valores_separados = [v.strip() for v in valor.split(";") if v.strip()]  # Separar valores múltiples
                 if clave in opciones:
                     opciones[clave].update(valores_separados)
@@ -63,7 +64,7 @@ class GroupedSelect(forms.Select):
         return '\n'.join(output)
 
 class MultiFilter(filters.FilterSet):
-    OPCIONES_FILTRO = obtener_opciones_filtro()
+    # OPCIONES_FILTRO = obtener_opciones_filtro()
 
     isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
     species = filters.ModelChoiceFilter(field_name='species', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
@@ -74,14 +75,14 @@ class MultiFilter(filters.FilterSet):
     isolation_date__lt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='lte', label='To (date)')
 
     incluir = filters.MultipleChoiceFilter(
-        choices=OPCIONES_FILTRO,
+        choices=[],
         # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect1'}),
         method='filtrar_incluir',
         label="Present mutations"
     )
     excluir = filters.MultipleChoiceFilter(
-        choices=OPCIONES_FILTRO,
+        choices=[],
         # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect2'}),
         method='filtrar_excluir',
@@ -93,7 +94,7 @@ class MultiFilter(filters.FilterSet):
         if value:
             filtros = []
             for valor in value:
-                filtros.append(f"JSON_SEARCH(mutational_resistome, 'one', '{valor}') IS NOT NULL")
+                filtros.append(f"JSON_SEARCH(mutational_resistome_muts, 'one', '{valor}') IS NOT NULL")
             return queryset.extra(where=[' OR '.join(filtros)])
         return queryset
 
@@ -102,12 +103,17 @@ class MultiFilter(filters.FilterSet):
         if value:
             filtros = []
             for valor in value:
-                filtros.append(f"JSON_SEARCH(mutational_resistome, 'one', '{valor}') IS NOT NULL")
+                filtros.append(f"JSON_SEARCH(mutational_resistome_muts, 'one', '{valor}') IS NOT NULL")
             return queryset.extra(where=[' NOT (' + ' OR '.join(filtros) + ')'])
         return queryset
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        opciones = obtener_opciones_filtro()
+        self.filters['incluir'].extra['choices'] = opciones
+        self.filters['excluir'].extra['choices'] = opciones
+
         self.form.helper = FormHelper(self.form)
         self.form.helper.form_method = 'GET'
         self.form.helper.layout = Layout(

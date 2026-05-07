@@ -39,7 +39,7 @@ class MetadataClinicForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MetadataClinicForm, self).__init__(*args, **kwargs)
-        self.fields['sample_type'].label_from_instance = lambda obj: obj.sample
+        self.fields['sample_type'].label_from_instance = lambda obj: obj.sample_en
 
 
 class HospitalForm(ModelForm):
@@ -68,9 +68,43 @@ class HospitalForm(ModelForm):
 class MicForm(ModelForm):
     class Meta:
         model = Mic
-        fields = ['pip', 'pip_tz', 'fep', 'cfdc', 'caz', 'caz_avi', 'ctz', 'imi', 'imi_rel', 'mer',
-                  'mer_vab', 'azt_avi', 'cip', 'ami', 'gen', 'net', 'tob',
-                  'col', 'fo', 'tic', 'ptz', 'atm']
+        fields = ['tic',
+                  'pip',
+                  'pip_tz',
+                  'caz',
+                  'caz_avi',
+                  'tol',
+                  'ctz',
+                  'fep',
+                  'cfdc',
+                  'fep_tan',
+                  'fep_zid',
+                  'fdc_xer',
+                  'atm',
+                  'azt_avi',
+                  'imi',
+                  'imi_rel',
+                  'mer',
+                  'mer_vab',
+                  'mer_nac',
+                  'mer_xer',
+                  'ami',
+                  'tob',
+                  'gen',
+                  'net',
+                  'cip',
+                  'lvx',
+                  'dlx',
+                  'mxl',
+                  'col',
+                  'fo',
+                  'taz',
+                  'avi',
+                  'rel',
+                  'nac',
+                  'dur',
+                  'xer',
+                  ]
 
 
 class FenotipoForm(ModelForm):

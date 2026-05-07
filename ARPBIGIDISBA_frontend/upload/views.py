@@ -22,6 +22,7 @@ import os.path
 import re
 import os
 import json
+import uuid
 
 from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 
@@ -37,6 +38,24 @@ FK_FIELDS_CONFIG = {
         'model': 'SampleType',
         'display_field': 'sample',
         'pk_field': 'sample_type_id',
+    },
+    'oprd_reference_id': {
+        'label': 'oprD reference',
+        'model': 'OprdReference',
+        'display_field': 'reference_strain',
+        'pk_field': 'oprd_reference_id',
+    },
+    'pdc_variant_id': {
+        'label': 'PDC variant',
+        'model': 'PdcVariant',
+        'display_field': 'variant_name',
+        'pk_field': 'pdc_variant_id',
+    },
+    'ward_id': {
+        'label': 'Ward collection',
+        'model': 'Ward',
+        'display_field': 'ward_name_en',
+        'pk_field': 'ward_id',
     },
 }
 
@@ -94,6 +113,13 @@ def descargar_manual_bdd(request):
 # Create your views here.
 def upload(request):
     if request.method == 'POST' and 'fileselect' in request.FILES:
+        for key in ['df', 'all_fields', 'amr_loci', 'loci_ext', 'mandatory_fields',
+                    'amr_columns', 'amr_mutations', 'active_fk', 'fk_mappings']:
+            request.session.pop(key, None)
+        upload_id = str(uuid.uuid4())
+        request.session['upload_id'] = upload_id
+        request.session.modified = True
+
         file = request.FILES['fileselect']
         loci_ext = request.POST.get('loci')
 
@@ -107,12 +133,13 @@ def upload(request):
 
         request.session['file'] = file.name
         request.session['df'] = df.to_json(orient='split')
+        request.session['loci_ext'] = loci_ext
 
         df_columns = df.columns.tolist()
         amr_loci = []
         locus_pattern = r"PA ?\d{4}"
 
-        if loci_ext == 'yes':
+        if loci_ext in ('muts', 'pols'):
             for column in df_columns:
                 if re.search(locus_pattern, column):
                     amr_loci.append(column)
@@ -129,7 +156,7 @@ def upload(request):
 
         manual_file(db_columns_helpers)
 
-        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'db_columns_helpers': db_columns_helpers})
+        return render(request, 'cargadatos.html', {'df_columns': df_columns, 'db_columns': db_columns, 'df_rows': df_rows, 'file': file, 'amr_loci': amr_loci, 'db_columns_helpers': db_columns_helpers, 'loci_ext': loci_ext, 'upload_id': upload_id})
 
     else:
         db_columns = []
@@ -178,6 +205,12 @@ def upload(request):
 
 def summary(request):
     if request.method == 'POST' and 'db_var_input' in request.POST:
+        # Validar que el upload_id del formulario coincide con el de la sesión
+        form_upload_id = request.POST.get('upload_id', '')
+        session_upload_id = request.session.get('upload_id', '')
+        if not form_upload_id or form_upload_id != session_upload_id:
+            messages.error(request, 'La sesión de carga ha expirado o no es válida. Por favor, vuelve a subir el archivo.')
+            return redirect('cargadatos')
         all_fields = {}
         # List with all the selected options in the db variables form
 
@@ -260,32 +293,61 @@ def summary(request):
         if active_fk:
             isolate_col = dict_fields.get('Isolate name') or dict_fields.get('isolate_name')
             active_fk_list = list(active_fk.items())
-            fk_rows = []
-            for idx, (_, row) in enumerate(df.iterrows()):
-                cells = []
-                for fk_key, fk_info in active_fk_list:
-                    cells.append({
+
+            # Una entrada por valor único de cada campo FK
+            fk_unique = []
+            for fk_key, fk_info in active_fk_list:
+                excel_col = fk_info['excel_col']
+                unique_vals = df[excel_col].dropna().unique().tolist() if excel_col in df.columns else []
+                fk_unique.append(
+                    {
                         'field_name': fk_key,
-                        'raw_value': str(row[fk_info['excel_col']]) if fk_info['excel_col'] in row.index else '',
+                        'label': fk_info['label'],
                         'options': fk_info['options'],
-                        'display_field': fk_info['display_field'],
+                        'unique_values': [str(v) for v in unique_vals],
                     })
-                fk_rows.append({
-                    'idx': idx,
-                    'isolate_name': str(row[isolate_col]) if isolate_col else f'Fila {idx + 1}',
-                    'cells': cells,
-                })
+
             fk_table = {
-                'active_fk': list(active_fk.items()),
-                'rows': fk_rows,
+                'active_fk': active_fk_list,
+                'fk_unique': fk_unique,
             }
-            # Guardar en sesión sin options (no serializables directamente)
             request.session['active_fk'] = {
                 k: {'excel_col': v['excel_col'], 'label': v['label']}
                 for k, v in active_fk.items()
             }
         else:
             request.session['active_fk'] = {}
+
+        # fk_table = None
+        # if active_fk:
+        #     isolate_col = dict_fields.get('Isolate name') or dict_fields.get('isolate_name')
+        #     active_fk_list = list(active_fk.items())
+        #     fk_rows = []
+        #     for idx, (_, row) in enumerate(df.iterrows()):
+        #         cells = []
+        #         for fk_key, fk_info in active_fk_list:
+        #             cells.append({
+        #                 'field_name': fk_key,
+        #                 'raw_value': str(row[fk_info['excel_col']]) if fk_info['excel_col'] in row.index else '',
+        #                 'options': fk_info['options'],
+        #                 'display_field': fk_info['display_field'],
+        #             })
+        #         fk_rows.append({
+        #             'idx': idx,
+        #             'isolate_name': str(row[isolate_col]) if isolate_col else f'Fila {idx + 1}',
+        #             'cells': cells,
+        #         })
+        #     fk_table = {
+        #         'active_fk': list(active_fk.items()),
+        #         'rows': fk_rows,
+        #     }
+        #     # Guardar en sesión sin options (no serializables directamente)
+        #     request.session['active_fk'] = {
+        #         k: {'excel_col': v['excel_col'], 'label': v['label']}
+        #         for k, v in active_fk.items()
+        #     }
+        # else:
+        #     request.session['active_fk'] = {}
         # --- Fin detección FK ---
 
         if 'Isolate name' in dict_fields:
@@ -318,6 +380,8 @@ def summary(request):
             'amr_mutations': amr_mutations,
             'mandatory_fields': mandatory_fields,
             'fk_table': fk_table,
+            'loci_ext': request.session.get('loci_ext', 'no'),
+            'upload_id': request.session.get('upload_id', ''),
         })
 
     else:
@@ -401,7 +465,7 @@ def modal(request):
 
         mandatory_fields = eval_mandatory(request, all_fields)
 
-        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'db_columns': db_columns, 'mandatory_fields': mandatory_fields})
+        return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'db_columns': db_columns, 'mandatory_fields': mandatory_fields, 'loci_ext': request.session.get('loci_ext', 'no'), 'upload_id': request.session.get('upload_id', '')})
 
     else:
         isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
@@ -419,11 +483,19 @@ def modal(request):
         common_isolates = []
         count_dict = Counter(dict(all_fields).values())
         duplicates = [key for key, value in count_dict.items()
-                  if count_dict[key] > 1 and key != 'Not write this in DB']
+                      if count_dict[key] > 1 and key != 'Do NOT write this in DB']
 
-        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields})
+        # return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields})
+        upload_id = request.GET.get('uid') or request.session.get('upload_id', '')
+        return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields, 'upload_id': upload_id})
 
 def confirm(request):
+    get_upload_id = request.GET.get('uid', '')
+    session_upload_id = request.session.get('upload_id', '')
+    if not get_upload_id or get_upload_id != session_upload_id:
+        messages.error(request, 'La sesión de carga ha expirado o no es válida. Por favor, vuelve a subir el archivo.')
+        return redirect('cargadatos')
+
     all_fields = request.session['all_fields']
     df = pd.read_json(StringIO(request.session['df']), orient='split')
 
@@ -446,45 +518,7 @@ def confirm(request):
             if '_id' not in field.name and field.name in input_fields:
                 model_fields[model_name].append(field.name)
 
-    # with transaction.atomic():
-    #     created_records = []
-    #     edited_records = {}
-        # for _, row in df.iterrows():
-        #
-        #     # Procesar el modelo principal (MetadataGeneral)
-        #     metadata_general_data = {field: row[input_fields[field]] for field in model_fields['MetadataGeneral'] if input_fields[field] in row}
-        #     metadata_general_instance, created = MetadataGeneral.objects.get_or_create(isolate_name=metadata_general_data['isolate_name'], defaults = metadata_general_data)
-        #
-        #     if created:
-        #         created_records.append(metadata_general_data['isolate_name'])
-        #
-        #     if not created:
-        #         for field, value in metadata_general_data.items():
-        #             setattr(metadata_general_instance, field, value)
-        #         metadata_general_instance.save()
-        #
-        #     for model_name, fields in model_fields.items():
-        #         model_data = {}
-        #         if model_name == 'MetadataGeneral':
-        #             continue
-        #
-        #         model_data = {field: row[input_fields[field]] for field in fields if input_fields[field] in row}
-        #
-        #         if model_data:
-        #             model_instance, created = apps.get_model('home', model_name).objects.get_or_create(isolate_id=metadata_general_instance, defaults=model_data)
-        #             if created:
-        #                 edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(fields)
-        #
-        #             if not created:
-        #                 for field, new_value in model_data.items():
-        #                     current_value = getattr(model_instance, field)
-        #                     if str(current_value) != str(new_value):
-        #                         setattr(model_instance, field, new_value)
-        #                         edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(field)
-        #                 model_instance.save()
-        #
-        # # Renderizar página para confirmar
-        # return render(request, 'upload_confirm.html', {'created_records': created_records, 'edited_records': edited_records})
+
 
     fk_mappings = request.session.get('fk_mappings', {})
     active_fk_session = request.session.get('active_fk', {})
@@ -499,69 +533,134 @@ def confirm(request):
                 break
             except Exception:
                 pass
+    loci_ext = request.session.get('loci_ext', 'no')
+    amr_loci = request.session.get('amr_loci', [])
 
     with transaction.atomic():
-        created_records = []
-        edited_records = {}
+        created_records = []  # lista de dicts
+        edited_records = []  # lista de dicts
+
         for idx, (_, row) in enumerate(df.iterrows()):
             row_fk = fk_mappings.get(str(idx), {})
 
-            metadata_general_data = {field: row[input_fields[field]] for field in model_fields['MetadataGeneral'] if input_fields[field] in row}
-            # # Calcular isolate_project_code para búsqueda
-            # project_col = input_fields.get('Project name')
-            # isolate_col = input_fields.get('Isolate name')
-            # if not project_col or not isolate_col:
-            #     raise ValueError(
-            #         "Project name e Isolate name son campos obligatorios para generar isolate_project_code")
-            # isolate_project_code = f"{row[project_col]}_{row[isolate_col]}"
+            metadata_general_data = {
+                field: row[input_fields[field]]
+                for field in model_fields['MetadataGeneral']
+                if input_fields[field] in row
+            }
             isolate_project_code = f"{metadata_general_data['project_name']}_{metadata_general_data['isolate_name']}"
-            # metadata_general_instance, created = MetadataGeneral.objects.get_or_create(isolate_name=metadata_general_data['isolate_name'], defaults=metadata_general_data)
-            metadata_general_instance, created = MetadataGeneral.objects.get_or_create(
+            metadata_general_instance, mg_created = MetadataGeneral.objects.get_or_create(
                 isolate_project_code=isolate_project_code,
                 defaults=metadata_general_data
             )
 
-            if created:
-                created_records.append(metadata_general_data['isolate_name'])
-
-            if not created:
+            if mg_created:
+                created_records.append(
+                    {
+                        'isolate_name': metadata_general_data.get('isolate_name', ''),
+                        'project_name': metadata_general_data.get('project_name', ''),
+                        'fields': {k: v for k, v in metadata_general_data.items()
+                                   if k not in ('isolate_name', 'project_name')},
+                    })
+            else:
+                mg_changed = {}
                 for field, value in metadata_general_data.items():
+                    if str(getattr(metadata_general_instance, field)) != str(value):
+                        mg_changed[field] = value
                     setattr(metadata_general_instance, field, value)
                 metadata_general_instance.save()
+                if mg_changed:
+                    edited_records.append(
+                        {
+                            'isolate_name': metadata_general_data.get('isolate_name', ''),
+                            'project_name': metadata_general_data.get('project_name', ''),
+                            'changed_fields': mg_changed,
+                        })
 
             for model_name, fields in model_fields.items():
                 if model_name == 'MetadataGeneral':
                     continue
 
-                model_data = {field: row[input_fields[field]] for field in fields if input_fields[field] in row}
+                model_data = {
+                    field: row[input_fields[field]]
+                    for field in fields
+                    if input_fields[field] in row
+                }
 
-                # Añadir FK fields si este modelo los tiene
                 for fk_key, fk_model_name in fk_to_model.items():
-                    if fk_model_name == model_name and fk_key in row_fk:
-                        # model_data[fk_key] = int(row_fk[fk_key])
-                        for fk_key, fk_model_name in fk_to_model.items():
-                            if fk_model_name == model_name and fk_key in row_fk:
-                                raw_value = row_fk.get(fk_key)
+                    if fk_model_name == model_name and fk_key in fk_mappings:
+                        excel_col = active_fk_session.get(fk_key, {}).get('excel_col', '')
+                        raw_val = str(row[excel_col]) if excel_col and excel_col in row.index else ''
+                        selected_id = fk_mappings[fk_key].get(raw_val, '')
+                        model_data[fk_key] = int(selected_id) if selected_id else None
 
-                                if raw_value in (None, ''):
-                                    model_data[fk_key] = None
-                                else:
-                                    model_data[fk_key] = int(raw_value)
+                if model_name == 'SequenceAnalysis' and amr_loci:
+                    resistome_data = {
+                        locus: str(row[locus]) if locus in row.index and pd.notna(row[locus]) else ''
+                        for locus in amr_loci
+                    }
+                    if loci_ext == 'muts':
+                        model_data['mutational_resistome_muts'] = resistome_data
+                    elif loci_ext == 'pols':
+                        model_data['mutational_resistome_pols'] = resistome_data
 
                 if model_data:
-                    model_instance, created = apps.get_model('home', model_name).objects.get_or_create(isolate_id=metadata_general_instance, defaults=model_data)
-                    if created:
-                        edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(fields)
+                    model_instance, rel_created = apps.get_model('home', model_name).objects.get_or_create(
+                        isolate_id=metadata_general_instance, defaults=model_data)
 
-                    if not created:
+                    if rel_created:
+                        # Registro relacionado nuevo: todos los campos son añadidos
+                        display_data = {
+                            k: '(JSON)' if isinstance(v, dict) else v
+                            for k, v in model_data.items()
+                        }
+                        existing = next(
+                            (r for r in edited_records
+                             if r['isolate_name'] == metadata_general_data.get('isolate_name', '')), None)
+                        if existing:
+                            existing['changed_fields'].update(display_data)
+                        else:
+                            edited_records.append(
+                                {
+                                    'isolate_name': metadata_general_data.get('isolate_name', ''),
+                                    'project_name': metadata_general_data.get('project_name', ''),
+                                    'changed_fields': display_data,
+                                })
+
+                    if not rel_created:
+                        rel_changed = {}
                         for field, new_value in model_data.items():
-                            current_value = getattr(model_instance, field)
-                            if str(current_value) != str(new_value):
+                            if str(getattr(model_instance, field)) != str(new_value):
+                                rel_changed[field] = '(JSON)' if isinstance(new_value, dict) else new_value
                                 setattr(model_instance, field, new_value)
-                                edited_records.setdefault(metadata_general_data['isolate_name'], []).extend(field)
                         model_instance.save()
+                        if rel_changed:
+                            existing = next(
+                                (r for r in edited_records
+                                 if r['isolate_name'] == metadata_general_data.get('isolate_name', '')), None)
+                            if existing:
+                                existing['changed_fields'].update(rel_changed)
+                            else:
+                                edited_records.append(
+                                    {
+                                        'isolate_name': metadata_general_data.get('isolate_name', ''),
+                                        'project_name': metadata_general_data.get('project_name', ''),
+                                        'changed_fields': rel_changed,
+                                    })
 
-        return render(request, 'upload_confirm.html', {'created_records': created_records, 'edited_records': edited_records})
+    # Cabeceras dinámicas para tabla de creados
+    created_field_headers = []
+    for record in created_records:
+        for f in record.get('fields', {}).keys():
+            if f not in created_field_headers:
+                created_field_headers.append(f)
+
+    return render(
+        request, 'upload_confirm.html', {
+            'created_records': created_records,
+            'edited_records': edited_records,
+            'created_field_headers': created_field_headers,
+        })
 
 def fk_save(request):
     if request.method == 'POST':

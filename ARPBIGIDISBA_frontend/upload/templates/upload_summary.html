@@ -6,7 +6,9 @@
     <script src="/static/js/admin_js.js"></script>
     <script>console.log("URL del modal:", "{% url 'upload_modal' %}");
 
-        function abrir_modal(url) {
+        function abrir_modal(url, uid) {
+            var fullUrl = uid ? url + '?uid=' + uid : url;
+
             console.log("1. Botón pulsado, URL:", url);
             console.log("2. jQuery:", typeof $ !== 'undefined');
             console.log("3. Bootstrap modal:", typeof $.fn.modal !== 'undefined');
@@ -33,12 +35,12 @@
         }
 
         function save_fk_mappings() {
-            var mappings = {};
+            var mappings = {};  // { fk_key: { raw_value: selected_id } }
             document.querySelectorAll('.fk-select').forEach(function(sel) {
-                var idx = sel.dataset.idx;
                 var field = sel.dataset.field;
-                if (!mappings[idx]) mappings[idx] = {};
-                mappings[idx][field] = sel.value;
+                var rawValue = sel.dataset.rawvalue;
+                if (!mappings[field]) mappings[field] = {};
+                mappings[field][rawValue] = sel.value;
             });
 
             fetch("{% url 'fk_save' %}", {
@@ -85,8 +87,8 @@
 
       <!-- Header -->
       <div class="w3-container" style="margin-top:10px" id="showcase">
-        <h1 class="w3-jumbo"><b>Carga de datos</b></h1>
-        <h4 class=""><b>Resumen de variables a cargar en BDD</b></h4>
+        <h1 class="w3-jumbo"><b>Data upload</b></h1>
+        <h4 class=""><b>Summary of variables to write in DB</b></h4>
         <hr style="width:50px;border:5px solid #00334c" class="w3-round">
       </div>
 
@@ -105,9 +107,9 @@
             <table class="table table-striped">
                 <thead style="font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
                     <tr>
-                        <th>Columna excel</th>
+                        <th>Input file column</th>
                         <th align="center"><i class="fas fa-arrow-circle-right fa-2x" style="width: 100%; height: 100%; "></i></th>
-                        <th>Campo BDD</th>
+                        <th>DB field</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,51 +132,53 @@
 
         {% if fk_table %}
         <hr style="width:100%;">
-        <h4>Asignación de valores para campos de tablas relacionadas:</h4>
-        <div class="results" style="overflow-x: auto;">
-            <table class="table table-striped" id="fk_mapping_table">
+        <h4>Value asignation to DB in formalised fields:</h4>
+
+        {% for fk_field in fk_table.fk_unique %}
+        <h5>{{ fk_field.label }}</h5>
+        <div class="results" style="overflow-x: auto; max-width: 80vw; width: fit-content;">
+            <table class="table table-striped">
                 <thead style="font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
                     <tr>
-                        <th>Aislado</th>
-                        {% for fk_key, fk_info in fk_table.active_fk %}
-                            <th>{{ fk_info.label }} (valor archivo)</th>
-                            <th>{{ fk_info.label }} (valor BDD)</th>
-                        {% endfor %}
+                        <th>Input file value</th>
+                        <th>DB value</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for fk_row in fk_table.rows %}
-                    <tr data-idx="{{ fk_row.idx }}">
-                        <td>{{ fk_row.isolate_name }}</td>
-                        {% for cell in fk_row.cells %}
-                            <td>{{ cell.raw_value }}</td>
-                            <td>
-                                <select class="fk-select"
-                                        data-idx="{{ fk_row.idx }}"
-                                        data-field="{{ cell.field_name }}">
-                                    <option value="">-- Seleccionar --</option>
-                                    {% for option in cell.options %}
-                                        <option value="{{ option.id }}">
-                                            {{ option.display }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                        {% endfor %}
+                    {% for raw_value in fk_field.unique_values %}
+                    <tr>
+                        <td>{{ raw_value }}</td>
+                        <td>
+                            <select class="fk-select"
+                                    data-field="{{ fk_field.field_name }}"
+                                    data-rawvalue="{{ raw_value }}">
+                                <option value="">-- Select --</option>
+                                {% for option in fk_field.options %}
+                                    <option value="{{ option.id }}">{{ option.display }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% endfor %}
+
         <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
-            <button class="btn btn-primary" id="save_fk_btn">Guardar asignación FK</button>
+            <button class="btn btn-primary" id="save_fk_btn">Save value asignation</button>
             <span id="fk_save_status" style="margin-left:10px; align-self:center;"></span>
         </div>
         {% endif %}
 
       {% if amr_mutations %}
 
-      <h4>Genes del resistoma:</h4>
+      <h4>Resistome loci:</h4>
+        {% if loci_ext == 'muts' %}
+          <div style="margin-bottom:10px;"><span style="background-color:#00334c; color:#fff; padding:5px 12px; border-radius:4px; font-weight:bold;">▶ Extract MUTATIONS only from loci</span></div>
+        {% elif loci_ext == 'pols' %}
+          <div style="margin-bottom:10px;"><span style="background-color:#00334c; color:#fff; padding:5px 12px; border-radius:4px; font-weight:bold;">▶ Extract MUTATIONS + POLYMORPHISMS from loci</span></div>
+        {% endif %}
       <div class="results" style="position: relative; overflow-x: auto !important; overflow-y: auto !important; height: 500px;">
             <table class="table table-striped results" style="overflow: auto !important;">
                 <thead style="position: sticky; top:0; background-color: #fff; z-index: 2; font-weight: bold; font-variant: small-caps; outline: 5px solid black; color: white; background-color: #f44336;">
@@ -200,7 +204,7 @@
 
       <div class="w3-container" style="width: 100%; display: flex; justify-content: space-evenly;">
 <!--          <input type="button" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('{% url 'upload_modal' %}')">          -->
-          <input type="button" value="Escribir en BDD" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('/upload_modal')">
+          <input type="button" value="WRITE TO DB" class="w3-button w3-block w3-black w3-hover-red" onclick="return abrir_modal('/upload_modal', '{{ upload_id }}')">
       </div>
 
       <div id="upload_modal" class="modal fade" tabindex="-1" role="dialog"></div>

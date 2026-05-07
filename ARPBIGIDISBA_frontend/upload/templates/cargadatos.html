@@ -33,10 +33,12 @@
     <!--                  <label for="fileselect" style="width: 100%;">Seleccione el archivo con la información:</label>-->
                       <input type="file" id="fileselect" name="fileselect" accept=".xlsx, .xls, .csv" style="width: 100%;" required>
                       <label for="loci">Obtain resistome loci from input file?</label>
-                      <select id="loci" name="loci">
-                        <option value="yes" selected="selected">Extract loci information</option>
-                        <option value="no">Do not extract loci information</option>
-                      </select>
+                        <select id="loci" name="loci" required>
+                          <option value="" {% if not loci_ext %}selected{% endif %} disabled>-- Choose how to proceed with loci info --</option>
+                          <option value="muts" {% if loci_ext == 'muts' %}selected{% endif %}>Extract only MUTATIONS from loci</option>
+                          <option value="pols" {% if loci_ext == 'pols' %}selected{% endif %}>Extract both MUTATIONS + POLYMORPHISMS from loci</option>
+                          <option value="no" {% if loci_ext == 'no' %}selected{% endif %}>Do not extract loci information</option>
+                        </select>
                       <div><input type="submit" value="Read file" class="btn btn-primary"></div>
                   </form>
           </div>
@@ -47,6 +49,12 @@
               </a></button>
           </div>
       </div>
+
+      {% if file %}
+      <div style="text-align:center; margin-top:6px; font-size:0.9em; color:#555;">
+        📄 <strong>{{ file.name }}</strong>
+      </div>
+      {% endif %}
 
       {% if df_columns %}
       <hr style="width:100%;">
@@ -82,6 +90,7 @@
             <form action="{% url 'upload_summary' %}" method="POST" id="upload_matches">
                 <h4>Select DB field to store each input file column information: </h4>
                 {% csrf_token %}
+                <input type="hidden" name="upload_id" value="{{ upload_id }}">
                 {% for df_column in df_columns %}
                     <label for="variable_{{ df_column }}" style="text-align: left;">{{ df_column }}</label>
                     <select name="variable_{{ df_column }}" id="variable_{{ df_column }}" title="{{ df_column }}" style="float: right;">
@@ -103,17 +112,18 @@
 
       {% endif %}
 
-      {% if amr_loci %}
-
-      <hr style="width:100%;">
-
-      <h3>ATB resistance related genes detected in input file</h3>
-
-      {% for amr in amr_loci %}
-        <div>{{ amr }}</div>
-      {% endfor %}
-
-      {% endif %}
+        {% if amr_loci %}
+        <hr style="width:100%;">
+        <h3>ATB resistance related genes detected in input file</h3>
+        {% if loci_ext == 'muts' %}
+          <div style="margin-bottom:10px;"><span style="background-color:#00334c; color:#fff; padding:5px 12px; border-radius:4px; font-weight:bold;">▶ Extract MUTATIONS only from loci</span></div>
+        {% elif loci_ext == 'pols' %}
+          <div style="margin-bottom:10px;"><span style="background-color:#00334c; color:#fff; padding:5px 12px; border-radius:4px; font-weight:bold;">▶ Extract MUTATIONS + POLYMORPHISMS from loci</span></div>
+        {% endif %}
+        {% for amr in amr_loci %}
+          <div>{{ amr }}</div>
+        {% endfor %}
+        {% endif %}
 
       <hr style="width:100%;">
 

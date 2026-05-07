@@ -216,14 +216,15 @@ class Hospital(models.Model):
 
 class SampleType(models.Model):
     sample_type_id = models.AutoField(primary_key=True, verbose_name="Tipo de muestra")
-    sample = models.CharField(max_length=255, blank=True, null=True, verbose_name="Tipo de muestra")
+    sample_es = models.CharField(max_length=255, blank=True, null=True, verbose_name="Sample type in spanish")
+    sample_en = models.CharField(max_length=255, blank=True, null=True, verbose_name="Sample type in english")
 
     class Meta:
         managed = True
         db_table = 'sample_type'
 
     def __str__(self):
-        return self.sample
+        return self.sample_en
 
 
 class HypermutationGene(models.Model):
@@ -288,15 +289,27 @@ class MetadataGeneral(models.Model):
         return self.isolate_name
         # return str(self.isolate_id)
 
+class Ward(models.Model):
+    ward_id = models.AutoField(primary_key=True)
+    ward_name_es = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name spanish", db_comment="Name of the ward in spanish where the isolate was obtained")
+    ward_name_en = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name english", db_comment="Name of the ward in english where the isolate was obtained")
+
+    class Meta:
+        managed = True
+        db_table = 'ward'
+
+    def __str__(self):
+        return self.ward_name_en
 
 class MetadataClinic(models.Model):
     clinic_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
+    isolate_id = models.OneToOneField(MetadataGeneral, models.PROTECT, blank=True, null=True, db_column='isolate_id')
     patient_code = models.CharField(max_length=255, blank=True, null=True, verbose_name="Patient code", db_comment="Code of the patient in the project")
-    sample_type = models.ForeignKey(SampleType, models.DO_NOTHING, db_column='sample_type_id', blank=True, null=True, verbose_name="Sample type", db_comment="Type of the sample from which the isolate was obtained")
+    sample_type = models.ForeignKey(SampleType, models.PROTECT, db_column='sample_type_id', blank=True, null=True, verbose_name="Sample type", db_comment="Type of the sample from which the isolate was obtained")
     # hospital_id = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
-    hospital = models.ForeignKey(Hospital, models.DO_NOTHING, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
-    collection_ward = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward", db_comment="Name of the departament where the isolate was obtained")
+    hospital = models.ForeignKey(Hospital, models.PROTECT, related_name='hospitals', db_column='hospital_id', blank=True, null=True, verbose_name="Hospital", db_comment="Name of the hospital where the isolate was obtained")
+    collection_ward = models.ForeignKey(Ward, models.PROTECT, related_name='wards', db_column='ward_id', blank=True, null=True, verbose_name="Ward", db_comment="Name of the departament where the isolate was obtained")
+    # collection_ward = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward", db_comment="Name of the departament where the isolate was obtained")
 
     class Meta:
         managed = True
@@ -335,6 +348,10 @@ class Mic(models.Model):
     mer_vab_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Meropenem/Vaborbactam clinical category", help_text="MER/VAB-ARO:3007146 clinical category", db_comment='Categoría clínica de resistencia del aislado a meropenem/vaborbactam')
     atm = models.CharField(max_length=10, blank=True, null=True, verbose_name="Aztreonam", help_text="AZT-ARO:3000550", db_comment='Valor numérico de la concentración mínima inhibitoria de aztreonam')
     atm_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Aztreonam clinical category", help_text="AZT-ARO:3000550 clinical category", db_comment='Categoría clínica de resistencia del aislado a aztreonam')
+    avi = models.CharField(max_length=10, blank=True, null=True, verbose_name="Avibactam", help_text="AVI-ARO:3000588", db_comment='Valor numérico de la concentración mínima inhibitoria de avibactam')
+    avi_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Avibactam clinical category", help_text="AVI-ARO:3000588 clinical category", db_comment='Categoría clínica de resistencia del aislado a avibactam')
+    rel = models.CharField(max_length=10, blank=True, null=True, verbose_name="Relebactam", help_text="REL-ARO:3007031", db_comment='Valor numérico de la concentración mínima inhibitoria de relebactam')
+    rel_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Relebactam clinical category", help_text="REL-ARO:3007031 clinical category", db_comment='Categoría clínica de resistencia del aislado a relebactam')
     azt_avi = models.CharField(max_length=10, blank=True, null=True, verbose_name="Aztreonam/Avibactam", help_text="AZT/AVI-ARO:3007366", db_comment='Valor numérico de la concentración mínima inhibitoria de aztreonam/avibactam')
     azt_avi_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Aztreonam/Avibactam clinical category", help_text="AZT/AVI-ARO:3007366 clinical category", db_comment='Categoría clínica de resistencia del aislado a aztreonam/avibactam')
     cip = models.CharField(max_length=10, blank=True, null=True, verbose_name="Ciprofloxacin", help_text="CIP-ARO:0000036", db_comment='Valor numérico de la concentración mínima inhibitoria de ciprofloxacino')
@@ -359,13 +376,28 @@ class Mic(models.Model):
     fo_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Fosfomycin clinical category", help_text="FOS-ARO:0000025 clinical category", db_comment='Categoría clínica de resistencia del aislado a fosfomicina')
     tic = models.CharField(max_length=10, blank=True, null=True, verbose_name="Ticarcillin", help_text="TIC-ARO:3003832", db_comment='Valor numérico de la concentración mínima inhibitoria de ticarcilina')
     tic_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Ticarcillin clinical category", help_text="TIC-ARO:3003832 clinical category", db_comment='Categoría clínica de resistencia del aislado a ticarcilina')
-    ptz = models.CharField(max_length=10, blank=True, null=True, verbose_name="Piperacillin/Tazobactam", help_text="PIP/TZ-ARO:3004021", db_comment='Valor numérico de la concentración mínima inhibitoria de piperacilina/tazobactam')
-    ptz_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Piperacillin/Tazobactam clinical category", help_text="PIP/TZ-ARO:3004021 clinical category", db_comment='Categoría clínica de resistencia del aislado a piperacilina/tazobactam')
     taz = models.CharField(max_length=10, blank=True, null=True, verbose_name="Tazobactam", help_text="TZ-ARO:0000077", db_comment='Valor numérico de la concentración mínima inhibitoria de tazobactam')
     taz_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Tazobactam clinical category", help_text="TZ-ARO:0000077 clinical category", db_comment='Categoría clínica de resistencia del aislado a tazobactam')
     caz_cloxa = models.CharField(max_length=3, blank=True, null=True, db_comment='Valor numérico de la concentración mínima inhibitoria de ceftazidima/cloxacilina')
     imi_cloxa = models.CharField(max_length=3, blank=True, null=True, db_comment='Valor numérico de la concentración mínima inhibitoria de imipenem/cloxacilina')
+    nac = models.CharField(max_length=10, blank=True, null=True, verbose_name="Nacubactam", help_text="NAC-ARO:3007295", db_comment='Valor numérico de la concentración mínima inhibitoria de nacubactam')
+    nac_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Nacubactam clinical category", help_text="NAC-ARO:3007295 clinical category", db_comment='Categoría clínica de resistencia del aislado a nacubactam')
+    dur = models.CharField(max_length=10, blank=True, null=True, verbose_name="Durlobactam", help_text="DUR-ARO:3007293", db_comment='Valor numérico de la concentración mínima inhibitoria de durlobactam')
+    dur_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Durlobactam clinical category", help_text="DUR-ARO:3007293 clinical category", db_comment='Categoría clínica de resistencia del aislado a durlobactam')
+    xer = models.CharField(max_length=10, blank=True, null=True, verbose_name="Xeruborbactam", help_text="XER-ARO:3007048", db_comment='Valor numérico de la concentración mínima inhibitoria de xeruborbactam')
+    xer_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Xeruborbactam clinical category", help_text="XER-ARO:3007048 clinical category", db_comment='Categoría clínica de resistencia del aislado a xeruborbactam')
+    fep_tan = models.CharField(max_length=10, blank=True, null=True, verbose_name="Cefepime/Taniborbactam", help_text="FEP_TAN-ARO:3007148", db_comment='Valor numérico de la concentración mínima inhibitoria de cefepime/taniborbactam')
+    fep_tan_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Cefepime/Taniborbactam clinical category", help_text="FEP_TAN-ARO:3007148 clinical category", db_comment='Categoría clínica de resistencia del aislado a cefepime/taniborbactam')
+    fep_zid = models.CharField(max_length=10, blank=True, null=True, verbose_name="Cefepime/Zidebactam", help_text="FEP_ZID-ARO:???????", db_comment='Valor numérico de la concentración mínima inhibitoria de cefepime/zidebactam')
+    fep_zid_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Cefepime/Zidebactam clinical category", help_text="FEP_ZID-ARO:??????? clinical category", db_comment='Categoría clínica de resistencia del aislado a cefepime/zidebactam')
+    fdc_xer = models.CharField(max_length=10, blank=True, null=True, verbose_name="Cefiderocol/Xeruborbactam", help_text="FDC_XER-ARO:????????", db_comment='Valor numérico de la concentración mínima inhibitoria de cefiderocol/xeruborbactam')
+    fdc_xer_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Cefiderocol/Xeruborbactam clinical category", help_text="FDC_XER-ARO:???????? clinical category", db_comment='Categoría clínica de resistencia del aislado a cefiderocol/xeruborbactam')
+    mer_nac = models.CharField(max_length=10, blank=True, null=True, verbose_name="Meropenem/Nacubactam", help_text="MER_NAC-ARO:????????", db_comment='Valor numérico de la concentración mínima inhibitoria de meropenem/nacubactam')
+    mer_nac_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Meropenem/Nacubactam clinical category", help_text="MER_NAC-ARO:???????? clinical category", db_comment='Categoría clínica de resistencia del aislado a meropenem/nacubactam')
+    mer_xer = models.CharField(max_length=10, blank=True, null=True, verbose_name="Meropenem/Xeruborbactam", help_text="MER_XER-ARO:????????", db_comment='Valor numérico de la concentración mínima inhibitoria de meropenem/xeruborbactam')
+    mer_xer_clinical_category = models.CharField(max_length=2, blank=True, null=True, verbose_name="Meropenem/Xeruborbactam clinical category", help_text="MER_XER-ARO:???????? clinical category", db_comment='Categoría clínica de resistencia del aislado a meropenem/xeruborbactam')
     mic_comments = models.CharField(max_length=255, blank=True, null=True, db_comment='Comentarios de la concentración mínima inhibitoria')
+    atb_synonyms = models.JSONField (blank=True, null=True, default=dict, verbose_name="Antibiotic synonyms", db_comment="Diccionario de antibióticos y sus sinónimos abreviados")
 
     class Meta:
         managed = True
@@ -444,21 +476,27 @@ BROTH_TYPE_CHOICES = (
     ('CM', 'Commercial'),
 )
 
+DTR_CHOICES = (
+    ('Y', 'Yes)'),
+    ('N', 'No'),
+)
+
 class PhenotypicData(models.Model):
     phenotypic_data_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
+    isolate_id = models.OneToOneField(MetadataGeneral, models.PROTECT, blank=True, null=True, db_column='isolate_id')
     atb_susceptibility_method = models.CharField(max_length=100, blank=True, null=True, choices=ATB_SUSCEPTIBILITY_METHOD_CHOICES, verbose_name="ATB susceptibility method", db_comment="Method used to determine antibiotic susceptibility")
     atb_susceptibility_method_other = models.CharField(max_length=100, blank=True, null=True, verbose_name="ATB susceptibility other method", db_comment="Other method used to determine antibiotic susceptibility")
     broth_type = models.CharField(max_length=100, blank=True, null=True, choices=BROTH_TYPE_CHOICES, verbose_name="Broth type", db_comment="Type of broth used in the susceptibility test")
     commercial_panel_name = models.CharField(max_length=100, blank=True, null=True, verbose_name="Commercial panel name", db_comment="Name of the commercial panel used in the susceptibility test")
-    mic = models.ForeignKey(Mic, models.DO_NOTHING, db_column='mic_id', blank=True, null=True)
+    mic = models.ForeignKey(Mic, models.PROTECT, db_column='mic_id', blank=True, null=True)
     ecdc_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="ECDC profile", db_comment='Resistance profile following ECDC guidelines')
     idsa_resistance_profile = models.CharField(max_length=3, blank=True, null=True, verbose_name="IDSA profile", db_comment='Resistance profile following IDSA guidelines')
+    dtr_profile = models.CharField(max_length=3, blank=True, null=True, choices=DTR_CHOICES, verbose_name="Difficult-to-treat profile", db_comment='Difficult-to-treat resistance profile')
     cloxa_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="CLOXA test", db_comment='CLOXA test result, accepted values: +/-')
     mbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="MBL test", db_comment='MBL test result, accepted values: +/-')
     esbl_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="ESBL test", db_comment='ESBL test result, accepted values: +/-')
     class_a_carbapenemase_test = models.CharField(max_length=3, blank=True, null=True, verbose_name="Class A carbapenemases", db_comment='Class A carbapenemases test result')
-    invitro_serotype = models.ForeignKey(InvitroSerotype, models.DO_NOTHING, db_column='invitro_serotype_id', blank=True, null=True, verbose_name="In vitro serotype")
+    invitro_serotype = models.ForeignKey(InvitroSerotype, models.PROTECT, db_column='invitro_serotype_id', blank=True, null=True, verbose_name="In vitro serotype")
     hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True, verbose_name="Hypermutator phenotype", db_comment='Hypermutator phenotype')
     phenotypic_comments = models.TextField(blank=True, null=True, verbose_name="Phenotypic comments", db_comment='Comments about isolate phenotype characteristics')
 
@@ -467,14 +505,39 @@ class PhenotypicData(models.Model):
         db_table = 'phenotypic_data'
         verbose_name_plural = 'Phenotypic Data'
 
+class OprdReference(models.Model):
+    oprd_reference_id = models.AutoField(primary_key=True)
+    reference_strain = models.CharField(max_length=100, blank=True, null=True)
+    sequence = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'oprd_reference'
+        verbose_name_plural = 'oprD references'
+
+
+class PdcVariant(models.Model):
+    pdc_variant_id = models.AutoField(primary_key=True)
+    variant_name = models.CharField(max_length=100, blank=True, null=True)
+    sequence = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'pdc_variant'
+        verbose_name_plural = 'PDC variants'
 
 class SequenceAnalysis(models.Model):
     sequence_analysis_id = models.AutoField(primary_key=True)
-    isolate_id = models.OneToOneField(MetadataGeneral, models.DO_NOTHING, blank=True, null=True, db_column='isolate_id')
+    isolate_id = models.OneToOneField(MetadataGeneral, models.PROTECT, blank=True, null=True, db_column='isolate_id')
     mlst_allelic_profile = models.JSONField(blank=True, null=True, verbose_name="MLST allelic profile", db_comment="Allelic values of loci used in multilocus strain typing, using JSON format")
     sequence_type = models.CharField(max_length=10, blank=True, null=True, verbose_name="Sequence type", db_comment="Sequence type of the isolate")
     clonal_complex = models.CharField(max_length=10, blank=True, null=True, verbose_name="Clonal complex", db_comment="Clonal complex of the isolate")
-    mutational_resistome = models.JSONField(blank=True, null=True, db_comment="Mutational resistome, using JSON format")
+    mutational_resistome_muts = models.JSONField(blank=True, null=True, db_comment="Mutations in mutational resistome, using JSON format")
+    mutational_resistome_pols = models.JSONField(blank=True, null=True, db_comment="Polymorphisms in mutational resistome, using JSON format")
+    # oprd_reference = models.CharField(max_length=20, blank=True, null=True, verbose_name="OprD reference", db_comment="Reference sequence for OprD porin")
+    oprd_reference = models.ForeignKey(OprdReference, models.PROTECT, db_column='oprd_reference_id', blank=True, null=True, verbose_name="OprD reference", db_comment="Reference sequence for OprD porin")
+    # pdc_variant = models.CharField(max_length=20, blank=True, null=True, verbose_name="PDC variant", db_comment="Variant of PDC beta-lactamase")
+    pdc_variant = models.ForeignKey(PdcVariant, models.PROTECT, db_column='pdc_variant_id', blank=True, null=True, verbose_name="PDC variant", db_comment="Variant of PDC beta-lactamase")
     ame_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="AME loci", db_comment="Aminoglycoside modifying enzymes loci, name list comma-separated")
     beta_lactamase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Beta-lactamases/Carbapenemases loci", db_comment="Beta-lactamases/Carbapenemases loci, name list comma-separated")
     fluoroquinolones_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Fluoroquinolones resistance determinants", db_comment="Fluoroquinolones resistance determinants loci, name list comma-separated")
