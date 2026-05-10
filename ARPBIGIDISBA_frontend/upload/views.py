@@ -36,7 +36,7 @@ FK_FIELDS_CONFIG = {
     'sample_type_id': {
         'label': 'Sample type',
         'model': 'SampleType',
-        'display_field': 'sample',
+        'display_field': 'sample_en',
         'pk_field': 'sample_type_id',
     },
     'oprd_reference_id': {
@@ -51,7 +51,7 @@ FK_FIELDS_CONFIG = {
         'display_field': 'variant_name',
         'pk_field': 'pdc_variant_id',
     },
-    'ward_id': {
+    'collection_ward_id': {
         'label': 'Ward collection',
         'model': 'Ward',
         'display_field': 'ward_name_en',
@@ -217,20 +217,6 @@ def summary(request):
         db_columns_dbname = request.session['db_columns_dbname']
         all_fields = [list(field) for field in request.POST.items()]
 
-        # mandatory_fields = {}
-
-        # if 'option_isolate_name' not in dict(all_fields).values():
-        #     mandatory_fields['isolate_name'] = 0
-        #     messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
-        # else:
-        #     mandatory_fields['isolate_name'] = 1
-        #
-        # if 'option_project_name' not in dict(all_fields).values():
-        #     mandatory_fields['project_name'] = 0
-        #     messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
-        # else:
-        #     mandatory_fields['project_name'] = 1
-
         # Update list with variables, removing variable_ and option_ prefixes, and removing the 'Do NOT write this in DB' option
         all_fields = [field for field in all_fields if 'variable_' in field[0]]
         for index, field in enumerate(all_fields):
@@ -243,19 +229,6 @@ def summary(request):
                     pass
 
         mandatory_fields = eval_mandatory(request, all_fields)
-
-
-        # if 'isolate_name' not in dict(all_fields).values():
-        #     mandatory_fields['isolate_name'] = 0
-        #     messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
-        # else:
-        #     mandatory_fields['isolate_name'] = 1
-        #
-        # if 'project_name' not in dict(all_fields).values():
-        #     mandatory_fields['project_name'] = 0
-        #     messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
-        # else:
-        #     mandatory_fields['project_name'] = 1
 
         # Write the selected options in the session
         request.session['all_fields'] = all_fields
@@ -318,38 +291,6 @@ def summary(request):
         else:
             request.session['active_fk'] = {}
 
-        # fk_table = None
-        # if active_fk:
-        #     isolate_col = dict_fields.get('Isolate name') or dict_fields.get('isolate_name')
-        #     active_fk_list = list(active_fk.items())
-        #     fk_rows = []
-        #     for idx, (_, row) in enumerate(df.iterrows()):
-        #         cells = []
-        #         for fk_key, fk_info in active_fk_list:
-        #             cells.append({
-        #                 'field_name': fk_key,
-        #                 'raw_value': str(row[fk_info['excel_col']]) if fk_info['excel_col'] in row.index else '',
-        #                 'options': fk_info['options'],
-        #                 'display_field': fk_info['display_field'],
-        #             })
-        #         fk_rows.append({
-        #             'idx': idx,
-        #             'isolate_name': str(row[isolate_col]) if isolate_col else f'Fila {idx + 1}',
-        #             'cells': cells,
-        #         })
-        #     fk_table = {
-        #         'active_fk': list(active_fk.items()),
-        #         'rows': fk_rows,
-        #     }
-        #     # Guardar en sesión sin options (no serializables directamente)
-        #     request.session['active_fk'] = {
-        #         k: {'excel_col': v['excel_col'], 'label': v['label']}
-        #         for k, v in active_fk.items()
-        #     }
-        # else:
-        #     request.session['active_fk'] = {}
-        # --- Fin detección FK ---
-
         if 'Isolate name' in dict_fields:
             isolate_var = dict_fields['Isolate name']
         else:
@@ -386,28 +327,6 @@ def summary(request):
 
     else:
         pass
-
-# def eval_mandatory(request, all_fields):
-#     mandatory_fields = request.session['mandatory_fields']
-#
-#     # if 'isolate_name' not in dict(all_fields).values():
-#     if 'Isolate name' not in dict(all_fields).values():
-#         mandatory_fields['isolate_name'] = 0
-#         messages.warning(request, 'No se ha seleccionado un campo para el nombre del aislado (isolate_name)')
-#     else:
-#         mandatory_fields['isolate_name'] = 1
-#
-#     # if 'project_name' not in dict(all_fields).values():
-#     if 'Project name' not in dict(all_fields).values():
-#         mandatory_fields['project_name'] = 0
-#         messages.warning(request, 'No se ha seleccionado un campo para el ID del proyecto (project_name)')
-#     else:
-#         mandatory_fields['project_name'] = 1
-#
-#     request.session['mandatory_fields'] = mandatory_fields
-#
-#     return mandatory_fields
-
 
 def eval_mandatory(request, all_fields):
     mandatory_fields = {}
@@ -527,12 +446,20 @@ def confirm(request):
     fk_to_model = {}
     for fk_key in active_fk_session:
         for model_name in tables:
+            model = apps.get_model('home', model_name)
+            # Buscar por attname (ej. collection_ward_id) o por field name (ej. collection_ward)
+            lookup = fk_key[:-3] if fk_key.endswith('_id') else fk_key
             try:
-                apps.get_model('home', model_name)._meta.get_field(fk_key)
+                model._meta.get_field(lookup)
                 fk_to_model[fk_key] = model_name
                 break
             except Exception:
-                pass
+                try:
+                    model._meta.get_field(fk_key)
+                    fk_to_model[fk_key] = model_name
+                    break
+                except Exception:
+                    pass
     loci_ext = request.session.get('loci_ext', 'no')
     amr_loci = request.session.get('amr_loci', [])
 

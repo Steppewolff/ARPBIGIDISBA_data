@@ -12,6 +12,15 @@
     <script src="/static/js/admin_js.js"></script>
     <script type="text/javascript" src="{% static 'django_tables2_column_shifter/js/django_tables2_column_shifter.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'home/js/exporter.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('breakpoint_table_1') || params.has('breakpoint_table_2')) {
+          const el = document.getElementById('mic_table');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    </script>
     {% endblock %}
 
     {% block title %}
@@ -106,29 +115,76 @@
                     <div id="collapseClinicalCat" class="accordion-body collapse" aria-labelledby="headingClinicalCat" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-                            <form action="{% url 'resultados' %}#mic_table" method="POST" id="amr_clas_results">
-                                {% csrf_token %}
-                                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>
+                              <form action="{% url 'resultados' %}" method="GET" id="amr_clas_results">
+                                 <p class="text-muted mb-3">
+                                    Select up to two breakpoint versions. Each one controls a separate
+                                    <em>CC</em> column displayed after every MIC value in the table below.
+                                    Leave a selector on <em>---</em> to leave that column empty.
+                                 </p>
 
-                                <select name="breakpoint_table_acc" id="breakpoint_table_acc">
-                                {% for table in breakpoints_tables %}:
-                                    {% if table == selected_table %}
-                                    <option value="{{ table }}" selected="selected">{{ table }}</option>
-                                    {% else %}
-                                    <option value="{{ table }}">{{ table }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                                </select>
+                              <div class="form-row align-items-end">
+                                <!-- Select 1 -->
+                                <div class="form-group col-md-5">
+                                  <label for="breakpoint_table_1"><strong>CC column 1</strong></label>
+                                  <select name="breakpoint_table_1" id="breakpoint_table_1" class="form-control">
+                                    <option value="">--- Not selected ---</option>
+                                    {% for table in breakpoints_tables %}
+                                      <option value="{{ table }}"
+                                        {% if table == selected_table_1 %}selected="selected"{% endif %}>
+                                        {{ table }}
+                                      </option>
+                                    {% endfor %}
+                                  </select>
+                                  <input type="text" name="alias_1" class="form-control mt-1"
+                                         placeholder="Short name for column 1 (e.g. EUCAST v6)"
+                                         value="{{ alias_1 }}">
+                                </div>
 
-                                <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">
-                                <input type="submit" value="Select breakpoint version" class="btn btn-primary">
+                                <!-- Select 2 -->
+                                <div class="form-group col-md-5">
+                                  <label for="breakpoint_table_2"><strong>CC column 2</strong></label>
+                                  <select name="breakpoint_table_2" id="breakpoint_table_2" class="form-control">
+                                    <option value="">--- Not selected ---</option>
+                                    {% for table in breakpoints_tables %}
+                                      <option value="{{ table }}"
+                                        {% if table == selected_table_2 %}selected="selected"{% endif %}>
+                                        {{ table }}
+                                      </option>
+                                    {% endfor %}
+                                  </select>
+                                  <input type="text" name="alias_2" class="form-control mt-1"
+                                         placeholder="Short name for column 2 (e.g. EUCAST v14)"
+                                         value="{{ alias_2 }}">
+                                </div>
+                                <!-- Calculate button -->
+                                <div class="form-group col-md-2">
+                                  <input type="submit" value="Calculate" class="btn btn-primary btn-block">
+                                </div>
+                              </div><!-- /form-row -->
+
                             </form>
+
+<!--                                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>-->
+
+<!--                                <select name="breakpoint_table_acc" id="breakpoint_table_acc">-->
+<!--                                {% for table in breakpoints_tables %}:-->
+<!--                                    {% if table == selected_table %}-->
+<!--                                    <option value="{{ table }}" selected="selected">{{ table }}</option>-->
+<!--                                    {% else %}-->
+<!--                                    <option value="{{ table }}">{{ table }}</option>-->
+<!--                                    {% endif %}-->
+<!--                                {% endfor %}-->
+<!--                                </select>-->
+
+<!--                                <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">-->
+<!--                                <input type="submit" value="Select breakpoint version" class="btn btn-primary">-->
+<!--                            </form>-->
                           </div>
                       </div>
                     </div>
                   </div>
                 </div>
-            {% render_table table %}
+
             <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
               <form method="GET">
                   <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to CSV format</a>
@@ -154,46 +210,53 @@
 
               </form>
             </div>
+            {% render_table table %}
+
         </div>
 
-        {% if selected_table %}
+        {% if selected_table_1 or selected_table_2 %}
         <div class="w3-container">
-            <h2 id="mic_table">Tabla de Mic</h2>
+            <h2 id="mic_table">MIC Table</h2>
+            {% if selected_table_1 %}
+              <p><span class="badge badge-info">{{ alias_1 }}</span> → {{ selected_table_1 }}</p>
+            {% endif %}
+            {% if selected_table_2 %}
+              <p><span class="badge badge-secondary">{{ alias_2 }}</span> → {{ selected_table_2 }}</p>
+            {% endif %}
         </div>
         <div class="w3-container">
             {% render_table mic_table %}
         </div>
-        <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
-          <form method="GET">
-              <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to CSV format</a>
-              <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar to XLSX format</a>
-              <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar to TXT format</a>
-          </form>
-        </div>
-        <div class="w3-container">
-            <form action="{% url 'resultados' %}#mic_table" method="POST">
-                {% csrf_token %}
-                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>
 
-                <select name="breakpoint_table_down" id="breakpoint_table_down">
-                {% for table in breakpoints_tables %}:
-                    {% if table == selected_table %}
-                    <option value="{{ table }}" selected="selected">{{ table }}</option>
-                    {% else %}
-                    <option value="{{ table }}">{{ table }}</option>
-                    {% endif %}
-                {% endfor %}
-                </select>
+        <!-- MIC table export buttons -->
+        <div class="form-group col-md-8 mb-0" style="margin: 10px !important;">
+          <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to CSV
+          </a>
+          <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to XLSX
+          </a>
+          <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to TXT
+          </a>
 
-                <input type="hidden" id="amr_clas_down" name="amr_clas_down">
-                <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
-                <!-- Botón para descargar la tabla de breakpoints usada como referencia -->
-                <a href="{% static selected_filepath %}" class="btn btn-success" download>
-                  Download breakpoint table version
-                </a>
-            </form>
+          <!-- Download reference breakpoint files -->
+          {% if selected_filepath_1 %}
+          <a href="{% static selected_filepath_1 %}" class="btn btn-sm btn-success shadow-sm" download
+             title="Download the breakpoint table used for CC column 1">
+            <i class="fas fa-file-download fa-sm"></i> Download BP Table 1
+          </a>
+          {% endif %}
+          {% if selected_filepath_2 %}
+          <a href="{% static selected_filepath_2 %}" class="btn btn-sm btn-success shadow-sm" download
+             title="Download the breakpoint table used for CC column 2">
+            <i class="fas fa-file-download fa-sm"></i> Download BP Table 2
+          </a>
+          {% endif %}
         </div>
+
+        {% endif %}
+
     </div>
 
-    {% endif %}
     {% endblock %}

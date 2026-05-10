@@ -15,7 +15,7 @@ import re
 import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
-from .tables import CombinedTable, MicTable
+from .tables import CombinedTable, create_mic_table # MicTable
 from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
 
@@ -97,12 +97,43 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         # Obtener los datos para la tabla de Mic con isolate_name
         filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
         # qs_mic = Mic.objects.select_related("matadatageneral.isolate_name").all()
-        qs_mic = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
+        # qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
+        # context['qs_mic'] = qs_mic
+        # # Sin breakpoints seleccionados aún: tabla vacía con cabeceras genéricas
+        # DefaultMicTable = create_mic_table()
+        # context['mic_table'] = DefaultMicTable(data=qs_mic)
+        # RequestConfig(self.request).configure(context['mic_table'])
+
+        qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
         context['qs_mic'] = qs_mic
-        context['mic_table'] = MicTable(data=qs_mic)
+
+        selected_table_1 = self.request.GET.get('breakpoint_table_1') or None
+        selected_table_2 = self.request.GET.get('breakpoint_table_2') or None
+
+        alias_1 = self.request.GET.get('alias_1') or 'CC1'
+        alias_2 = self.request.GET.get('alias_2') or 'CC2'
+
+        if selected_table_1 or selected_table_2:
+            bp_dict_1 = self._get_bp_dict(selected_table_1)
+            bp_dict_2 = self._get_bp_dict(selected_table_2)
+            self._apply_clinical_categories(qs_mic, bp_dict_1, bp_dict_2)
+            DynamicMicTable = create_mic_table(
+                label1=alias_1,
+                label2=alias_2,
+            )
+            context['mic_table'] = DynamicMicTable(data=qs_mic)
+        else:
+            context['mic_table'] = create_mic_table()(data=qs_mic)
+
         RequestConfig(self.request).configure(context['mic_table'])
 
-        # RequestConfig(self.request).configure(context['mic_table'])
+        context['selected_table_1'] = selected_table_1
+        context['selected_table_2'] = selected_table_2
+        context['alias_1'] = alias_1
+        context['alias_2'] = alias_2
+        context['selected_filepath_1'] = self._get_filepath(selected_table_1)
+        context['selected_filepath_2'] = self._get_filepath(selected_table_2)
+        context['breakpoints_tables'] = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
 
         context['filter'] = self.get_filterset(self.get_filterset_class())
         context['verbose_used'] = verbose_used
@@ -146,6 +177,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 verbose_used[key.replace('_', ' ').capitalize()] = values[0]
 
         context['verbose_used'] = verbose_used
+        context['breakpoints_tables'] = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
 
         return context
 
@@ -194,14 +226,76 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         # Exporta la tabla de MIC (mic_table)
         elif TableExport.is_valid_format(export_mic_format):
             # Reutilizamos la lógica para obtener el queryset de MIC, igual que en get_context_data
+            # Retrieve last-used breakpoint table labels from session so the
+            # export column headers match what the user sees on screen.
+            t1 = request.session.get('selected_table_1') or 'BP Version 1'
+            t2 = request.session.get('selected_table_2') or 'BP Version 2'
+
             filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
             qs_mic = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
-            mic_table = MicTable(data=qs_mic)
+
+            # Re-compute clinical categories if breakpoint tables are stored in session
+            bp_dict_1 = self._get_bp_dict(t1 if t1 != 'BP Version 1' else None)
+            bp_dict_2 = self._get_bp_dict(t2 if t2 != 'BP Version 2' else None)
+            self._apply_clinical_categories(qs_mic, bp_dict_1, bp_dict_2)
+
+            ExportMicTable = create_mic_table(label1=t1, label2=t2)
+            mic_table = ExportMicTable(data=qs_mic)
             RequestConfig(self.request).configure(mic_table)
             exporter = TableExport(export_mic_format, mic_table)
             return exporter.response('arpbig_data_export_mic.{}'.format(export_mic_format))
 
         return super().get(request, *args, **kwargs)
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _get_bp_dict(self, table_name):
+        """Return the mic_breakpoints dict for *table_name*, or {} if absent."""
+        if not table_name:
+            return {}
+        qs = BreakpointTable.objects.filter(table_version_name=table_name).values_list('mic_breakpoints', flat=True)
+        return qs.first() or {}
+
+    def _get_filepath(self, table_name):
+        """Return the filepath of the BreakpointTable row, or None."""
+        if not table_name:
+            return None
+        obj = BreakpointTable.objects.filter(table_version_name=table_name).first()
+        return obj.filepath if obj else None
+
+    def _apply_clinical_categories(self, qs_mic, bp_dict_1, bp_dict_2):
+        """
+        Inject {ab}_clinical_category_1 and {ab}_clinical_category_2 attributes
+        onto each record in *qs_mic* in-place, using the two breakpoint dicts.
+        """
+        all_abs = set(bp_dict_1.keys()) | set(bp_dict_2.keys())
+        for record in qs_mic:
+            for ab in all_abs:
+                value = getattr(record, ab, None)
+                if value is None:
+                    continue
+
+                # ---- Breakpoint table 1 ----
+                if ab in bp_dict_1:
+                    bp = bp_dict_1[ab]
+                    if bp and (None in bp.values() or "-" in bp.values()):
+                        setattr(record, f"{ab}_clinical_category_1", "Sin BP")
+                    elif bp:
+                        setattr(
+                            record, f"{ab}_clinical_category_1",
+                            self.compute_clinical_category(value, bp))
+
+                # ---- Breakpoint table 2 ----
+                if ab in bp_dict_2:
+                    bp = bp_dict_2[ab]
+                    if bp and (None in bp.values() or "-" in bp.values()):
+                        setattr(record, f"{ab}_clinical_category_2", "Sin BP")
+                    elif bp:
+                        setattr(
+                            record, f"{ab}_clinical_category_2",
+                            self.compute_clinical_category(value, bp))
 
     def compute_clinical_category(self, value, bp):
         """
@@ -286,57 +380,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
     def post(self, request, *args, **kwargs):
         self.update_parameters(request)
-
         self.object_list = self.get_queryset()
         context = self.get_context_data(**kwargs)
-        breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
-        context["breakpoints_tables"] = breakpoints_tables
-
-        selected_table = None
-
-        # if request.method == "POST" and ('amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST):
-        if 'amr_clas_acc' in request.POST or 'amr_clas_down' in request.POST:
-            selected_table = request.POST.get('breakpoint_table_acc')
-
-        elif 'amr_clas_down' in request.POST:
-            selected_table = request.POST.get('breakpoint_table_down')
-
-        selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list(
-            'mic_breakpoints', flat=True)
-        # selected_filepath = BreakpointTable.objects.get(table_version_name=selected_table).filepath
-        bp_obj = BreakpointTable.objects.filter(table_version_name=selected_table).first()
-        selected_filepath = bp_obj.filepath if bp_obj else None
-
-        qs_mic = context['qs_mic']
-
-        bp_dict = {}
-
-        if selected_breakpoints.exists():
-            bp_dict = selected_breakpoints.first()
-
-        context["selected_table"] = selected_table
-        context["selected_breakpoints"] = selected_breakpoints
-        context["selected_filepath"] = selected_filepath
-
-        for record in qs_mic:
-            for ab in bp_dict:
-                value = getattr(record, ab, None)
-                bp = bp_dict.get(ab, {})
-                if value == None:
-                    pass
-                elif None in bp.values() or "-" in bp.values():
-                    clinical_category = "Sin breakpoints en esta versión"
-                    setattr(record, f"{ab}_clinical_category", clinical_category)
-                else:
-                    clinical_category = self.compute_clinical_category(value, bp)
-                    setattr(record, f"{ab}_clinical_category", clinical_category)
-
-        context['mic_table'] = MicTable(data=qs_mic)
-        RequestConfig(request).configure(context['mic_table'])
-
-        table_obj = self.get_table()
-        context['table'] = table_obj
-
         return render(request, 'resultados.html', context=context)
 
     def update_parameters(self, request, *args, **kwargs):

@@ -291,8 +291,8 @@ class MetadataGeneral(models.Model):
 
 class Ward(models.Model):
     ward_id = models.AutoField(primary_key=True)
-    ward_name_es = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name spanish", db_comment="Name of the ward in spanish where the isolate was obtained")
-    ward_name_en = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name english", db_comment="Name of the ward in english where the isolate was obtained")
+    ward_name_es = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name in spanish", db_comment="Name of the ward in spanish where the isolate was obtained")
+    ward_name_en = models.CharField(max_length=255, blank=True, null=True, verbose_name="Ward name in english", db_comment="Name of the ward in english where the isolate was obtained")
 
     class Meta:
         managed = True
