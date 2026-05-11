@@ -66,9 +66,20 @@ class GroupedSelect(forms.Select):
 class MultiFilter(filters.FilterSet):
     # OPCIONES_FILTRO = obtener_opciones_filtro()
 
-    isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
+    # isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
+    isolate_name = filters.MultipleChoiceFilter(
+        field_name='isolate_name',
+        widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'isolateNameSelect'}),
+        label='Isolate name'
+    )
     species = filters.ModelChoiceFilter(field_name='species', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
-    project_name = filters.ModelChoiceFilter(field_name='project_name', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
+    # project_name = filters.ModelChoiceFilter(field_name='project_name', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
+    project_name = filters.MultipleChoiceFilter(
+        field_name='project_name',
+        widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'projectNameSelect'}),
+        label='Project'
+    )
+
     isolate_source = filters.ModelChoiceFilter(field_name='isolate_source', queryset=MetadataGeneral.objects.values_list('isolate_source', flat=True).distinct(), to_field_name='isolate_source', label='Isolate origin')
 
     isolation_date__gt = filters.DateFilter(field_name='isolation_date', widget=DateInput(attrs={'type': 'date'}), lookup_expr='gte', label='From (date)')
@@ -88,6 +99,11 @@ class MultiFilter(filters.FilterSet):
         method='filtrar_excluir',
         label="Absent mutations"
     )
+
+    # def filtrar_isolate_name(self, queryset, name, value):
+    #     if value:
+    #         return queryset.filter(isolate_name__in=value)
+    #     return queryset
 
     def filtrar_incluir(self, queryset, name, value):
         """Filtra registros donde una clave específica tenga un valor concreto."""
@@ -113,6 +129,14 @@ class MultiFilter(filters.FilterSet):
         opciones = obtener_opciones_filtro()
         self.filters['incluir'].extra['choices'] = opciones
         self.filters['excluir'].extra['choices'] = opciones
+        self.filters['isolate_name'].extra['choices'] = [
+            (v, v) for v in
+            MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct().order_by('isolate_name') if v
+        ]
+        self.filters['project_name'].extra['choices'] = [
+            (v, v) for v in
+            MetadataGeneral.objects.values_list('project_name', flat=True).distinct().order_by('project_name') if v
+        ]
 
         self.form.helper = FormHelper(self.form)
         self.form.helper.form_method = 'GET'

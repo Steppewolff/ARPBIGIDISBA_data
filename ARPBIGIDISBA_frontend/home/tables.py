@@ -1,21 +1,77 @@
 import django_tables2 as tables
 from django_tables2.export.views import ExportMixin
-from django.db.models import Field
+from django.db.models import Field, JSONField
 from django_tables2_column_shifter.tables import ColumnShiftTableBootstrap4Responsive, ColumnShiftTableBootstrap4, ColumnShiftTable, ColumnShiftTableBootstrap5Responsive
 
 from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral, MetadataClinic, FilePath
 
-def create_dynamic_table(*models):
+class GeneColumn(tables.Column):
+    """Column that reads a single gene value from a SequenceAnalysis JSON field."""
+    def __init__(self, gene_name, loci_type='muts', **kwargs):
+        self.gene_name = gene_name
+        self.loci_type = loci_type
+        kwargs.setdefault('verbose_name', gene_name)
+        kwargs.setdefault('orderable', False)
+        kwargs.setdefault('accessor', 'isolate_name')  # accessor válido que siempre resuelve
+        super().__init__(**kwargs)
+
+    def render(self, value, record):
+        try:
+            sa = getattr(record, 'sequenceanalysis', None)
+            if sa is None:
+                return 'NO_SA'
+            field = 'mutational_resistome_muts' if self.loci_type == 'muts' else 'mutational_resistome_pols'
+            json_data = getattr(sa, field, None) or getattr(sa, 'mutational_resistome_muts', None)
+            if json_data is None:
+                return 'NO_JSON'
+            val = json_data.get(self.gene_name)
+            return val if val is not None else 'KEY_NOT_FOUND'
+        except Exception as e:
+            return f'ERR:{e}'
+
+# def create_dynamic_table(*models, extra_columns=None):
+#     attrs = {}
+#     for model in models:
+#         for field in model._meta.get_fields():
+#             if isinstance(field, Field):
+#                 if isinstance(field, JSONField):          # ← excluir JSON fields
+#                     continue
+#                 if model._meta.model_name == 'metadatageneral':
+#                     accessor = f'{field.name}'
+#                     column_name = f'{field.name}'
+#                     attrs[column_name] = tables.Column(accessor=accessor)
+#                 else:
+#                     if '_id' in field.name:
+#                         pass
+#                     else:
+#                         accessor = f'{model._meta.model_name}.{field.name}'
+#                         column_name = f'{model._meta.model_name}_{field.name}'
+#                         attrs[column_name] = tables.Column(accessor=accessor)
+#
+#         attrs['Meta'] = type('Meta', (), {
+#             'template_name': 'django_tables2/bootstrap4.html',
+#             'exclude': ('clinic_id', 'isolate_id',),
+#             'export_formats': ["csv", "xlsx", "txt"],
+#             'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
+#         })
+#     if extra_columns:
+#         attrs.update(extra_columns)
+#     return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
+
+
+def create_dynamic_table(*models, extra_columns=None):
     attrs = {}
+    all_column_names = []
 
     for model in models:
         for field in model._meta.get_fields():
             if isinstance(field, Field):
-                # attrs[f'_{field.name}'] = tables.Column(accessor=f'{str(model)}.{field.name}')
+                if isinstance(field, JSONField):
+                    continue
                 if model._meta.model_name == 'metadatageneral':
-                    accessor = f'{field.name}'
                     column_name = f'{field.name}'
-                    attrs[column_name] = tables.Column(accessor=accessor)
+                    attrs[column_name] = tables.Column(accessor=f'{field.name}')
+                    all_column_names.append(column_name)
                 else:
                     if '_id' in field.name:
                         pass
@@ -23,16 +79,28 @@ def create_dynamic_table(*models):
                         accessor = f'{model._meta.model_name}.{field.name}'
                         column_name = f'{model._meta.model_name}_{field.name}'
                         attrs[column_name] = tables.Column(accessor=accessor)
+                        all_column_names.append(column_name)
 
-                pass
+    # Construir sequence con genes después de project_name
+    gene_col_names = list(extra_columns.keys()) if extra_columns else []
+    if extra_columns:
+        attrs.update(extra_columns)
 
-        attrs['Meta'] = type('Meta', (), {'template_name': 'django_tables2/bootstrap4.html', 'exclude' : ('clinic_id', 'isolate_id',), 'export_formats' : ["csv", "xlsx", "txt"], 'attrs': {
-            'class': 'table table-dark table-striped table-hover table-responsive results'}})
+    if gene_col_names and 'project_name' in all_column_names:
+        idx = all_column_names.index('project_name') + 1
+        sequence = all_column_names[:idx] + gene_col_names + all_column_names[idx:]
+    else:
+        sequence = all_column_names + gene_col_names
 
-        pass
+    attrs['Meta'] = type('Meta', (), {
+        'template_name': 'django_tables2/bootstrap4.html',
+        'exclude': ('clinic_id', 'isolate_id',),
+        'sequence': tuple(sequence),
+        'export_formats': ["csv", "xlsx", "txt"],
+        'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
+    })
 
-    return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs) # ColumnShiftTableBootstrap4Responsive, ExportMixin
-
+    return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
 
 CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)
 

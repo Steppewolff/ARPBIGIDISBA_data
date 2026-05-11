@@ -55,6 +55,27 @@ def busqueda(request):
                        'mic_form': mic_form,
                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
+def _get_gene_category(gene, muts_json, pols_json):
+    """WT | Mutation | Polymorphism | Both — compares muts vs pols JSON for a single gene."""
+    def variants(val):
+        if not val:
+            return set()
+        return {v.strip() for v in val.split(';') if v.strip() and v.strip().upper() != 'WT'}
+
+    muts_val = (muts_json or {}).get(gene, 'WT')
+    pols_val  = (pols_json or {}).get(gene, 'WT')
+    muts_v = variants(muts_val)
+    pols_v = variants(pols_val)
+    pol_only = pols_v - muts_v
+
+    if muts_v and pol_only:
+        return 'Both'
+    if muts_v:
+        return 'Mutation'
+    if pol_only:
+        return 'Polymorphism'
+    return 'WT'
+
 class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequiredMixin,
     table_class = CombinedTable
     model = MetadataGeneral
@@ -173,20 +194,115 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                     for gen, muts in sorted(gen_groups.items())
                 )
                 verbose_used[label] = display
+            elif key == 'genes':
+                verbose_used['Genes'] = ', '.join(values)
+            elif key == 'loci_type':
+                loci_labels = {
+                    'muts': 'Mutations only',
+                    'muts_pols': 'Mutations + Polymorphisms',
+                }
+                verbose_used['Loci type'] = loci_labels.get(values[0], values[0])
             else:
                 verbose_used[key.replace('_', ' ').capitalize()] = values[0]
 
         context['verbose_used'] = verbose_used
         context['breakpoints_tables'] = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
 
+        # --- Resistome context ---
+        loci_type     = self.request.GET.get('loci_type', '')
+        selected_genes = [g for g in self.request.GET.getlist('genes') if g]
+        show_heatmap  = self.request.GET.get('show_heatmap', 'no')
+        filtered_ids  = self.get_queryset().values_list('isolate_id', flat=True)
+        sa_qs         = SequenceAnalysis.objects.filter(isolate_id__in=filtered_ids)
+
+        # Gene list from filtered records
+        all_genes = set()
+        for sa in sa_qs.exclude(mutational_resistome_muts=None):
+            all_genes.update((sa.mutational_resistome_muts or {}).keys())
+        all_genes = sorted(all_genes)
+
+        # Warnings for missing JSON data
+        resistome_warnings = []
+        n_miss_muts = sa_qs.filter(mutational_resistome_muts=None).count()
+        n_miss_pols = sa_qs.filter(mutational_resistome_pols=None).count()
+        if n_miss_muts:
+            resistome_warnings.append(
+                f"{n_miss_muts} record(s) are missing mutation resistome data (mutational_resistome_muts). "
+                f"Gene columns cannot be displayed for these records."
+            )
+        if n_miss_pols:
+            resistome_warnings.append(
+                f"{n_miss_pols} record(s) are missing polymorphism resistome data (mutational_resistome_pols). "
+                f"Polymorphism calculation is not available for these records — "
+                f"only mutation data will be used."
+            )
+
+        # Heatmap data for current page only
+        heatmap_json = None
+        if show_heatmap == 'yes' and selected_genes:
+            table = context.get('table')
+            if table and hasattr(table, 'page'):
+                page_objects = [row.record for row in table.page.object_list]
+            else:
+                page_objects = list(self.get_queryset()[:25])
+            page_ids = [obj.isolate_id for obj in page_objects]
+            sa_page    = {sa.isolate_id_id: sa for sa in SequenceAnalysis.objects.filter(isolate_id__in=page_ids)}
+            cat_map    = {'WT': 0, 'Mutation': 1, 'Polymorphism': 2, 'Both': 3}
+            isolates, z_data, text_data = [], [], []
+            for obj in page_objects:
+                sa = sa_page.get(obj.isolate_id)
+                if not sa:
+                    continue
+                muts = sa.mutational_resistome_muts or {}
+                pols = sa.mutational_resistome_pols or {}
+                isolates.append(obj.isolate_name or str(obj.isolate_id))
+                z_data.append([cat_map[_get_gene_category(g, muts, pols)] for g in selected_genes])
+                text_data.append([
+                    f"Muts: {muts.get(g, 'WT')}<br>Pols: {pols.get(g, 'WT')}"
+                    for g in selected_genes
+                ])
+            heatmap_json = json.dumps({
+                'isolates': isolates, 'genes': selected_genes,
+                'z': z_data, 'text': text_data,
+            })
+
+        context.update({
+            'all_genes':          all_genes,
+            'selected_genes':     selected_genes,
+            'loci_type':          loci_type,
+            'show_heatmap':       show_heatmap,
+            'heatmap_json':       heatmap_json,
+            'resistome_warnings': resistome_warnings,
+        })
+
+        context['per_page_options'] = [10, 25, 50, 100, 250]
         return context
 
     def get_table(self, **kwargs):
-        # qs=self.get_queryset()
+        from .tables import GeneColumn, CombinedTable
         qs = getattr(self, 'object_list', self.get_queryset())
-        table = self.table_class(data=qs, request=self.request, **kwargs)
-        RequestConfig(self.request).configure(table)
+        selected_genes = [g for g in self.request.GET.getlist('genes') if g]
+        loci_type = self.request.GET.get('loci_type', 'muts')
 
+        if selected_genes:
+            from .tables import GeneColumn, create_dynamic_table
+            gene_attrs = {
+                f'gene_{gene}': GeneColumn(gene_name=gene, loci_type=loci_type)
+                for gene in selected_genes
+            }
+            DynamicTable = create_dynamic_table(
+                MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath,
+                extra_columns=gene_attrs
+            )
+            table = DynamicTable(data=qs, request=self.request, **kwargs)
+        else:
+            table = self.table_class(data=qs, request=self.request, **kwargs)
+
+        try:
+            per_page = int(self.request.GET.get('per_page', 25))
+        except (ValueError, TypeError):
+            per_page = 25
+        RequestConfig(self.request, paginate={'per_page': per_page}).configure(table)
         return table
 
     def get(self, request, *args, **kwargs):
@@ -410,50 +526,6 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         request.session['verbose_used'] = verbose_used
         request.session.modified = True
 
-
-    # def update_parameters(self, request, *args, **kwargs):
-    #     parameters = request.POST.copy()
-    #     # parameters = (request.POST if request.method == "POST" else request.GET).copy()
-    #     parameters_used = request.session.get('parameters_used', {})
-    #     verbose_used = request.session.get('verbose_used', {})
-    #     # for parameter, value in parameters.items():
-    #
-    #     for parameter in set(parameters.keys()):
-    #         values = [v for v in parameters.getlist(parameter) if v and v != 'none']
-    #         if not values or parameter == 'csrfmiddlewaretoken':
-    #             continue
-    #         value = values[0]  # para el filtrado se sigue usando el primer valor
-    #         if parameter == 'csrfmiddlewaretoken' or value == 'none':
-    #             pass
-    #         elif value == '' :
-    #             if parameter in parameters_used:
-    #                 parameters_used.pop(parameter)
-    #                 for model in apps.get_models():
-    #                     for field in model._meta.get_fields():
-    #                         if field.name == parameter:
-    #                             new_name = field.verbose_name.capitalize()
-    #                             verbose_used.pop(new_name, None)
-    #                             break
-    #             else:
-    #                 pass
-    #         else:
-    #             for model in apps.get_models():
-    #                 for field in model._meta.get_fields():
-    #                     if field.name == parameter:
-    #                         new_name = field.verbose_name.capitalize()
-    #                         parameters_used[field.name] = value
-    #                         verbose_used[str(new_name)] = ', '.join(values)
-    #                         if isinstance(field, ForeignKey):
-    #                             model_id = field.related_model._meta.pk.name
-    #                             value = field.related_model.objects.get(Q((model_id, value))).__str__()
-    #                             verbose_used[str(new_name)] = ', '.join(values)
-    #
-    #                         break
-    #
-    #     self.request.session['parameters_used'] = parameters_used
-    #     self.request.session['verbose_used'] = verbose_used
-    #     self.request.session.modified = True
-
     def get_queryset(self, *args, **kwargs):
         qs = super(ResultadosListView, self).get_queryset(*args, **kwargs)
         metadatageneral_fields=[field.name for field in MetadataGeneral._meta.get_fields()]
@@ -483,19 +555,36 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
                 qs = qs.filter(**kwargs_filter)
 
-        qs = qs.filter().order_by("isolate_name")
+        qs = qs.filter().order_by("isolate_name").select_related('sequenceanalysis')
 
         return qs
 
-# def amr_clas_modal(request):
-#     breakpoints_tables = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
-#     if request.method == "POST":
-#         selected_table = request.POST.get('breakpoint_table')
-#         selected_breakpoints = BreakpointTable.objects.filter(table_version_name=selected_table).values_list('mic_breakpoints')
-#         return render(request, 'resultados.html', {"breakpoints_tables" : breakpoints_tables, "selected_table" : selected_table, 'selected_breakpoints':selected_breakpoints})
-#
-#     else:
-#         return render(request, 'amr_clas_modal.html', {"breakpoints_tables" : breakpoints_tables})
+def heatmap_all_view(request):
+    """Printable page: full resistome heatmap for all filtered records."""
+    selected_genes = [g for g in request.GET.getlist('genes') if g]
+    loci_type = request.GET.get('loci_type', 'muts')
+    if not selected_genes:
+        return HttpResponse("No genes selected.", status=400)
+
+    qs = MultiFilter(request.GET, queryset=MetadataGeneral.objects.all().select_related('sequenceanalysis')).qs
+    sa_dict = {
+        sa.isolate_id_id: sa
+        for sa in SequenceAnalysis.objects.filter(isolate_id__in=qs.values_list('isolate_id', flat=True))
+    }
+    cat_map = {'WT': 0, 'Mutation': 1, 'Polymorphism': 2, 'Both': 3}
+    isolates, z_data, text_data = [], [], []
+    for obj in qs:
+        sa = sa_dict.get(obj.isolate_id)
+        if not sa:
+            continue
+        muts = sa.mutational_resistome_muts or {}
+        pols = sa.mutational_resistome_pols or {}
+        isolates.append(obj.isolate_name or str(obj.isolate_id))
+        z_data.append([cat_map[_get_gene_category(g, muts, pols)] for g in selected_genes])
+        text_data.append([f"Muts: {muts.get(g,'WT')}<br>Pols: {pols.get(g,'WT')}" for g in selected_genes])
+
+    heatmap_json = json.dumps({'isolates': isolates, 'genes': selected_genes, 'z': z_data, 'text': text_data})
+    return render(request, 'heatmap_print.html', {'heatmap_json': heatmap_json})
 
 def pipelines(request):
     return render(request, 'pipelines.html')

@@ -21,6 +21,83 @@
         }
       });
     </script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script>
+    // Resistome: preserve current GET params when submitting the resistome form
+    document.addEventListener('DOMContentLoaded', function () {
+      var form = document.getElementById('resistome_form');
+      if (form) {
+        form.addEventListener('submit', function () {
+          var current = new URLSearchParams(window.location.search);
+          var resistomeKeys = ['loci_type', 'genes', 'show_heatmap'];
+          current.forEach(function (val, key) {
+            if (!resistomeKeys.includes(key) && !form.querySelector('[name="' + key + '"]')) {
+              var inp = document.createElement('input');
+              inp.type = 'hidden'; inp.name = key; inp.value = val;
+              form.appendChild(inp);
+            }
+          });
+        });
+        document.getElementById('resistome_select_all').addEventListener('click', function () {
+          var sel = document.getElementById('resistome_genes_select');
+          Array.from(sel.options).forEach(function (o) { o.selected = true; });
+          if (window.$) $(sel).trigger('change');  // refresh select2
+        });
+      }
+
+      // Heatmap rendering
+      var heatmapData = {{ heatmap_json|default:"null"|safe }};
+      if (heatmapData) {
+        var colorscale = [
+          [0,     '#f0f0f0'], [0.333, '#f0f0f0'],
+          [0.334, '#ffb3b3'], [0.666, '#ffb3b3'],
+          [0.667, '#b3d4ff'], [0.999, '#b3d4ff'],
+          [1.0,   '#d4b3ff']
+        ];
+        var height = Math.max(300, heatmapData.isolates.length * 22 + 80);
+        Plotly.newPlot('resistome_heatmap', [{
+          type: 'heatmap',
+          x: heatmapData.genes,
+          y: heatmapData.isolates,
+          z: heatmapData.z,
+          text: heatmapData.text,
+          hovertemplate: '<b>%{y}</b> — %{x}<br>%{text}<extra></extra>',
+          colorscale: colorscale,
+          zmin: 0, zmax: 3,
+          showscale: false,
+          xgap: 1, ygap: 1,
+        }], {
+          margin: {l: 120, r: 20, t: 20, b: 80},
+          height: height,
+          xaxis: {tickangle: -45},
+        }, {responsive: true});
+      }
+    });
+    </script>
+
+    <script>
+    function changePerPage(val) {
+        var params = new URLSearchParams(window.location.search);
+        params.set('per_page', val);
+        params.set('page', 1);
+        window.location.href = window.location.pathname + '?' + params.toString();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // ... resto del JS existente ...
+    });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar por clase genérica
+            $('.select2').select2({
+                placeholder: "Seleccione una opción",
+                allowClear: true,
+                width: '100%' // Importante para que respete el diseño de Bootstrap/Crispy
+            });
+        });
+    </script>
+
     {% endblock %}
 
     {% block title %}
@@ -69,12 +146,6 @@
                     <div id="collapseFilterOne" class="accordion-body collapse" aria-labelledby="headingFilter" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-<!--                            <form action="{% url 'resultados' %}" method="POST">-->
-<!--                                {% csrf_token %}-->
-
-<!--                                {% bootstrap_form filter.form layout='inline' %}-->
-<!--                                {% bootstrap_button 'Filtrar' %}-->
-<!--                            </form>-->
                             <form method="GET">
                               {% csrf_token %}
                               {% crispy filter.form %}
@@ -84,26 +155,6 @@
                     </div>
                   </div>
                   {% endif %}
-<!--                  <div class="card accordion-group">-->
-<!--                    <div class="card-header accordion-heading" id="headingPrint">-->
-<!--                      <h5 class="mb-0">-->
-<!--                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapsePrint" aria-expanded="true" aria-controls="collapsePrint" data-parent="#accordion_filter" href="#collapsePrint">-->
-<!--                          Filtrar resultados por mutación-->
-<!--                        </button>-->
-<!--                      </h5>-->
-<!--                    </div>-->
-<!--                    <div id="collapsePrint" class="accordion-body collapse" aria-labelledby="headingPrint" data-parent="#accordion_filter">-->
-<!--                      <div class="card-body form-row">-->
-<!--                          <div class="form-group col-md-6 mb-0">-->
-<!--                            <form method="GET">-->
-<!--                                <a href='{% export_url "csv" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a CSV</a>-->
-<!--                                <a href='{% export_url "xlsx" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a XLSX</a>-->
-<!--                                <a href='{% export_url "txt" %}' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Exportar a TXT</a>-->
-<!--                            </form>-->
-<!--                          </div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                  </div>-->
                   <div class="card accordion-group">
                     <div class="card-header accordion-heading" id="headingClinicalCat">
                       <h5 class="mb-0">
@@ -161,29 +212,56 @@
                                   <input type="submit" value="Calculate" class="btn btn-primary btn-block">
                                 </div>
                               </div><!-- /form-row -->
-
                             </form>
-
-<!--                                <h5>Select the breakpoint version to use for R/I/S calculations: </h5>-->
-
-<!--                                <select name="breakpoint_table_acc" id="breakpoint_table_acc">-->
-<!--                                {% for table in breakpoints_tables %}:-->
-<!--                                    {% if table == selected_table %}-->
-<!--                                    <option value="{{ table }}" selected="selected">{{ table }}</option>-->
-<!--                                    {% else %}-->
-<!--                                    <option value="{{ table }}">{{ table }}</option>-->
-<!--                                    {% endif %}-->
-<!--                                {% endfor %}-->
-<!--                                </select>-->
-
-<!--                                <input type="hidden" id="amr_clas_acc" name="amr_clas_acc">-->
-<!--                                <input type="submit" value="Select breakpoint version" class="btn btn-primary">-->
-<!--                            </form>-->
                           </div>
                       </div>
                     </div>
+                    <div class="card accordion-group">
+                        <div class="card-header accordion-heading" id="headingResisome">
+                          <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseResisome" aria-expanded="false" aria-controls="collapseResisome" data-parent="#accordion_filter" href="#collapseResisome">
+                              Resistome
+                            </button>
+                          </h5>
+                        </div>
+                        <div id="collapseResisome" class="accordion-body collapse" aria-labelledby="headingResisome" data-parent="#accordion_filter">
+                          <div class="card-body">
+                            <form method="GET" id="resistome_form">
+                              <div class="form-row">
+                                <div class="form-group col-md-3">
+                                  <label><strong>Loci data type <span style="color:red">*</span></strong></label>
+                                  <select name="loci_type" class="form-control" required>
+                                    <option value="" {% if not loci_type %}selected{% endif %} disabled>-- Select --</option>
+                                    <option value="muts" {% if loci_type == 'muts' %}selected{% endif %}>Mutations only</option>
+                                    <option value="muts_pols" {% if loci_type == 'muts_pols' %}selected{% endif %}>Mutations + Polymorphisms</option>
+                                  </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                  <label><strong>Show heatmap</strong></label>
+                                  <select name="show_heatmap" class="form-control">
+                                    <option value="no" {% if show_heatmap != 'yes' %}selected{% endif %}>No</option>
+                                    <option value="yes" {% if show_heatmap == 'yes' %}selected{% endif %}>Yes</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label><strong>Genes to display as columns</strong></label>
+                                <select name="genes" id="resistome_genes_select" class="form-control select2" multiple style="width:100%">
+                                  {% for gene in all_genes %}
+                                    <option value="{{ gene }}" {% if gene in selected_genes %}selected{% endif %}>{{ gene }}</option>
+                                  {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-secondary btn-sm mt-1" id="resistome_select_all">Show all genes</button>
+                              </div>
+                              <button type="submit" class="btn btn-primary">Apply</button>
+                            </form>
+                          </div>
+                        </div>
+                    </div>
+
                   </div>
-                </div>
+              </div>
+            </div>
 
             <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
               <form method="GET">
@@ -210,8 +288,50 @@
 
               </form>
             </div>
+
+
+            {% if resistome_warnings %}
+            <div style="margin-bottom:10px;">
+              {% for w in resistome_warnings %}
+                <div class="alert alert-warning" role="alert"><strong>⚠ Resistome warning:</strong> {{ w }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <label for="per_page_select" style="margin:0; font-weight:bold;">Rows per page:</label>
+                <select id="per_page_select" class="form-control" style="width:auto;"
+                        onchange="changePerPage(this.value)"
+                    {% for n in per_page_options %}
+                        <option value="{{ n }}"
+                            {% if request.GET.per_page == n|stringformat:"s" %}selected{% endif %}>
+                            {{ n }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
             {% render_table table %}
 
+            {% if heatmap_json %}
+            <div style="margin-top:20px;">
+              <h4>Resistome heatmap <small class="text-muted">(current page)</small>
+                <a href="{% url 'heatmap_all' %}?{{ request.GET.urlencode }}"
+                   target="_blank"
+                   class="btn btn-sm btn-outline-secondary ml-2"
+                   title="Open printable heatmap for all filtered records">
+                  🖨 Print PDF (all records)
+                </a>
+              </h4>
+              <div style="font-size:0.85em; margin-bottom:6px;">
+                <span style="background:#ffb3b3; padding:2px 8px; border-radius:3px;">Mutation</span>
+                <span style="background:#b3d4ff; padding:2px 8px; border-radius:3px; margin-left:6px;">Polymorphism</span>
+                <span style="background:#d4b3ff; padding:2px 8px; border-radius:3px; margin-left:6px;">Both</span>
+                <span style="background:#f0f0f0; padding:2px 8px; border-radius:3px; margin-left:6px;">WT</span>
+              </div>
+              <div id="resistome_heatmap" style="width:100%; overflow-x:auto;"></div>
+            </div>
+            {% endif %}
         </div>
 
         {% if selected_table_1 or selected_table_2 %}
@@ -223,9 +343,6 @@
             {% if selected_table_2 %}
               <p><span class="badge badge-secondary">{{ alias_2 }}</span> → {{ selected_table_2 }}</p>
             {% endif %}
-        </div>
-        <div class="w3-container">
-            {% render_table mic_table %}
         </div>
 
         <!-- MIC table export buttons -->
@@ -253,6 +370,10 @@
             <i class="fas fa-file-download fa-sm"></i> Download BP Table 2
           </a>
           {% endif %}
+        </div>
+
+        <div class="w3-container">
+            {% render_table mic_table %}
         </div>
 
         {% endif %}

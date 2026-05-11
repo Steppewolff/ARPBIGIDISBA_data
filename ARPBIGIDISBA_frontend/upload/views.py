@@ -137,7 +137,7 @@ def upload(request):
 
         df_columns = df.columns.tolist()
         amr_loci = []
-        locus_pattern = r"PA ?\d{4}"
+        locus_pattern = r"PA(?:LES)? ?\d{4}"
 
         if loci_ext in ('muts', 'pols'):
             for column in df_columns:
