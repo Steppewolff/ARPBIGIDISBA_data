@@ -16,6 +16,8 @@ from django.templatetags.static import static
 from django.http import FileResponse, Http404
 from django.conf import settings
 from io import StringIO
+from datetime import date, datetime
+
 import pandas as pd
 import numpy as np
 import os.path
@@ -137,7 +139,8 @@ def upload(request):
 
         df_columns = df.columns.tolist()
         amr_loci = []
-        locus_pattern = r"PA(?:LES)? ?\d{4}"
+        # locus_pattern = r"PA(?:LES)? ?\d{4}"
+        locus_pattern = r"^(?:PA(?:LES|14)?[_ ]?\d{4,5})(?!\d)"
 
         if loci_ext in ('muts', 'pols'):
             for column in df_columns:
@@ -408,6 +411,33 @@ def modal(request):
         upload_id = request.GET.get('uid') or request.session.get('upload_id', '')
         return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields, 'upload_id': upload_id})
 
+def _sanitize_field_value(val):
+    """Convierte tipos pandas/numpy a tipos Python nativos seguros para el ORM de Django."""
+    import datetime
+    import numpy as np
+    try:
+        if pd.isna(val):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(val, pd.Timestamp):
+        return val.date()
+    if isinstance(val, datetime.datetime):
+        return val.date()
+    if isinstance(val, datetime.date):
+        return val
+    if isinstance(val, np.datetime64):
+        return pd.Timestamp(val).date()
+    # Integers grandes son timestamps en ms (round-trip JSON de columnas fecha)
+    # Los campos enteros normales (día, mes, año) son < 10000, nunca > 1e10
+    if isinstance(val, (int, float, np.integer, np.floating)) and not isinstance(val, bool):
+        if abs(val) > 1e10:
+            try:
+                return pd.Timestamp(val, unit='ms').date()
+            except Exception:
+                pass
+    return val
+
 def confirm(request):
     get_upload_id = request.GET.get('uid', '')
     session_upload_id = request.session.get('upload_id', '')
@@ -471,7 +501,7 @@ def confirm(request):
             row_fk = fk_mappings.get(str(idx), {})
 
             metadata_general_data = {
-                field: row[input_fields[field]]
+                field: _sanitize_field_value(row[input_fields[field]])
                 for field in model_fields['MetadataGeneral']
                 if input_fields[field] in row
             }
@@ -509,7 +539,7 @@ def confirm(request):
                     continue
 
                 model_data = {
-                    field: row[input_fields[field]]
+                    field: _sanitize_field_value(row[input_fields[field]])
                     for field in fields
                     if input_fields[field] in row
                 }

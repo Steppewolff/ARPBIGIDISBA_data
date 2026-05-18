@@ -146,7 +146,7 @@
                     <div id="collapseFilterOne" class="accordion-body collapse" aria-labelledby="headingFilter" data-parent="#accordion_filter">
                       <div class="card-body form-row">
                           <div class="form-group col-md-6 mb-0">
-                            <form method="GET">
+                            <form method="GET" data-loading-msg="Applying changes in filters, please wait…">
                               {% csrf_token %}
                               {% crispy filter.form %}
                             </form>
@@ -159,7 +159,7 @@
                     <div class="card-header accordion-heading" id="headingClinicalCat">
                       <h5 class="mb-0">
                         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseClinicalCat" aria-expanded="true" aria-controls="collapseClinicalCat" data-parent="#accordion_filter" href="#collapseClinicalCat">
-                          Clinical categories versions used
+                          Clinical categorie/s version/s used
                         </button>
                       </h5>
                     </div>
@@ -169,14 +169,14 @@
                               <form action="{% url 'resultados' %}" method="GET" id="amr_clas_results">
                                  <p class="text-muted mb-3">
                                     Select up to two breakpoint versions. Each one controls a separate
-                                    <em>CC</em> column displayed after every MIC value in the table below.
-                                    Leave a selector on <em>---</em> to leave that column empty.
+                                    <em>Clinical category version</em> column displayed after every MIC value in the table below.
                                  </p>
+                                 <p> Leave a selector on <em>---</em> to leave that column empty.</p>
 
                               <div class="form-row align-items-end">
                                 <!-- Select 1 -->
                                 <div class="form-group col-md-5">
-                                  <label for="breakpoint_table_1"><strong>CC column 1</strong></label>
+                                  <label for="breakpoint_table_1"><strong>Clinical category version 1</strong></label>
                                   <select name="breakpoint_table_1" id="breakpoint_table_1" class="form-control">
                                     <option value="">--- Not selected ---</option>
                                     {% for table in breakpoints_tables %}
@@ -186,14 +186,15 @@
                                       </option>
                                     {% endfor %}
                                   </select>
-                                  <input type="text" name="alias_1" class="form-control mt-1"
+                                  <label for="alias_1" style="margin-top:0.3 !important;"><i>Alias of version 1 in table</i></label>
+                                  <input type="text" name="alias_1" id="alias_1" class="form-control mt-1"
                                          placeholder="Short name for column 1 (e.g. EUCAST v6)"
-                                         value="{{ alias_1 }}">
+                                         value="{{ alias_1 }}" style="margin-top:0 !important;">
                                 </div>
 
                                 <!-- Select 2 -->
                                 <div class="form-group col-md-5">
-                                  <label for="breakpoint_table_2"><strong>CC column 2</strong></label>
+                                  <label for="breakpoint_table_2"><strong>Clinical category version 2</strong></label>
                                   <select name="breakpoint_table_2" id="breakpoint_table_2" class="form-control">
                                     <option value="">--- Not selected ---</option>
                                     {% for table in breakpoints_tables %}
@@ -203,13 +204,14 @@
                                       </option>
                                     {% endfor %}
                                   </select>
-                                  <input type="text" name="alias_2" class="form-control mt-1"
+                                  <label for="alias_2" style="margin-top:0.3 !important;"><i>Alias of version 2 in table</i></label>
+                                  <input type="text" name="alias_2" id="alias_2" class="form-control mt-1"
                                          placeholder="Short name for column 2 (e.g. EUCAST v14)"
-                                         value="{{ alias_2 }}">
+                                         value="{{ alias_2 }}" style="margin-top:0 !important;">
                                 </div>
                                 <!-- Calculate button -->
                                 <div class="form-group col-md-2">
-                                  <input type="submit" value="Calculate" class="btn btn-primary btn-block">
+                                  <input type="submit" value="Calculate" class="btn btn-primary btn-block" data-loading-msg="Calculating clinical categories, please wait…">
                                 </div>
                               </div><!-- /form-row -->
                             </form>
@@ -220,7 +222,7 @@
                         <div class="card-header accordion-heading" id="headingResisome">
                           <h5 class="mb-0">
                             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseResisome" aria-expanded="false" aria-controls="collapseResisome" data-parent="#accordion_filter" href="#collapseResisome">
-                              Resistome
+                              Whole Genome Sequencing filters
                             </button>
                           </h5>
                         </div>
@@ -253,7 +255,7 @@
                                 </select>
                                 <button type="button" class="btn btn-secondary btn-sm mt-1" id="resistome_select_all">Show all genes</button>
                               </div>
-                              <button type="submit" class="btn btn-primary">Apply</button>
+                              <button type="submit" class="btn btn-primary" data-loading-msg="Applying changes in genes to display, please wait…">Apply</button>
                             </form>
                           </div>
                         </div>
@@ -261,7 +263,6 @@
 
                   </div>
               </div>
-            </div>
 
             <div class="form-group col-md-6 mb-0" style="margin: 10px !important;">
               <form method="GET">
@@ -336,7 +337,7 @@
 
         {% if selected_table_1 or selected_table_2 %}
         <div class="w3-container">
-            <h2 id="mic_table">MIC Table</h2>
+            <h2 id="mic_table">MICs Table</h2>
             {% if selected_table_1 %}
               <p><span class="badge badge-info">{{ alias_1 }}</span> → {{ selected_table_1 }}</p>
             {% endif %}
@@ -346,28 +347,28 @@
         </div>
 
         <!-- MIC table export buttons -->
-        <div class="form-group col-md-8 mb-0" style="margin: 10px !important;">
+        <div class="w3-container form-group col-md-12 mb-0" style="margin: 10px !important;">
           <a href='?_export_mic=csv' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to CSV
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MICs table to CSV
           </a>
           <a href='?_export_mic=xlsx' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to XLSX
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MICs table to XLSX
           </a>
           <a href='?_export_mic=txt' class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Export MIC to TXT
+            <i class="fas fa-download fa-sm text-white-50"></i> Export MICs table to TXT
           </a>
 
           <!-- Download reference breakpoint files -->
           {% if selected_filepath_1 %}
           <a href="{% static selected_filepath_1 %}" class="btn btn-sm btn-success shadow-sm" download
-             title="Download the breakpoint table used for CC column 1">
-            <i class="fas fa-file-download fa-sm"></i> Download BP Table 1
+             title="Download the breakpoint table used for Clinical category column 1">
+            <i class="fas fa-file-download fa-sm"></i> Download Source Breakpoints Table 1
           </a>
           {% endif %}
           {% if selected_filepath_2 %}
           <a href="{% static selected_filepath_2 %}" class="btn btn-sm btn-success shadow-sm" download
-             title="Download the breakpoint table used for CC column 2">
-            <i class="fas fa-file-download fa-sm"></i> Download BP Table 2
+             title="Download the breakpoint table used for Clinical category column 2">
+            <i class="fas fa-file-download fa-sm"></i> Download Source Breakpoints Table 2
           </a>
           {% endif %}
         </div>

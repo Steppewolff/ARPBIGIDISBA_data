@@ -16,7 +16,7 @@ import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
 from .tables import CombinedTable, create_mic_table # MicTable
-from .forms import HospitalForm, MicForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
+from .forms import HospitalForm, MicForm, MicSearchForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
 
 class MyLoginView(LoginView):
@@ -27,33 +27,53 @@ class MyLoginView(LoginView):
 def home(request):
     return render(request, 'home.html')
 
+def _get_all_genes(sa_qs=None):
+    """Sorted list of unique gene keys from mutational_resistome_muts.
+    Pass a filtered SequenceAnalysis queryset or None for all records."""
+    if sa_qs is None:
+        sa_qs = SequenceAnalysis.objects.all()
+    genes = set()
+    for sa in sa_qs.exclude(mutational_resistome_muts=None).only('mutational_resistome_muts'):
+        genes.update((sa.mutational_resistome_muts or {}).keys())
+    return sorted(genes)
 
+# def busqueda(request):
+#     if request.method == 'POST':
+#         metadatageneral_form = MetadataGeneralForm(request.POST)
+#         metadataclinic_form = MetadataClinicForm(request.POST)
+#         hospital_form = HospitalForm(request.POST)
+#         mic_form = MicForm(request.POST)
+#         fenotipo_form = FenotipoForm(request.POST)
+#         secuencia_analisis_form = SequenceAnalysisForm(request.POST)
+#
+#         if metadatageneral_form.is_valid() and hospital_form.is_valid() and mic_form.is_valid() and fenotipo_form.is_valid() and secuencia_analisis_form.is_valid() and metadataclinic_form.is_valid():
+#             return render(request, 'resultados.html')
+#
+#     else:
+#         metadatageneral_form = MetadataGeneralForm()
+#         metadataclinic_form = MetadataClinicForm()
+#         hospital_form = HospitalForm()
+#         mic_form = MicForm()
+#         mic_search_form = MicSearchForm()
+#         fenotipo_form = FenotipoForm()
+#         secuencia_analisis_form = SequenceAnalysisForm()
+#
+#         return render(request, 'busqueda.html',
+#                       {'metadatageneral_form': metadatageneral_form, 'metadataclinic_form': metadataclinic_form, 'hospital_form': hospital_form,
+#                        'mic_form': mic_form, 'mic_search_form': mic_search_form,
+#                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
 
-# @login_required
 def busqueda(request):
-    if request.method == 'POST':
-        metadatageneral_form = MetadataGeneralForm(request.POST)
-        metadataclinic_form = MetadataClinicForm(request.POST)
-        hospital_form = HospitalForm(request.POST)
-        mic_form = MicForm(request.POST)
-        fenotipo_form = FenotipoForm(request.POST)
-        secuencia_analisis_form = SequenceAnalysisForm(request.POST)
-
-        if metadatageneral_form.is_valid() and hospital_form.is_valid() and mic_form.is_valid() and fenotipo_form.is_valid() and secuencia_analisis_form.is_valid() and metadataclinic_form.is_valid():
-            return render(request, 'resultados.html')
-
-    else:
-        metadatageneral_form = MetadataGeneralForm()
-        metadataclinic_form = MetadataClinicForm()
-        hospital_form = HospitalForm()
-        mic_form = MicForm()
-        fenotipo_form = FenotipoForm()
-        secuencia_analisis_form = SequenceAnalysisForm()
-
-        return render(request, 'busqueda.html',
-                      {'metadatageneral_form': metadatageneral_form, 'metadataclinic_form': metadataclinic_form, 'hospital_form': hospital_form,
-                       'mic_form': mic_form,
-                       'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
+    return render(request, 'busqueda.html', {
+        'metadatageneral_form':    MetadataGeneralForm(),
+        'metadataclinic_form':     MetadataClinicForm(),
+        'hospital_form':           HospitalForm(),
+        'mic_form':                MicForm(),
+        'mic_search_form':         MicSearchForm(),
+        'fenotipo_form':           FenotipoForm(),
+        'secuencia_analisis_form': SequenceAnalysisForm(),
+        'all_genes':               _get_all_genes(),
+    })
 
 def _get_gene_category(gene, muts_json, pols_json):
     """WT | Mutation | Polymorphism | Both — compares muts vs pols JSON for a single gene."""
@@ -115,24 +135,15 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         verbose_used = self.request.session.get('verbose_used', {})
         context = super().get_context_data(**kwargs)
 
-        # Obtener los datos para la tabla de Mic con isolate_name
         filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
-        # qs_mic = Mic.objects.select_related("matadatageneral.isolate_name").all()
-        # qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
-        # context['qs_mic'] = qs_mic
-        # # Sin breakpoints seleccionados aún: tabla vacía con cabeceras genéricas
-        # DefaultMicTable = create_mic_table()
-        # context['mic_table'] = DefaultMicTable(data=qs_mic)
-        # RequestConfig(self.request).configure(context['mic_table'])
-
         qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
         context['qs_mic'] = qs_mic
 
         selected_table_1 = self.request.GET.get('breakpoint_table_1') or None
         selected_table_2 = self.request.GET.get('breakpoint_table_2') or None
 
-        alias_1 = self.request.GET.get('alias_1') or 'CC1'
-        alias_2 = self.request.GET.get('alias_2') or 'CC2'
+        alias_1 = self.request.GET.get('alias_1') or 'CCv1'
+        alias_2 = self.request.GET.get('alias_2') or 'CCv2'
 
         if selected_table_1 or selected_table_2:
             bp_dict_1 = self._get_bp_dict(selected_table_1)
@@ -162,13 +173,6 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         # Garantizar que 'table' siempre esté presente
         if 'table' not in context or not hasattr(context['table'], 'columns'):
             context['table'] = self.get_table()
-
-        # Añadir filtros de la vista filtrada para que aparezcan en /results
-        verbose_used = context.get('verbose_used', {}).copy()
-        # for key, value in self.request.GET.items():
-        #     if key in ['csrfmiddlewaretoken', 'page'] or not value:
-        #         continue
-        #     verbose_used[key.replace('_', ' ').capitalize()] = value
 
         for key in self.request.GET.keys():
             if key in ['csrfmiddlewaretoken', 'page']:
@@ -216,10 +220,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         sa_qs         = SequenceAnalysis.objects.filter(isolate_id__in=filtered_ids)
 
         # Gene list from filtered records
-        all_genes = set()
-        for sa in sa_qs.exclude(mutational_resistome_muts=None):
-            all_genes.update((sa.mutational_resistome_muts or {}).keys())
-        all_genes = sorted(all_genes)
+        all_genes = _get_all_genes(sa_qs)
 
         # Warnings for missing JSON data
         resistome_warnings = []

@@ -1,5 +1,6 @@
 {% extends "home_template.html" %}
 
+{% load static %}
 {% load django_tables2 %}
 {% load render_table from django_tables2 %}
 {% load bootstrap4 %}
@@ -8,6 +9,11 @@
 {% bootstrap_messages %}
 
     {% block head %}
+    <link rel="stylesheet" href="{% static 'home/css/busqueda.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- JS (debe ir después de jQuery) -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     {% endblock %}
 
     {% block title %}
@@ -32,406 +38,536 @@
             <hr style="width:50px;border:5px solid #00334c" class="w3-round">
           </div>
 
+          <!-- Search schema -->
+          <div style="display: flex; align-items: stretch; justify-content: space-between; width: 100%; font-family: sans-serif; margin-bottom:16px; font-size: 0.82rem;">
+
+              <!-- Step 1: Collection data -->
+              <div style="flex:1; background-color: rgba(0,51,76,0.50); padding:12px 14px 12px; position:relative; border-radius:5px; cursor:pointer;" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  <div style="position:absolute; top:6px; left:9px; font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.05em;">STEP 1</div>
+                  <div style="color:#a8d8ea; font-weight:700; font-size:0.78rem; margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">Set Collection filters</div>
+                  <ul style="color:rgba(255,255,255,0.85); margin:0; padding-left:16px; list-style-type:disc; line-height:1.6;">
+                      <li>Select Project &amp; isolate/s</li>
+                      <li>Select Sample type &amp; ward</li>
+                      <li>Select Hospital &amp; location</li>
+                  </ul>
+              </div>
+
+              <div style="display:flex; align-items:center; padding:0 6px; flex-shrink:0;">
+                  <div style="width:40px; height:40px; background:#00334c; border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:bold;">&rarr;</div>
+              </div>
+
+              <!-- Step 2: Phenotypic data -->
+              <div style="flex:1; background-color: rgba(0,51,76,0.64); padding:12px 14px 12px; position:relative; border-radius:5px; cursor:pointer;" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  <div style="position:absolute; top:6px; left:9px; font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.05em;">STEP 2</div>
+                  <div style="color:#a8d8ea; font-weight:700; font-size:0.78rem; margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">Set Phenotypic filters</div>
+                  <ul style="color:rgba(255,255,255,0.85); margin:0; padding-left:16px; list-style-type:disc; line-height:1.6;">
+                      <li>ECDC / DTR profiles</li>
+                      <li>AmpC, MBL, ESBL tests</li>
+                      <li>In vitro serotype</li>
+                  </ul>
+              </div>
+
+              <div style="display:flex; align-items:center; padding:0 6px; flex-shrink:0;">
+                  <div style="width:40px; height:40px; background:#00334c; border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:bold;">&rarr;</div>
+              </div>
+
+              <!-- Step 3: SIR breakpoints -->
+              <div style="flex:1; background-color: rgba(0,51,76,0.78); padding:12px 14px 12px; position:relative; border-radius:5px; cursor:pointer;" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  <div style="position:absolute; top:6px; left:9px; font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.05em;">STEP 3</div>
+                  <div style="color:#a8d8ea; font-weight:700; font-size:0.78rem; margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">Set SIR Breakpoints filters</div>
+                  <ul style="color:rgba(255,255,255,0.85); margin:0; padding-left:16px; list-style-type:disc; line-height:1.6;">
+                      <li>Select S / I / R categories for 8 atb</li>
+                  </ul>
+              </div>
+
+              <div style="display:flex; align-items:center; padding:0 6px; flex-shrink:0;">
+                  <div style="width:40px; height:40px; background:#00334c; border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:bold;">&rarr;</div>
+              </div>
+
+              <!-- Step 4: Molecular data -->
+              <div style="flex:1; background-color: rgba(0,51,76,0.92); padding:12px 14px 12px; position:relative; border-radius:5px; cursor:pointer;" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                  <div style="position:absolute; top:6px; left:9px; font-size:0.65rem; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.05em;">STEP 4</div>
+                  <div style="color:#a8d8ea; font-weight:700; font-size:0.78rem; margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">Set Molecular filters</div>
+                  <ul style="color:rgba(255,255,255,0.85); margin:0; padding-left:16px; list-style-type:disc; line-height:1.6;">
+                      <li>MLST sequence type</li>
+                      <li>In silico serotype</li>
+                      <li>Whole Genome Sequencing filters</li>
+                  </ul>
+              </div>
+
+              <div style="display:flex; align-items:center; padding:0 6px; flex-shrink:0;">
+                  <div style="width:40px; height:40px; background:#dc3545; border-radius:10%; color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:bold;">SEARCH</div>
+              </div>
+
+              <!-- Step 5: Results -->
+              <div style="flex:1.1; background: linear-gradient(135deg, #dc3545 0%, #00566e 100%); border: 2px solid rgba(168,216,234,0.4); padding:12px 14px 12px; position:relative; border-radius:5px;">
+                  <div style="position:absolute; top:6px; left:9px; font-size:0.65rem; font-weight:700; color:white; letter-spacing:0.05em;">RESULTS</div>
+                  <div style="color:#a8d8ea; font-weight:700; font-size:0.78rem; margin-top:14px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.06em;">Obtain Results table</div>
+                  <ul style="color:rgba(255,255,255,0.85); margin:0; padding-left:16px; list-style-type:disc; line-height:1.6;">
+                      <li>Display list with filtered isolates</li>
+                      <li style="color:#a8d8ea;">Refine filters on the go</li>
+                      <li>Compare SIR breakpoints versions</li>
+                      <li>Export to CSV / Excel</li>
+                  </ul>
+              </div>
+
+          </div>
+          <p style="font-size:0.75rem; color:#6c757d; margin-bottom:10px; margin-top:-8px;">
+              &#9432;&nbsp; Expand any section below, set your filters and click <strong>SEARCH</strong>.
+              All active filters across sections are combined. Leave fields empty to ignore them.
+          </p>
+
         <!-- Query Filters -->
-        <form action="{% url 'resultados' %}" method="POST" id="filtros_busqueda">
-            {% csrf_token %}
-            <div class="accordion" id="accordion_form">
+        <form action="{% url 'resultados' %}" method="GET" id="filtros_busqueda">
+            <div class="accordion filter-accordion" id="accordion_form">
+
+              <!-- ═══════════════════════════════════════════════════════
+                   ACCORDION 1 · Collection data filters
+              ═══════════════════════════════════════════════════════ -->
               <div class="card accordion-group">
                 <div class="card-header accordion-heading" id="headingOne">
                   <h5 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" data-parent="#accordion_form" href="#collapseOne">
-                      Isolated strain data
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                            aria-expanded="true" aria-controls="collapseOne"
+                            data-parent="#accordion_form" href="#collapseOne">
+                      Collection data filters
+                      <span class="acc-badge">Traceability · Sample obtention · Geographical origin</span>
+                      <span class="acc-chevron">▼</span>
                     </button>
                   </h5>
                 </div>
                 <div id="collapseOne" class="accordion-body collapse" aria-labelledby="headingOne" data-parent="#accordion_form">
-                  <div class="card-body form-row">
-                      <div class="form-group col-md-6 mb-0">
-                        {{ metadatageneral_form.isolate_name | as_crispy_field }}
+                  <div class="card-body">
+                    <div class="row">
+
+                      <!-- Traceability -->
+                      <div class="col-md-4 mb-3">
+                        <div class="filter-subgroup sg-traceability h-100">
+                          <div class="filter-subgroup-header">
+                            🏷&nbsp; Traceability
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="Project and isolate identifiers for tracing sample origin within the database">i</span>
+                          </div>
+                          {{ metadatageneral_form.project_name | as_crispy_field }}
+                          {{ metadatageneral_form.isolate_name | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-6 mb-0">
-                        {{ metadatageneral_form.project_name | as_crispy_field }}
+
+                      <!-- Sample obtention -->
+                      <div class="col-md-4 mb-3">
+                        <div class="filter-subgroup sg-obtention h-100">
+                          <div class="filter-subgroup-header">
+                            🏥&nbsp; Sample obtention
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="Collection date, sample type, and hospital ward where the clinical sample was obtained">i</span>
+                          </div>
+                          {{ metadataclinic_form.sample_type | as_crispy_field }}
+                          {{ metadataclinic_form.collection_ward | as_crispy_field }}
+                        </div>
                       </div>
-                       <div class="form-group col-md-6 mb-0">
-                        {{ metadataclinic_form.sample_type | as_crispy_field }}
+
+                      <!-- Geographical origin -->
+                      <div class="col-md-4 mb-3">
+                        <div class="filter-subgroup sg-geographical h-100">
+                          <div class="filter-subgroup-header">
+                            🌍&nbsp; Geographical origin
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="Country, region, city and hospital of sample origin (hierarchical: select country first)">i</span>
+                          </div>
+                          {{ hospital_form.country | as_crispy_field }}
+                          {{ hospital_form.region | as_crispy_field }}
+                          {{ hospital_form.town | as_crispy_field }}
+                          {{ hospital_form.hospital | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-6 mb-0">
-                        {{ metadataclinic_form.collection_ward | as_crispy_field }}
-                      </div>
+
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- ═══════════════════════════════════════════════════════
+                   ACCORDION 2 · Phenotypic data filters
+              ═══════════════════════════════════════════════════════ -->
               <div class="card">
                 <div class="card-header" id="headingTwo">
                   <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                      Geographic data
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="false" aria-controls="collapseTwo">
+                      Phenotypic data filters
+                      <span class="acc-badge">Resistance profiles · Enzymatic tests · Serotype</span>
+                      <span class="acc-chevron">▼</span>
                     </button>
                   </h5>
                 </div>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion_form">
                   <div class="card-body">
-                    {{ hospital_form.country | as_crispy_field }}
-                    {{ hospital_form.region | as_crispy_field }}
-                    {{ hospital_form.town | as_crispy_field }}
-                    {{ hospital_form.hospital | as_crispy_field }}
+
+                    <!-- Row 1: Resistance profiles + Serotype -->
+                    <div class="row mb-2">
+
+                      <!-- Resistance profiles -->
+                      <div class="col-md-8 mb-3">
+                        <div class="filter-subgroup sg-resistance h-100">
+                          <div class="filter-subgroup-header">
+                            🛡&nbsp; Resistance profiles
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="ECDC (MDR, XDR, PDR) and Difficult-to-treat standardized resistance profile classifications">i</span>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6">
+                              {{ fenotipo_form.ecdc_resistance_profile | as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                              {{ fenotipo_form.dtr_profile | as_crispy_field }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Serotype -->
+                      <div class="col-md-4 mb-3">
+                        <div class="filter-subgroup sg-serotype h-100">
+                          <div class="filter-subgroup-header">
+                            🧫&nbsp; Serotype
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="In vitro serotype determined by slide agglutination or equivalent phenotypic method">i</span>
+                          </div>
+                          {{ fenotipo_form.invitro_serotype | as_crispy_field }}
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <!-- Row 2: Enzymatic tests -->
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="filter-subgroup sg-enzymatic">
+                          <div class="filter-subgroup-header">
+                            ⚗️&nbsp; Enzymatic resistance tests
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="Phenotypic detection tests for specific resistance enzymes. Cloxacillin: AmpC; MBL: metallo-β-lactamases; ESBL: extended-spectrum β-lactamases">i</span>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-4">
+                              {{ fenotipo_form.cloxa_test | as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                              {{ fenotipo_form.mbl_test | as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                              {{ fenotipo_form.esbl_test | as_crispy_field }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
+
+              <!-- ═══════════════════════════════════════════════════════
+                   ACCORDION 3 · SIR breakpoints filters
+              ═══════════════════════════════════════════════════════ -->
               <div class="card">
                 <div class="card-header" id="headingThree">
                   <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                      MIC values
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree"
+                            aria-expanded="false" aria-controls="collapseThree">
+                      SIR breakpoints filters
+                      <span class="acc-badge">8 antibiotic classes</span>
+                      <span class="acc-chevron">▼</span>
                     </button>
                   </h5>
                 </div>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion_form">
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_pip" name="comparison_pip">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.pip | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_pip_tz" name="comparison_pip_tz">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.pip_tz | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_fep" name="comparison_fep">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.fep | as_crispy_field }}
-                      </div>
+                  <div class="card-body">
+
+                    <div class="sir-intro-note">
+                      <span class="sg-info" style="background:#8aacbc;" data-toggle="tooltip" data-placement="right"
+                            title="SIR categories follow EUCAST or CLSI clinical breakpoints. S = Susceptible, I = Intermediate, R = Resistant">i</span>
+                      &nbsp;Filter isolates by <strong>SIR clinical category</strong> for each antibiotic class.
+                      Hover over a class title for compound details.
                     </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_cfdc" name="comparison_cfdc">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
+
+                    <div class="row">
+
+                      <!-- Carboxypenicillins -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="carboxipenicillins">
+                        <div class="sir-class-card sir-carboxy h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Carboxypenicillins — Ticarcillin (TIC)">
+                            Carboxypenicillins
+                          </div>
+                          {{ mic_search_form.tic_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.cfdc | as_crispy_field }}
+
+                      <!-- Penicillins + BLI -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="penicillins">
+                        <div class="sir-class-card sir-penicillin h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Ureidopenicillins + β-lactamase inhibitor — Piperacillin-Tazobactam (PIP-TZ)">
+                            Penicillins + BLI
+                          </div>
+                          {{ mic_search_form.pip_tz_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_caz" name="comparison_caz">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
+
+                      <!-- Cephalosporins -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="cephalosporins">
+                        <div class="sir-class-card sir-cephalo h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Cephalosporins and combinations — CAZ, CAZ/AVI, TOL, TOL/CTZ, FEP, CFDC">
+                            Cephalosporins
+                          </div>
+                          {{ mic_search_form.caz_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.caz_avi_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.tol_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.ctz_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.fep_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.cfdc_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.caz | as_crispy_field }}
+
+                      <!-- Monobactams -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="monobactams">
+                        <div class="sir-class-card sir-mono h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Monobactams and combinations — Aztreonam (AZT), Aztreonam-Avibactam (AZT/AVI)">
+                            Monobactams
+                          </div>
+                          {{ mic_search_form.atm_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.azt_avi_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_caz_avi" name="comparison_caz_avi">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
+
+                      <!-- Carbapenems -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="carbapenems">
+                        <div class="sir-class-card sir-carbapenem h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Carbapenems — Imipenem (IMI), Imipenem-Relebactam (IMI/REL), Meropenem (MER)">
+                            Carbapenems
+                          </div>
+                          {{ mic_search_form.imi_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.imi_rel_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.mer_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.caz_avi | as_crispy_field }}
+
+                      <!-- Aminoglycosides -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="aminoglycosides">
+                        <div class="sir-class-card sir-aminogly h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Aminoglycosides — Amikacin (AMI), Tobramycin (TOB)">
+                            Aminoglycosides
+                          </div>
+                          {{ mic_search_form.ami_clinical_category | as_crispy_field }}
+                          {{ mic_search_form.tob_clinical_category | as_crispy_field }}
+                        </div>
                       </div>
+
+                      <!-- Fluoroquinolones -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="fluoroquinolones">
+                        <div class="sir-class-card sir-fluoroqui h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Fluoroquinolones — Ciprofloxacin (CIP)">
+                            Fluoroquinolones
+                          </div>
+                          {{ mic_search_form.cip_clinical_category | as_crispy_field }}
+                        </div>
+                      </div>
+
+                      <!-- Polymyxins -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="polimixins">
+                        <div class="sir-class-card sir-polymyxin h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Polymyxins — Colistin (COL)">
+                            Polymyxins
+                          </div>
+                          {{ mic_search_form.col_clinical_category | as_crispy_field }}
+                        </div>
+                      </div>
+
                     </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_ct" name="comparison_ct">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.ctz | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_imi" name="comparison_imi">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.imi | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_imi_rel" name="comparison_imi_rel">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.imi_rel | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_mer" name="comparison_mer">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.mer | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_mer_vab" name="comparison_mer_vab">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.mer_vab | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_azt_avi" name="comparison_azt_avi">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.azt_avi | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_cip" name="comparison_cip">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.cip | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_ami" name="comparison_ami">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.ami | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_gen" name="comparison_gen">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.gen | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_net" name="comparison_net">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.net | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_tob" name="comparison_tob">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.tob | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_col" name="comparison_col">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.col | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_fo" name="comparison_fo">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.fo | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_tic" name="comparison_tic">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.tic | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_ptz" name="comparison_ptz">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                         {{ mic_form.ctz | as_crispy_field }}
-                      </div>
-                    </div>
-                    <div class="card-body form-row">
-                      <div class="form-group col-md-1 mb-0">
-                        <select id="comparison_atm" name="comparison_atm">
-                            <option value="" selected>-</option>
-                            <option value="gt">&gt;</option>
-                            <option value="gte">&gt;=</option>
-                            <option value="lt">&lt;</option>
-                            <option value="lte">&lt;=</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-2 mb-0">
-                        {{ mic_form.atm | as_crispy_field }}
-                      </div>
-                    </div>
+                  </div>
                 </div>
               </div>
+
+              <!-- ═══════════════════════════════════════════════════════
+                   ACCORDION 4 · Molecular data filters
+              ═══════════════════════════════════════════════════════ -->
               <div class="card">
                 <div class="card-header" id="headingFour">
                   <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                      Phenotype
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour"
+                            aria-expanded="false" aria-controls="collapseFour">
+                      Molecular data filters
+                      <span class="acc-badge">Typing · Whole Genome Sequencing</span>
+                      <span class="acc-chevron">▼</span>
                     </button>
                   </h5>
                 </div>
                 <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion_form">
-                  <div class="card-body form-row">
-                      <div class="form-group col-md-6 mb-0">
-                        {{ fenotipo_form.ecdc_resistance_profile | as_crispy_field }}
+                  <div class="card-body">
+                    <div class="row">
+
+                      <!-- Molecular typing -->
+                      <div class="col-md-6 mb-3" id="molecular_filters">
+                        <div class="filter-subgroup sg-molecular h-100">
+                          <div class="filter-subgroup-header">
+                            🔖&nbsp; Molecular typing
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="In silico MLST sequence type (ST) and serotype predicted bioinformatically from Whole Genome Sequencing data">i</span>
+                          </div>
+                          {{ secuencia_analisis_form.sequence_type | as_crispy_field }}
+                          {{ secuencia_analisis_form.insilico_serotype | as_crispy_field }}
+                        </div>
                       </div>
-                      <div class="form-group col-md-6 mb-0">
-                        {{ fenotipo_form.idsa_resistance_profile | as_crispy_field }}
+
+                      <!-- WGS filters — placeholder, pending backend implementation -->
+                      <div class="col-md-6 mb-3" id="wgs_filters">
+                        <div class="filter-subgroup sg-wgs h-100">
+                          <div class="filter-subgroup-header">
+                            🧬&nbsp; Whole Genome Sequencing filters
+                            <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                  title="Whole Genome Sequencing-derived filters: resistance genes.">i</span>
+                          </div>
+
+<!--                      WGS filters — genes/loci_type/show_heatmap are read directly from request.GET in ResultadosListView (get_context_data + get_table),-->
+<!--                      outside the MultiFilter filterset. They flow automatically when this GET form is submitted to {% url 'resultados'.-->
+
+                          <div class="form-row mb-2">
+                            <div class="form-group col-md-6 mb-0">
+                              <label class="col-form-label pt-0"><strong>Loci data type</strong>
+                                <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                      title="Whether to consider only point mutations, or also polymorphisms, when computing gene resistome categories">i</span>
+                              </label>
+                              <select name="loci_type" class="form-control form-control-sm" id="wgs_loci_type">
+                                <option value="" selected>— Any (no column added) —</option>
+                                <option value="muts">Mutations only</option>
+                                <option value="muts_pols">Mutations + Polymorphisms</option>
+                              </select>
+                            </div>
+                            <div class="form-group col-md-6 mb-0">
+                              <label class="col-form-label pt-0"><strong>Show heatmap in results</strong>
+                                <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                      title="Render a Plotly heatmap below the results table showing gene categories per isolate">i</span>
+                              </label>
+                              <select name="show_heatmap" class="form-control form-control-sm" id="wgs_show_heatmap">
+                                <option value="no" selected>No</option>
+                                <option value="yes">Yes</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group mb-1">
+                            <label><strong>Genes to display as columns</strong>
+                              <span class="sg-info" data-toggle="tooltip" data-placement="top"
+                                    title="Each selected gene will be added as a column to the results table, showing the resistome category for that isolate">i</span>
+                            </label>
+                            <select name="genes" id="wgs_genes_select" class="form-control" multiple style="width:100%">
+                              {% for gene in all_genes %}
+                                <option value="{{ gene }}">{{ gene }}</option>
+                              {% endfor %}
+                            </select>
+                            <button type="button" id="wgs_select_all" class="btn btn-outline-secondary btn-sm mt-1">
+                              Select all genes
+                            </button>
+                          </div>
+                          <p class="text-muted" style="font-size:0.75rem; margin-top:4px;">
+                            &#9432; Gene columns and heatmap can be adjusted further in the <em>Resistome</em> panel on the results page.
+                          </p>
+
+
+                        </div>
                       </div>
-                  </div>
-                  <div class="card-body form-row">
-                      <div class="form-group col-md-4 mb-0">
-                        {{ fenotipo_form.cloxa_test | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-4 mb-0">
-                        {{ fenotipo_form.mbl_test | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-4 mb-0">
-                        {{ fenotipo_form.esbl_test | as_crispy_field }}
-                      </div>
-                  </div>
-                  <div class="card-body form-row">
-                      <div class="form-group col-md-6 mb-0">
-                        {{ fenotipo_form.invitro_serotype | as_crispy_field }}
-                      </div>
-                  </div>
-                </div>
-              <div class="card">
-                <div class="card-header" id="headingFive">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                      Molecular data
-                    </button>
-                  </h5>
-                </div>
-                <div id="collapseFive" class="collapse" aria-labelledby="headingFour" data-parent="#accordion_form">
-                  <div class="card-body form-row">
-                      <div class="form-group col-md-6 mb-0">
-                        {{ secuencia_analisis_form.clonal_complex | as_crispy_field }}
-                      </div>
-                      <div class="form-group col-md-6 mb-0">
-                        {{ secuencia_analisis_form.insilico_serotype | as_crispy_field }}
-                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <button type="submit" form="filtros_busqueda" value="BUSCAR">BUSCAR</button>
-          </div>
-        </form>
 
+            </div>{# /accordion_form #}
+            <div style="text-align: center;">
+                <button type="submit" form="filtros_busqueda" value="BUSCAR" style="width:20%; background:#dc3545; border-radius:10%; color:white; font-size:2rem; font-weight:bold;" data-loading-msg="Searching isolates, please wait…">SEARCH</button>
+            </div>
+        </form>
     <!-- End page content -->
     </div>
 
+
+<script>
+$(document).ready(function() {
+
+    // Bootstrap tooltips (contextual help icons)
+    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover focus' });
+
+    // WGS genes: Select2 pill-style
+    $('#wgs_genes_select').select2({
+        placeholder: '— Select genes to add as columns —',
+        allowClear: true,
+        width: '100%',
+        closeOnSelect: false,
+    });
+    $('#wgs_select_all').on('click', function() {
+        var allVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
+        $('#wgs_genes_select').val(allVals).trigger('change');
+    });
+
+    // SIR fields: Select2 pill-style + ARO code as tooltip on label
+    $('.sir-class-card select').each(function() {
+        var $fg    = $(this).closest('.form-group');
+        var $label = $fg.find('label, .col-form-label').first();
+        var full   = $label.text().trim();
+        var aroM   = full.match(/ARO:\d+/);
+
+        if (aroM) {
+            // e.g. "TIC ARO:3003832 clinical category" → show "TIC", tooltip "ARO:3003832"
+            var short = full.replace(/\s*ARO:\d+/g, '').replace(/clinical category/i, '').trim();
+            $label.text(short)
+                  .attr({'title': aroM[0], 'data-toggle': 'tooltip', 'data-placement': 'top'})
+                  .tooltip({ trigger: 'hover focus' });
+        } else {
+            // e.g. "Ticarcillin clinical category" → show "Ticarcillin", tooltip full
+            var short2 = full.replace(/\s*clinical category\s*/i, '').trim();
+            $label.text(short2)
+                  .attr({'title': full, 'data-toggle': 'tooltip', 'data-placement': 'top'})
+                  .tooltip({ trigger: 'hover focus' });
+        }
+
+        $(this).select2({
+            placeholder: '—',
+            allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
+    });
+
+<!--    // Dual listbox para isolate_name-->
+<!--    $('select[name="isolate_name"]').bootstrapDualListbox({-->
+<!--        nonSelectedListLabel: 'Available isolates',-->
+<!--        selectedListLabel: 'Selected isolates',-->
+<!--        preserveSelectionOnMove: 'moved',-->
+<!--        moveOnSelect: false,-->
+<!--        filterPlaceHolder: 'Search...',-->
+<!--    });-->
+
+<!--    // Dual listbox para project_name-->
+<!--    $('select[name="project_name"]').bootstrapDualListbox({-->
+<!--        nonSelectedListLabel: 'Available projects',-->
+<!--        selectedListLabel: 'Selected projects',-->
+<!--        preserveSelectionOnMove: 'moved',-->
+<!--        moveOnSelect: false,-->
+<!--        filterPlaceHolder: 'Search...',-->
+<!--    });-->
+
+    // Re-inicializar al abrir acordeón
+    $('#accordion_form').on('shown.bs.collapse', function () {
+        $('select[name="isolate_name"]').bootstrapDualListbox('refresh');
+        $('select[name="project_name"]').bootstrapDualListbox('refresh');
+    });
+
+});
+</script>
+<script src="{% static 'home/js/busqueda.js' %}"></script>
     {% endblock %}

@@ -67,6 +67,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             var btn = document.getElementById('save_fk_btn');
             if (btn) btn.addEventListener('click', save_fk_mappings);
+
+            setTimeout(function() {
+                $('.fk-select').each(function() {
+                    var $sel = $(this);
+                    try { $sel.select2('destroy'); } catch(e) {}
+                    $sel.select2({
+                        width: '100%',
+                        placeholder: '-- Select --',
+                        allowClear: true,
+                        matcher: function(params, data) {
+                            if (!params.term || params.term.trim() === '') return data;
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) !== -1) return data;
+                            return null;
+                        },
+                    });
+                });
+            }, 0);
         });
     </script>
 
@@ -165,7 +182,7 @@
         </div>
         {% endfor %}
 
-        <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+        <div style="display:flex; justify-content:flex-start; margin-bottom:10px;">
             <button class="btn btn-primary" id="save_fk_btn">Save value asignation</button>
             <span id="fk_save_status" style="margin-left:10px; align-self:center;"></span>
         </div>

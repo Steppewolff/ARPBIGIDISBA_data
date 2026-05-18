@@ -15,11 +15,11 @@ df = pd.DataFrame({
     'Valores': [4, 3, 7, 9]
 })
 
-# df_sequenceAnalysis = pd.DataFrame(list(SequenceAnalysis.objects.all().values()))
-df_sequenceAnalysis = pd.DataFrame()
+df_sequenceAnalysis = pd.DataFrame(list(SequenceAnalysis.objects.all().values()))
+# df_sequenceAnalysis = pd.DataFrame()
 
-cnt_clonal_complex = Counter()
-# cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
+# cnt_clonal_complex = Counter()
+cnt_clonal_complex = Counter(df_sequenceAnalysis['sequence_type'])
 
 del cnt_clonal_complex[None]
 

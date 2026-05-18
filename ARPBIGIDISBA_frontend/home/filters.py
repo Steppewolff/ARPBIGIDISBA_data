@@ -69,6 +69,7 @@ class MultiFilter(filters.FilterSet):
     # isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
     isolate_name = filters.MultipleChoiceFilter(
         field_name='isolate_name',
+        choices=[],
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'isolateNameSelect'}),
         label='Isolate name'
     )
@@ -76,6 +77,7 @@ class MultiFilter(filters.FilterSet):
     # project_name = filters.ModelChoiceFilter(field_name='project_name', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
     project_name = filters.MultipleChoiceFilter(
         field_name='project_name',
+        choices=[],
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'projectNameSelect'}),
         label='Project'
     )

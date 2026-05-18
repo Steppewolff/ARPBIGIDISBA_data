@@ -33,8 +33,27 @@
 
     {% endblock %}
   </head>
-  <body style="padding-bottom: 100px;">
 
+<style>
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+
+<script>
+function w3_open()  { document.getElementById('mySidebar').style.display = 'block'; document.getElementById('myOverlay').style.display = 'block'; }
+function w3_close() { document.getElementById('mySidebar').style.display = 'none';  document.getElementById('myOverlay').style.display = 'none'; }
+</script>
+  <body style="padding-bottom: 100px;">
+    <!-- ── Loading overlay ── -->
+    <div id="loading-overlay" style="
+        display:none; position:fixed; inset:0; z-index:9999;
+        background:rgba(0,0,51,0.45); backdrop-filter:blur(2px);
+        flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+      <div style="width:48px;height:48px;border:5px solid rgba(255,255,255,0.25);
+                  border-top-color:#a8d8ea;border-radius:50%;
+                  animation:spin 0.75s linear infinite;"></div>
+      <span id="loading-msg" style="color:#fff;font-size:0.9rem;
+            font-family:sans-serif;letter-spacing:0.04em;opacity:0.9;"></span>
+    </div>
     <!-- Sidebar/menu -->
     <nav class="w3-sidebar w3-red w3-collapse w3-top w3-large w3-padding" style="z-index:3;width:300px;font-weight:bold;" id="mySidebar"><br>
       <a href="javascript:void(0)" onclick="w3_close()" class="w3-button w3-hide-large w3-display-topleft" style="width:100%;font-size:22px">Close Menu</a>
@@ -94,6 +113,48 @@
 
     <!-- Créditos y filiación -->
     <div class="w3-light-grey w3-container w3-padding-32" style="position: fixed; bottom: 0; left: 340px; text-align: right; padding-right: 20px !important; width: 82%; z-index: 1000; box-sizing: border-box;"><p class="w3-right">Developed by <a href="https://arpbigidisba.com" title="ARPBIG" target="_blank" class="w3-hover-opacity">ARPBIG</a></p></div>
+
+    <script>
+    (function() {
+        var overlay = document.getElementById('loading-overlay');
+        var msgEl   = document.getElementById('loading-msg');
+        var DEFAULT = 'Loading…';
+
+        function show(msg) {
+            msgEl.textContent = msg || DEFAULT;
+            overlay.style.display = 'flex';
+            document.body.style.cursor = 'wait';
+        }
+        function hide() {
+            overlay.style.display = 'none';
+            document.body.style.cursor = '';
+        }
+
+        // Forms
+        document.addEventListener('submit', function(e) {
+            var msg = e.target.dataset.loadingMsg || 'Applying filters…';
+            show(msg);
+        });
+
+        // Links (excluye anclas, javascript:, y target=_blank)
+        document.addEventListener('click', function(e) {
+            var a = e.target.closest('a[href]');
+            if (!a) return;
+            var href = a.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
+            show(a.dataset.loadingMsg || DEFAULT);
+        });
+
+        // AJAX (jQuery) — oculta cuando termina
+        if (window.jQuery) {
+            $(document).ajaxStart(function() { show('Fetching data…'); });
+            $(document).ajaxStop(hide);
+        }
+
+        // Ocultar si el navegador restaura la página desde bfcache
+        window.addEventListener('pageshow', hide);
+    })();
+    </script>
 
   </body>
 </html>
