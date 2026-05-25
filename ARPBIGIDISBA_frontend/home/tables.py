@@ -19,47 +19,17 @@ class GeneColumn(tables.Column):
         try:
             sa = getattr(record, 'sequenceanalysis', None)
             if sa is None:
-                return 'NO_SA'
+                return ''
             field = 'mutational_resistome_muts' if self.loci_type == 'muts' else 'mutational_resistome_pols'
             json_data = getattr(sa, field, None) or getattr(sa, 'mutational_resistome_muts', None)
             if json_data is None:
-                return 'NO_JSON'
+                return ''
             val = json_data.get(self.gene_name)
-            return val if val is not None else 'KEY_NOT_FOUND'
+            return val if val is not None else ''
         except Exception as e:
             return f'ERR:{e}'
 
-# def create_dynamic_table(*models, extra_columns=None):
-#     attrs = {}
-#     for model in models:
-#         for field in model._meta.get_fields():
-#             if isinstance(field, Field):
-#                 if isinstance(field, JSONField):          # ← excluir JSON fields
-#                     continue
-#                 if model._meta.model_name == 'metadatageneral':
-#                     accessor = f'{field.name}'
-#                     column_name = f'{field.name}'
-#                     attrs[column_name] = tables.Column(accessor=accessor)
-#                 else:
-#                     if '_id' in field.name:
-#                         pass
-#                     else:
-#                         accessor = f'{model._meta.model_name}.{field.name}'
-#                         column_name = f'{model._meta.model_name}_{field.name}'
-#                         attrs[column_name] = tables.Column(accessor=accessor)
-#
-#         attrs['Meta'] = type('Meta', (), {
-#             'template_name': 'django_tables2/bootstrap4.html',
-#             'exclude': ('clinic_id', 'isolate_id',),
-#             'export_formats': ["csv", "xlsx", "txt"],
-#             'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
-#         })
-#     if extra_columns:
-#         attrs.update(extra_columns)
-#     return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
-
-
-def create_dynamic_table(*models, extra_columns=None):
+def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
     attrs = {}
     all_column_names = []
 
@@ -99,6 +69,13 @@ def create_dynamic_table(*models, extra_columns=None):
         'export_formats': ["csv", "xlsx", "txt"],
         'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
     })
+
+    _empty = frozenset(empty_columns or [])
+
+    def get_column_default_show(self):
+        return [c for c in self.sequence if c not in _empty]
+
+    attrs['get_column_default_show'] = get_column_default_show
 
     return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
 

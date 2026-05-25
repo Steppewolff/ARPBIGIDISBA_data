@@ -316,12 +316,12 @@ class MetadataClinic(models.Model):
         db_table = 'metadata_clinic'
 
 SIR_OPTIONS=(
-    ('S', 'Sensible'),
-    ('I', 'Intermediate'),
-    ('R', 'Resistant'),
+    ('S', 'S'),
+    ('I', 'I'),
+    ('R', 'R'),
     ('S/I', 'S/I'),
     ('I/R', 'I/R'),
-    ('-', 'No data'),
+    ('-', '-'),
 )
 
 class Mic(models.Model):
@@ -495,6 +495,21 @@ MORPHOTYPE_CHOICES = (
     ('Small colony variant', 'Small colony variant'),
 )
 
+VIRULENCE_CHOICES = (
+    ('Virulent', 'Virulent'),
+    ('Non virulent', 'Non virulent'),
+    ('Intermediate', 'Intermediate'),
+)
+
+CEVS_CHOICES = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+    ('-', '-'),
+)
+
 class PhenotypicData(models.Model):
     phenotypic_data_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField(MetadataGeneral, models.PROTECT, blank=True, null=True, db_column='isolate_id')
@@ -513,6 +528,9 @@ class PhenotypicData(models.Model):
     invitro_serotype = models.ForeignKey(InvitroSerotype, models.PROTECT, db_column='invitro_serotype_id', blank=True, null=True, verbose_name="In vitro serotype")
     hypermutator_phenotype = models.CharField(max_length=15, blank=True, null=True, verbose_name="Hypermutator phenotype", db_comment='Hypermutator phenotype')
     morphotype = models.CharField(max_length=30, blank=True, null=True, choices=MORPHOTYPE_CHOICES, verbose_name="Morphotype", db_comment='Morphotype of the isolate')
+    virulence = models.CharField(max_length=30, blank=True, null=True, choices=VIRULENCE_CHOICES, verbose_name="Virulence", db_comment='Virulence of the isolate')
+    cevs = models.CharField(max_length=1, blank=True, null=True, choices=CEVS_CHOICES, verbose_name="CEVs", db_comment='CEVs of the isolate')
+
     phenotypic_comments = models.TextField(blank=True, null=True, verbose_name="Phenotypic comments", db_comment='Comments about isolate phenotype characteristics')
 
     class Meta:
@@ -543,6 +561,13 @@ class PdcVariant(models.Model):
         db_table = 'pdc_variant'
         verbose_name_plural = 'PDC variants'
 
+PIU_CHOICES = (
+    ('A', 'A'),
+    ('B', 'B'),
+    ('C', 'C'),
+    ('D', 'D'),
+)
+
 class SequenceAnalysis(models.Model):
     sequence_analysis_id = models.AutoField(primary_key=True)
     isolate_id = models.OneToOneField(MetadataGeneral, models.PROTECT, blank=True, null=True, db_column='isolate_id')
@@ -552,9 +577,10 @@ class SequenceAnalysis(models.Model):
     mutational_resistome_muts = models.JSONField(blank=True, null=True, db_comment="Mutations in mutational resistome, using JSON format")
     mutational_resistome_pols = models.JSONField(blank=True, null=True, db_comment="Polymorphisms in mutational resistome, using JSON format")
     # oprd_reference = models.CharField(max_length=20, blank=True, null=True, verbose_name="OprD reference", db_comment="Reference sequence for OprD porin")
-    oprd_reference = models.ForeignKey(OprdReference, models.PROTECT, db_column='oprd_reference_id', blank=True, null=True, verbose_name="OprD reference", db_comment="Reference sequence for OprD porin")
+    oprd_reference = models.ForeignKey(OprdReference, models.PROTECT, db_column='oprd_reference_id', blank=True, null=True, verbose_name="oprD reference", db_comment="Reference sequence for OprD porin")
     # pdc_variant = models.CharField(max_length=20, blank=True, null=True, verbose_name="PDC variant", db_comment="Variant of PDC beta-lactamase")
     pdc_variant = models.ForeignKey(PdcVariant, models.PROTECT, db_column='pdc_variant_id', blank=True, null=True, verbose_name="PDC variant", db_comment="Variant of PDC beta-lactamase")
+    piu_reference = models.CharField(max_length=1, blank=True, null=True, choices=PIU_CHOICES, verbose_name="piu reference", db_comment="Reference sequence for piu gene")
     ame_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="AME loci", db_comment="Aminoglycoside modifying enzymes loci, name list comma-separated")
     beta_lactamase_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Beta-lactamases/Carbapenemases loci", db_comment="Beta-lactamases/Carbapenemases loci, name list comma-separated")
     fluoroquinolones_loci = models.CharField(max_length=500, blank=True, null=True, verbose_name="Fluoroquinolones resistance determinants", db_comment="Fluoroquinolones resistance determinants loci, name list comma-separated")

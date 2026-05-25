@@ -98,6 +98,82 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var emptyCols = {{ empty_cols_json|default:"[]"|safe }};
+
+            /* Oculta columnas vacías en el column-shifter */
+            function applyEmptyColumns() {
+                if (!emptyCols.length) return;
+                $('.btn-shift-column').each(function () {
+                    var btn = $(this);
+                    var tdClass = btn.data('td-class');
+                    if (emptyCols.indexOf(tdClass) !== -1 && btn.data('state') === 'on') {
+                        btn.data('state', 'off');
+                        btn.find('img.check').hide();
+                        btn.find('img.uncheck').show();
+                        var containerId = btn.data('table-class-container');
+                        $('#' + containerId).find('table').find('.' + tdClass).hide();
+                    }
+                });
+            }
+
+            /* Calcula el left real de isolate_name sumando anchos de columnas visibles anteriores */
+            function setupStickyColumn() {
+                $('table.results').each(function () {
+                    var $table = $(this);
+                    var leftPx = 0;
+                    var found  = false;
+                    $table.find('thead tr th').each(function () {
+                        if ($(this).hasClass('isolate_name')) { found = true; return false; }
+                        if ($(this).is(':visible')) leftPx += $(this).outerWidth();
+                    });
+                    if (found) $table.find('th.isolate_name, td.isolate_name').css('left', leftPx);
+                });
+            }
+
+            /* Punto de entrada: se llama cuando el column-shifter ha terminado su init */
+            function onReady() {
+                applyEmptyColumns();
+                setupStickyColumn();
+            }
+
+            var loaders = Array.from(document.querySelectorAll('.column-shifter-container .loader'));
+            var pending  = loaders.length;
+
+            if (!pending) { onReady(); return; }   // sin column-shifter, ejecutar ya
+
+            loaders.forEach(function (loader) {
+                var obs = new MutationObserver(function (_, observer) {
+                    if (loader.style.display === 'none') {
+                        observer.disconnect();
+                        if (--pending === 0) onReady();
+                    }
+                });
+                obs.observe(loader, { attributes: true, attributeFilter: ['style'] });
+            });
+
+            /* Recalcular left sticky al redimensionar (cambian anchos de columnas) */
+            $(window).on('resize', setupStickyColumn);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            /* Selección de filas — delegado para funcionar tras paginación */
+            $(document).on('click', 'table.results tbody tr', function () {
+                $(this).toggleClass('row-selected');
+                var count = $('table.results tbody tr.row-selected').length;
+                if (count > 0) {
+                    $('#row-selection-badge')
+                        .text(count + ' fila' + (count !== 1 ? 's' : '') + ' seleccionada' + (count !== 1 ? 's' : ''))
+                        .show();
+                } else {
+                    $('#row-selection-badge').hide();
+                }
+            });
+        });
+    </script>
     {% endblock %}
 
     {% block title %}
@@ -310,6 +386,11 @@
                         </option>
                     {% endfor %}
                 </select>
+            </div>
+
+            <div id="row-selection-badge"
+                 style="display:none; margin-bottom:6px;"
+                 class="badge badge-info" style="font-size:0.9em; padding:6px 10px;">
             </div>
 
             {% render_table table %}

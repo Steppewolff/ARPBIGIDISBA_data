@@ -103,19 +103,30 @@ function createDualListbox(selectName, leftLabel, rightLabel) {
         syncSelect();
     });
 
-    $box.find('.search-left').on('input', function() {
-        const t = $(this).val().toLowerCase();
-        $left.find('.item-row').each(function() {
-            $(this).toggle($(this).text().toLowerCase().includes(t));
-        });
-    });
-
     $box.find('.search-right').on('input', function() {
         const t = $(this).val().toLowerCase();
         $right.find('.item-row').each(function() {
             $(this).toggle($(this).text().toLowerCase().includes(t));
         });
     });
+
+    function setSelected(values) {
+        // Mover todo de right a left
+        $right.find('.item-row').each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        // Mover los seleccionados a right
+        $left.find('.item-row').filter(function() {
+            return values.indexOf($(this).attr('data-value')) !== -1;
+        }).each(function() {
+            $right.append($(this));
+        });
+        syncSelect();
+    }
+
+    return { setSelected: setSelected };
 }
 
 $(document).ready(function() {
@@ -123,16 +134,39 @@ $(document).ready(function() {
     createDualListbox('project_name', 'Available projects', 'Selected projects');
 
     // WGS genes: Select2 pill-style multi-select
-    $('#wgs_genes_select').select2({
-        placeholder: '— Select genes to add as columns in Results —',
-        allowClear: true,
-        width: '100%',
-        closeOnSelect: false,
-    });
+//    $('#wgs_genes_select').select2({
+//        placeholder: '— Select genes to add as columns in Results —',
+//        allowClear: true,
+//        width: '100%',
+//        closeOnSelect: false,
+//    });
+//
+//    $('#wgs_select_all').on('click', function() {
+//        const $sel = $('#wgs_genes_select');
+//        const allVals = $sel.find('option').map(function() { return $(this).val(); }).get();
+//        $sel.val(allVals).trigger('change');
+//    });
+
+    var genesListbox = createDualListbox('genes', 'Available genes', 'Selected genes');
 
     $('#wgs_select_all').on('click', function() {
-        const $sel = $('#wgs_genes_select');
-        const allVals = $sel.find('option').map(function() { return $(this).val(); }).get();
-        $sel.val(allVals).trigger('change');
+        var allVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
+        genesListbox.setSelected(allVals);
     });
+
+    function selectGenesBySubset(subset) {
+        var vals = [];
+        $('#wgs_genes_select option').each(function() {
+            var gene  = $(this).val();
+            var locus = gene.split('_')[0];
+            if (!locusRegex.test(locus)) return;
+            var subsets = genesSubsetMap[locus] || [];
+            if (subsets.indexOf(subset) !== -1) vals.push(gene);
+        });
+        genesListbox.setSelected(vals);
+    }
+
+    $('#wgs_select_basic').on('click', function() { selectGenesBySubset('BASIC'); });
+    $('#wgs_select_cr').on('click',    function() { selectGenesBySubset('CR');    });
+    $('#wgs_select_hyp').on('click',   function() { selectGenesBySubset('HYP');   });
 });

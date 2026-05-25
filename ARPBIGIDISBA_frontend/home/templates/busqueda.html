@@ -292,29 +292,34 @@
                     </div>
 
                     <div class="row">
+                      <!-- Carboxypenicillins + Penicillins + BLI (bloque apilado) -->
+                      <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="row g-2 h-100">
 
-                      <!-- Carboxypenicillins -->
-                      <div class="col-md-3 col-sm-6 mb-3" id="carboxipenicillins">
-                        <div class="sir-class-card sir-carboxy h-100">
-                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
-                               title="Carboxypenicillins — Ticarcillin (TIC)">
-                            Carboxypenicillins
+                          <!-- Carboxypenicillins -->
+                          <div class="col-12" id="carboxipenicillins">
+                            <div class="sir-class-card sir-carboxy h-100">
+                              <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                                   title="Carboxypenicillins — Ticarcillin (TIC)">
+                                Carboxypenicillins
+                              </div>
+                              {{ mic_search_form.tic_clinical_category | as_crispy_field }}
+                            </div>
                           </div>
-                          {{ mic_search_form.tic_clinical_category | as_crispy_field }}
+
+                          <!-- Penicillins + BLI -->
+                          <div class="col-12" id="penicillins">
+                            <div class="sir-class-card sir-penicillin h-100">
+                              <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                                   title="Ureidopenicillins + β-lactamase inhibitor — Piperacillin-Tazobactam (PIP-TZ)">
+                                Penicillins + BLI
+                              </div>
+                              {{ mic_search_form.pip_tz_clinical_category | as_crispy_field }}
+                            </div>
+                          </div>
+
                         </div>
                       </div>
-
-                      <!-- Penicillins + BLI -->
-                      <div class="col-md-3 col-sm-6 mb-3" id="penicillins">
-                        <div class="sir-class-card sir-penicillin h-100">
-                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
-                               title="Ureidopenicillins + β-lactamase inhibitor — Piperacillin-Tazobactam (PIP-TZ)">
-                            Penicillins + BLI
-                          </div>
-                          {{ mic_search_form.pip_tz_clinical_category | as_crispy_field }}
-                        </div>
-                      </div>
-
                       <!-- Cephalosporins -->
                       <div class="col-md-3 col-sm-6 mb-3" id="cephalosporins">
                         <div class="sir-class-card sir-cephalo h-100">
@@ -389,7 +394,16 @@
                           {{ mic_search_form.col_clinical_category | as_crispy_field }}
                         </div>
                       </div>
-
+                      <!-- Fosfonic Acid Derivatives -->
+                      <div class="col-md-3 col-sm-6 mb-3" id="fosfonic_acid_derivatives">
+                        <div class="sir-class-card sir-fosfonic_acid_derivatives h-100">
+                          <div class="sir-class-title" data-toggle="tooltip" data-placement="top"
+                               title="Fosfonic acid derivatives">
+                            Fosfonic acid derivatives
+                          </div>
+                          {{ mic_search_form.fo_clinical_category | as_crispy_field }}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -466,14 +480,25 @@
                               <span class="sg-info" data-toggle="tooltip" data-placement="top"
                                     title="Each selected gene will be added as a column to the results table, showing the resistome category for that isolate">i</span>
                             </label>
-                            <select name="genes" id="wgs_genes_select" class="form-control" multiple style="width:100%">
+                            <select name="genes" id="wgs_genes_select" class="form-control" multiple>
                               {% for gene in all_genes %}
                                 <option value="{{ gene }}">{{ gene }}</option>
                               {% endfor %}
                             </select>
-                            <button type="button" id="wgs_select_all" class="btn btn-outline-secondary btn-sm mt-1">
-                              Select all genes
-                            </button>
+                              <div class="mt-1" style="display:flex; flex-wrap:wrap; gap:4px;">
+                                <button type="button" id="wgs_select_all" class="btn btn-outline-secondary btn-sm">
+                                  Extended resistome
+                                </button>
+                                <button type="button" id="wgs_select_basic" class="btn btn-outline-secondary btn-sm">
+                                  Basic resistome
+                                </button>
+                                <button type="button" id="wgs_select_cr" class="btn btn-outline-secondary btn-sm">
+                                  Cefiderocol resistome
+                                </button>
+                                <button type="button" id="wgs_select_hyp" class="btn btn-outline-secondary btn-sm">
+                                  Hypermutation
+                                </button>
+                              </div>
                           </div>
                           <p class="text-muted" style="font-size:0.75rem; margin-top:4px;">
                             &#9432; Gene columns and heatmap can be adjusted further in the <em>Resistome</em> panel on the results page.
@@ -497,23 +522,11 @@
 
 
 <script>
+var genesSubsetMap = {{ genes_subset_map|safe }};
+var locusRegex = /^PA(?:LES|14)?[_ ]?\d{4,5}$/;
+
 $(document).ready(function() {
-
-    // Bootstrap tooltips (contextual help icons)
     $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover focus' });
-
-    // WGS genes: Select2 pill-style
-    $('#wgs_genes_select').select2({
-        placeholder: '— Select genes to add as columns —',
-        allowClear: true,
-        width: '100%',
-        closeOnSelect: false,
-    });
-    $('#wgs_select_all').on('click', function() {
-        var allVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
-        $('#wgs_genes_select').val(allVals).trigger('change');
-    });
-
     // SIR fields: Select2 pill-style + ARO code as tooltip on label
     $('.sir-class-card select').each(function() {
         var $fg    = $(this).closest('.form-group');
@@ -561,11 +574,13 @@ $(document).ready(function() {
 <!--        filterPlaceHolder: 'Search...',-->
 <!--    });-->
 
-    // Re-inicializar al abrir acordeón
-    $('#accordion_form').on('shown.bs.collapse', function () {
-        $('select[name="isolate_name"]').bootstrapDualListbox('refresh');
-        $('select[name="project_name"]').bootstrapDualListbox('refresh');
-    });
+        // Re-inicializar al abrir acordeón (sólo si el plugin está cargado)
+        $('#accordion_form').on('shown.bs.collapse', function () {
+            if ($.fn.bootstrapDualListbox) {
+                $('select[name="isolate_name"]').bootstrapDualListbox('refresh');
+                $('select[name="project_name"]').bootstrapDualListbox('refresh');
+            }
+        });
 
 });
 </script>

@@ -208,8 +208,8 @@ class MicSearchForm(Form):
         choices=SIR_OPTIONS,
         required=False,
         widget=SelectMultiple,
-        label="Categoría clínica TIC",
-        # label=Mic._meta.get_field('tic_clinical_category').verbose_name,
+        # label="Categoría clínica TIC",
+        label=Mic._meta.get_field('tic_clinical_category').verbose_name,
     )
     pip_clinical_category = MultipleChoiceField(
         choices=SIR_OPTIONS,

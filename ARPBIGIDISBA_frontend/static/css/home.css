@@ -216,6 +216,34 @@ hr{height: 3px; border:0;border-top:1px solid #00334c;margin:20px 0}
     text-align: center;
 }
 
+/* ── Scroll horizontal en la tabla ── */
+.table-wrapper { overflow-x: auto; }
+
+/* ── Columna isolate_name inmovilizada ── */
+table.results th.isolate_name,
+table.results td.isolate_name {
+position: sticky;
+left: 0;                        /* JS lo recalcula si hay columnas antes */
+z-index: 2;
+background-color: #343a40;      /* table-dark base */
+box-shadow: 2px 0 6px rgba(0,0,0,.45);
+}
+table.results th.isolate_name { z-index: 3; }
+table.results.table-striped tbody tr:nth-of-type(odd) td.isolate_name {
+background-color: #3b3f45;      /* dark + rgba(255,255,255,.05) */
+}
+table.results tbody tr:hover td.isolate_name { background-color: #474d53; }
+
+/* ── Selección de filas ── */
+table.results tbody tr { cursor: pointer; user-select: none; }
+table.results tbody tr.row-selected td {
+background-color: rgba(23,162,184,.20) !important;
+}
+table.results tbody tr.row-selected td.isolate_name {
+background-color: rgba(23,162,184,.38) !important;
+box-shadow: 2px 0 6px rgba(0,0,0,.45);
+}
+
 /* Colors */
 .w3-amber,.w3-hover-amber:hover{color:#000!important;background-color:#ffc107!important}
 .w3-aqua,.w3-hover-aqua:hover{color:#000!important;background-color:#00ffff!important}

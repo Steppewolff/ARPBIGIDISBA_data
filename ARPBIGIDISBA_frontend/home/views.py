@@ -14,7 +14,7 @@ import json
 import re
 import pandas as pd
 
-from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType
+from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType, InterestGenes
 from .tables import CombinedTable, create_mic_table # MicTable
 from .forms import HospitalForm, MicForm, MicSearchForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
@@ -37,31 +37,22 @@ def _get_all_genes(sa_qs=None):
         genes.update((sa.mutational_resistome_muts or {}).keys())
     return sorted(genes)
 
-# def busqueda(request):
-#     if request.method == 'POST':
-#         metadatageneral_form = MetadataGeneralForm(request.POST)
-#         metadataclinic_form = MetadataClinicForm(request.POST)
-#         hospital_form = HospitalForm(request.POST)
-#         mic_form = MicForm(request.POST)
-#         fenotipo_form = FenotipoForm(request.POST)
-#         secuencia_analisis_form = SequenceAnalysisForm(request.POST)
-#
-#         if metadatageneral_form.is_valid() and hospital_form.is_valid() and mic_form.is_valid() and fenotipo_form.is_valid() and secuencia_analisis_form.is_valid() and metadataclinic_form.is_valid():
-#             return render(request, 'resultados.html')
-#
-#     else:
-#         metadatageneral_form = MetadataGeneralForm()
-#         metadataclinic_form = MetadataClinicForm()
-#         hospital_form = HospitalForm()
-#         mic_form = MicForm()
-#         mic_search_form = MicSearchForm()
-#         fenotipo_form = FenotipoForm()
-#         secuencia_analisis_form = SequenceAnalysisForm()
-#
-#         return render(request, 'busqueda.html',
-#                       {'metadatageneral_form': metadatageneral_form, 'metadataclinic_form': metadataclinic_form, 'hospital_form': hospital_form,
-#                        'mic_form': mic_form, 'mic_search_form': mic_search_form,
-#                        'fenotipo_form': fenotipo_form, 'secuencia_analisis_form': secuencia_analisis_form})
+def _get_genes_subset_map():
+    """Dict {locus: [subset1, subset2, ...]} from the InterestGenes table.
+    Used by the template to enable subset-filter buttons on the gene selector."""
+    result = {}
+    for ig in InterestGenes.objects.exclude(locus=None).values('locus', 'subset'):
+        locus = (ig['locus'] or '').strip()
+        if not locus:
+            continue
+        raw = ig['subset'] or []
+        # MultiSelectField devuelve lista; por si acaso llega string (ej. desde fixture)
+        if isinstance(raw, str):
+            subsets = [s.strip() for s in raw.split(',') if s.strip()]
+        else:
+            subsets = [s.strip() for s in raw if s]
+        result[locus] = subsets
+    return result
 
 def busqueda(request):
     return render(request, 'busqueda.html', {
@@ -73,6 +64,7 @@ def busqueda(request):
         'fenotipo_form':           FenotipoForm(),
         'secuencia_analisis_form': SequenceAnalysisForm(),
         'all_genes':               _get_all_genes(),
+        'genes_subset_map': json.dumps(_get_genes_subset_map()),
     })
 
 def _get_gene_category(gene, muts_json, pols_json):
@@ -142,8 +134,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         selected_table_1 = self.request.GET.get('breakpoint_table_1') or None
         selected_table_2 = self.request.GET.get('breakpoint_table_2') or None
 
-        alias_1 = self.request.GET.get('alias_1') or 'CCv1'
-        alias_2 = self.request.GET.get('alias_2') or 'CCv2'
+        alias_1 = self.request.GET.get('alias_1') or 'SIRv1'
+        alias_2 = self.request.GET.get('alias_2') or 'SIRv2'
 
         if selected_table_1 or selected_table_2:
             bp_dict_1 = self._get_bp_dict(selected_table_1)
@@ -277,27 +269,36 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         })
 
         context['per_page_options'] = [10, 25, 50, 100, 250]
+        context['empty_cols_json'] = json.dumps(list(getattr(self, '_empty_cols', [])))
+
         return context
 
     def get_table(self, **kwargs):
-        from .tables import GeneColumn, CombinedTable
+        from .tables import GeneColumn, create_dynamic_table
         qs = getattr(self, 'object_list', self.get_queryset())
         selected_genes = [g for g in self.request.GET.getlist('genes') if g]
         loci_type = self.request.GET.get('loci_type', 'muts')
 
+        self._empty_cols = self._compute_empty_columns(qs)
+        empty_cols = self._empty_cols
+
         if selected_genes:
-            from .tables import GeneColumn, create_dynamic_table
             gene_attrs = {
                 f'gene_{gene}': GeneColumn(gene_name=gene, loci_type=loci_type)
                 for gene in selected_genes
             }
             DynamicTable = create_dynamic_table(
                 MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath,
-                extra_columns=gene_attrs
+                extra_columns=gene_attrs,
+                empty_columns=empty_cols,
             )
-            table = DynamicTable(data=qs, request=self.request, **kwargs)
         else:
-            table = self.table_class(data=qs, request=self.request, **kwargs)
+            DynamicTable = create_dynamic_table(
+                MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath,
+                empty_columns=empty_cols,
+            )
+
+        table = DynamicTable(data=qs, request=self.request, **kwargs)
 
         try:
             per_page = int(self.request.GET.get('per_page', 25))
@@ -382,6 +383,48 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         obj = BreakpointTable.objects.filter(table_version_name=table_name).first()
         return obj.filepath if obj else None
 
+    def _compute_empty_columns(self, qs):
+        from django.db.models import Max, Field, JSONField as DJSONField, ForeignKey
+
+        if not qs.exists():
+            return set()
+
+        empty = set()
+        isolate_ids = qs.values_list('isolate_id', flat=True)
+
+        mg_fields = [
+            f for f in MetadataGeneral._meta.get_fields()
+            if isinstance(f, Field) and not isinstance(f, (DJSONField, ForeignKey))
+        ]
+        try:
+            agg = qs.aggregate(**{f.name: Max(f.name) for f in mg_fields})
+            for f in mg_fields:
+                if agg.get(f.name) in (None, '', '-'):
+                    empty.add(f.name)
+        except Exception:
+            pass
+
+        for model in [MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath]:
+            rel_fields = [
+                f for f in model._meta.get_fields()
+                if isinstance(f, Field)
+                and not isinstance(f, (DJSONField, ForeignKey))
+                and '_id' not in f.name          # igual que create_dynamic_table
+            ]
+            if not rel_fields:
+                continue
+            try:
+                rel_qs = model.objects.filter(isolate_id__in=isolate_ids)
+                agg = rel_qs.aggregate(**{f.name: Max(f.name) for f in rel_fields})
+                prefix = model._meta.model_name
+                for f in rel_fields:
+                    if agg.get(f.name) in (None, '', '-'):
+                        empty.add(f'{prefix}_{f.name}')
+            except Exception:
+                pass
+
+        return empty
+
     def _apply_clinical_categories(self, qs_mic, bp_dict_1, bp_dict_2):
         """
         Inject {ab}_clinical_category_1 and {ab}_clinical_category_2 attributes
@@ -398,7 +441,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 if ab in bp_dict_1:
                     bp = bp_dict_1[ab]
                     if bp and (None in bp.values() or "-" in bp.values()):
-                        setattr(record, f"{ab}_clinical_category_1", "Sin BP")
+                        setattr(record, f"{ab}_clinical_category_1", "No Breakpoint")
                     elif bp:
                         setattr(
                             record, f"{ab}_clinical_category_1",
@@ -408,7 +451,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 if ab in bp_dict_2:
                     bp = bp_dict_2[ab]
                     if bp and (None in bp.values() or "-" in bp.values()):
-                        setattr(record, f"{ab}_clinical_category_2", "Sin BP")
+                        setattr(record, f"{ab}_clinical_category_2", "No Breakpoint")
                     elif bp:
                         setattr(
                             record, f"{ab}_clinical_category_2",

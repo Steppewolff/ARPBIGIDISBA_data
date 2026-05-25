@@ -25,6 +25,14 @@
     border-top: 1px solid #dee2e6;
 }
 
+#id_hospital,
+select[name="hospital"] {
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* ── Accordion header ── */
 .filter-accordion .card-header {
     background: linear-gradient(135deg, #00334c 0%, #005073 100%);
@@ -138,6 +146,11 @@
     vertical-align: middle;
 }
 
+/* genes selection */
+#wgs_genes_select + .select2-container .select2-selection--multiple {
+    max-height: 80px;
+    overflow-y: auto;
+}
 
 /* ── Dual listbox: ensure readable text on both list panels ── */
 /* project_name and isolate_name use bootstrap-duallistbox */
@@ -189,6 +202,8 @@
 .sir-class-card.sir-fluoroqui  .sir-class-title { color: #005a8a; }
 .sir-class-card.sir-polymyxin  { border-top-color: #2d6a4f; }
 .sir-class-card.sir-polymyxin  .sir-class-title { color: #1e4d38; }
+.sir-class-card.sir-fosfonic_acid_derivatives  { border-top-color: #bf3b51; }
+.sir-class-card.sir-fosfonic_acid_derivatives  .sir-class-title { color: #bf3b51; }
 
 /* SIR intro note */
 .sir-intro-note {
