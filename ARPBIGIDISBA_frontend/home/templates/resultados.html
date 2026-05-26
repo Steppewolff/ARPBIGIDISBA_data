@@ -45,6 +45,21 @@
         });
       }
 
+      var amrForm = document.getElementById('amr_clas_results');
+      if (amrForm) {
+          amrForm.addEventListener('submit', function () {
+              var current = new URLSearchParams(window.location.search);
+              var amrKeys = ['breakpoint_table_1', 'breakpoint_table_2', 'alias_1', 'alias_2'];
+              current.forEach(function (val, key) {
+                  if (!amrKeys.includes(key) && !amrForm.querySelector('[name="' + key + '"]')) {
+                      var inp = document.createElement('input');
+                      inp.type = 'hidden'; inp.name = key; inp.value = val;
+                      amrForm.appendChild(inp);
+                  }
+              });
+          });
+      }
+
       // Heatmap rendering
       var heatmapData = {{ heatmap_json|default:"null"|safe }};
       if (heatmapData) {
@@ -102,13 +117,13 @@
         document.addEventListener('DOMContentLoaded', function () {
             var emptyCols = {{ empty_cols_json|default:"[]"|safe }};
 
-            /* Oculta columnas vacías en el column-shifter */
+            /* FIX 1: sin condición de estado — forzar hide siempre en columnas vacías */
             function applyEmptyColumns() {
                 if (!emptyCols.length) return;
                 $('.btn-shift-column').each(function () {
                     var btn = $(this);
                     var tdClass = btn.data('td-class');
-                    if (emptyCols.indexOf(tdClass) !== -1 && btn.data('state') === 'on') {
+                    if (emptyCols.indexOf(tdClass) !== -1) {
                         btn.data('state', 'off');
                         btn.find('img.check').hide();
                         btn.find('img.uncheck').show();
@@ -118,12 +133,10 @@
                 });
             }
 
-            /* Calcula el left real de isolate_name sumando anchos de columnas visibles anteriores */
             function setupStickyColumn() {
                 $('table.results').each(function () {
                     var $table = $(this);
-                    var leftPx = 0;
-                    var found  = false;
+                    var leftPx = 0, found = false;
                     $table.find('thead tr th').each(function () {
                         if ($(this).hasClass('isolate_name')) { found = true; return false; }
                         if ($(this).is(':visible')) leftPx += $(this).outerWidth();
@@ -132,28 +145,35 @@
                 });
             }
 
-            /* Punto de entrada: se llama cuando el column-shifter ha terminado su init */
             function onReady() {
                 applyEmptyColumns();
                 setupStickyColumn();
             }
 
             var loaders = Array.from(document.querySelectorAll('.column-shifter-container .loader'));
-            var pending  = loaders.length;
 
-            if (!pending) { onReady(); return; }   // sin column-shifter, ejecutar ya
+            if (!loaders.length) { onReady(); return; }
+
+            /* FIX 2: si el column-shifter ya corrió antes que nosotros,
+               los loaders ya están hidden — detectarlo y disparar onReady igualmente */
+            var resolved = 0;
+            function settle(observer) {
+                if (observer) observer.disconnect();
+                if (++resolved === loaders.length) onReady();
+            }
 
             loaders.forEach(function (loader) {
+                if (loader.style.display === 'none') {
+                    /* Ya oculto: column-shifter terminó antes de que montáramos el observer */
+                    settle(null);
+                    return;
+                }
                 var obs = new MutationObserver(function (_, observer) {
-                    if (loader.style.display === 'none') {
-                        observer.disconnect();
-                        if (--pending === 0) onReady();
-                    }
+                    if (loader.style.display === 'none') settle(observer);
                 });
                 obs.observe(loader, { attributes: true, attributeFilter: ['style'] });
             });
 
-            /* Recalcular left sticky al redimensionar (cambian anchos de columnas) */
             $(window).on('resize', setupStickyColumn);
         });
     </script>

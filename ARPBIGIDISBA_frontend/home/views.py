@@ -127,7 +127,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         verbose_used = self.request.session.get('verbose_used', {})
         context = super().get_context_data(**kwargs)
 
-        filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
+        filtered_ids = self.object_list.values_list('isolate_id', flat=True)
         qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
         context['qs_mic'] = qs_mic
 
@@ -208,8 +208,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         loci_type     = self.request.GET.get('loci_type', '')
         selected_genes = [g for g in self.request.GET.getlist('genes') if g]
         show_heatmap  = self.request.GET.get('show_heatmap', 'no')
-        filtered_ids  = self.get_queryset().values_list('isolate_id', flat=True)
-        sa_qs         = SequenceAnalysis.objects.filter(isolate_id__in=filtered_ids)
+        filtered_ids = self.object_list.values_list('isolate_id', flat=True)
+        sa_qs = SequenceAnalysis.objects.filter(isolate_id__in=filtered_ids)
 
         # Gene list from filtered records
         all_genes = _get_all_genes(sa_qs)
@@ -346,15 +346,16 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
             # Reutilizamos la lógica para obtener el queryset de MIC, igual que en get_context_data
             # Retrieve last-used breakpoint table labels from session so the
             # export column headers match what the user sees on screen.
-            t1 = request.session.get('selected_table_1') or 'BP Version 1'
-            t2 = request.session.get('selected_table_2') or 'BP Version 2'
+            t1 = request.session.get('selected_table_1') or 'Breakpoint Version 1'
+            t2 = request.session.get('selected_table_2') or 'Breakpoint Version 2'
 
-            filtered_ids = self.get_queryset().values_list('isolate_id', flat=True)
+            filterset = self.get_filterset(self.get_filterset_class())
+            filtered_ids = filterset.qs.values_list('isolate_id', flat=True)
             qs_mic = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
 
             # Re-compute clinical categories if breakpoint tables are stored in session
-            bp_dict_1 = self._get_bp_dict(t1 if t1 != 'BP Version 1' else None)
-            bp_dict_2 = self._get_bp_dict(t2 if t2 != 'BP Version 2' else None)
+            bp_dict_1 = self._get_bp_dict(t1 if t1 != 'Breakpoint Version 1' else None)
+            bp_dict_2 = self._get_bp_dict(t2 if t2 != 'Breakpoint Version 2' else None)
             self._apply_clinical_categories(qs_mic, bp_dict_1, bp_dict_2)
 
             ExportMicTable = create_mic_table(label1=t1, label2=t2)
