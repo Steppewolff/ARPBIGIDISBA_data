@@ -141,11 +141,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'psdb_pre',  # 'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': 'fernando',
-        'PASSWORD': 'Orgullovalor',
+        'USER': 'remote_user', # 'fernando'
+        'PASSWORD': '@rpB1Gserver', #'Orgullovalor',
         # 'USER': 'root',
         # 'PASSWORD': 'Orgullovalor',
-        'HOST': '127.0.0.1',  # 'db',, arpbig_ps, os.environ.get('DB_HOST'), '165.22.89.54',
+        'HOST': '165.22.89.54',  # 'db',, arpbig_ps, os.environ.get('DB_HOST'), 127.0.0.1,
         "connect_timeout": 180,
         'PORT': '3306',  # 3306
     }

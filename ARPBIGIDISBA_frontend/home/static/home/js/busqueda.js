@@ -103,6 +103,13 @@ function createDualListbox(selectName, leftLabel, rightLabel) {
         syncSelect();
     });
 
+    $box.find('.search-left').on('input', function() {
+        const t = $(this).val().toLowerCase();
+        $left.find('.item-row').each(function() {
+            $(this).toggle($(this).text().toLowerCase().includes(t));
+        });
+    });
+
     $box.find('.search-right').on('input', function() {
         const t = $(this).val().toLowerCase();
         $right.find('.item-row').each(function() {

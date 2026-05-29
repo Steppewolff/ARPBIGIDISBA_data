@@ -1,9 +1,16 @@
 import django_tables2 as tables
+import re
 from django_tables2.export.views import ExportMixin
 from django.db.models import Field, JSONField
 from django_tables2_column_shifter.tables import ColumnShiftTableBootstrap4Responsive, ColumnShiftTableBootstrap4, ColumnShiftTable, ColumnShiftTableBootstrap5Responsive
 
 from .models import Mic, PhenotypicData, SequenceAnalysis, MetadataGeneral, MetadataClinic, FilePath
+
+LOCUS_RE = re.compile(r'^(PA(?:LES|14)?\d{4,5})', re.IGNORECASE)
+
+def _extract_locus(key):
+    m = LOCUS_RE.match(key)
+    return m.group(1) if m else key
 
 class GeneColumn(tables.Column):
     """Column that reads a single gene value from a SequenceAnalysis JSON field."""
@@ -24,7 +31,11 @@ class GeneColumn(tables.Column):
             json_data = getattr(sa, field, None) or getattr(sa, 'mutational_resistome_muts', None)
             if json_data is None:
                 return ''
-            val = json_data.get(self.gene_name)
+            # Exact match primero, luego por locus prefix
+            if self.gene_name in json_data:
+                val = json_data[self.gene_name]
+            else:
+                val = next((v for k, v in json_data.items() if _extract_locus(k) == self.gene_name), None)
             return val if val is not None else ''
         except Exception as e:
             return f'ERR:{e}'

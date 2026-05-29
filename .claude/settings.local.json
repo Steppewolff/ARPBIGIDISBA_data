@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import docx; print\\('ok'\\)\")",
+      "Bash(pip3 install *)"
+    ]
+  }
+}

@@ -481,9 +481,9 @@
                                     title="Each selected gene will be added as a column to the results table, showing the resistome category for that isolate">i</span>
                             </label>
                             <select name="genes" id="wgs_genes_select" class="form-control" multiple>
-                              {% for gene in all_genes %}
-                                <option value="{{ gene }}">{{ gene }}</option>
-                              {% endfor %}
+                            {% for locus, label in all_genes_display %}
+                                <option value="{{ locus }}">{{ label }}</option>
+                            {% endfor %}
                             </select>
                               <div class="mt-1" style="display:flex; flex-wrap:wrap; gap:4px;">
                                 <button type="button" id="wgs_select_all" class="btn btn-outline-secondary btn-sm">

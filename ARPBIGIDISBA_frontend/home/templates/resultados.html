@@ -345,9 +345,9 @@
                               <div class="form-group">
                                 <label><strong>Genes to display as columns</strong></label>
                                 <select name="genes" id="resistome_genes_select" class="form-control select2" multiple style="width:100%">
-                                  {% for gene in all_genes %}
-                                    <option value="{{ gene }}" {% if gene in selected_genes %}selected{% endif %}>{{ gene }}</option>
-                                  {% endfor %}
+                                {% for locus, label in all_genes_display %}
+                                    <option value="{{ locus }}" {% if locus in selected_genes %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
                                 </select>
                                 <button type="button" class="btn btn-secondary btn-sm mt-1" id="resistome_select_all">Show all genes</button>
                               </div>

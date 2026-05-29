@@ -6,18 +6,43 @@ from django_tables2.export.export import TableExport
 from django_filters.views import FilterView
 from import_export.admin import ExportMixin
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 import re
+from functools import lru_cache
 import pandas as pd
 
 from .models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, BreakpointTable, Hospital, SampleType, InterestGenes
 from .tables import CombinedTable, create_mic_table # MicTable
 from .forms import HospitalForm, MicForm, MicSearchForm, MetadataGeneralForm, FenotipoForm, SequenceAnalysisForm, MetadataClinicForm
 from .filters import MultiFilter
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+LOCUS_RE = re.compile(r'^(PA(?:LES|14)?[_ ]?\d{4,5})', re.IGNORECASE)
+
+def _extract_locus(key):
+    m = LOCUS_RE.match(key)
+    return m.group(1) if m else key
+
+@lru_cache(maxsize=1)
+def _get_locus_display_map():
+    """Devuelve {locus: nombre} desde InterestGenes. Usa synonym_name si official_name está vacío."""
+    result = {}
+    for ig in InterestGenes.objects.exclude(locus=None).values('locus', 'official_name', 'synonym_name'):
+        if not ig['locus']:
+            continue
+        name = (ig['official_name'] or ig['synonym_name'] or '').strip()
+        result[ig['locus']] = name
+    return result
+
+@receiver(post_save, sender=InterestGenes)
+def _clear_locus_display_cache(sender, **kwargs):
+    _get_locus_display_map.cache_clear()
 
 class MyLoginView(LoginView):
     template_name = 'login.html'
@@ -32,10 +57,11 @@ def _get_all_genes(sa_qs=None):
     Pass a filtered SequenceAnalysis queryset or None for all records."""
     if sa_qs is None:
         sa_qs = SequenceAnalysis.objects.all()
-    genes = set()
+    loci = set()
     for sa in sa_qs.exclude(mutational_resistome_muts=None).only('mutational_resistome_muts'):
-        genes.update((sa.mutational_resistome_muts or {}).keys())
-    return sorted(genes)
+        for key in (sa.mutational_resistome_muts or {}).keys():
+            loci.add(_extract_locus(key))
+    return sorted(loci)
 
 def _get_genes_subset_map():
     """Dict {locus: [subset1, subset2, ...]} from the InterestGenes table.
@@ -64,18 +90,30 @@ def busqueda(request):
         'fenotipo_form':           FenotipoForm(),
         'secuencia_analisis_form': SequenceAnalysisForm(),
         'all_genes':               _get_all_genes(),
+        'all_genes_display': [
+            (g, f"{g} ({_get_locus_display_map().get(g, '')})" if _get_locus_display_map().get(g) else g)
+            for g in _get_all_genes()
+        ],
         'genes_subset_map': json.dumps(_get_genes_subset_map()),
     })
 
+
 def _get_gene_category(gene, muts_json, pols_json):
     """WT | Mutation | Polymorphism | Both — compares muts vs pols JSON for a single gene."""
+    def _lookup(json_dict, locus):
+        if not json_dict:
+            return 'WT'
+        if locus in json_dict:
+            return json_dict[locus]
+        return next((v for k, v in json_dict.items() if _extract_locus(k) == locus), 'WT')
+
     def variants(val):
         if not val:
             return set()
         return {v.strip() for v in val.split(';') if v.strip() and v.strip().upper() != 'WT'}
 
-    muts_val = (muts_json or {}).get(gene, 'WT')
-    pols_val  = (pols_json or {}).get(gene, 'WT')
+    muts_val = _lookup(muts_json, gene)
+    pols_val  = _lookup(pols_json, gene)
     muts_v = variants(muts_val)
     pols_v = variants(pols_val)
     pol_only = pols_v - muts_v
@@ -213,6 +251,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
         # Gene list from filtered records
         all_genes = _get_all_genes(sa_qs)
+        _dmap = _get_locus_display_map()
+        all_genes_display = [(g, f"{g} ({_dmap[g]})" if g in _dmap else g) for g in all_genes]
 
         # Warnings for missing JSON data
         resistome_warnings = []
@@ -260,7 +300,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
             })
 
         context.update({
-            'all_genes':          all_genes,
+            'all_genes': all_genes,
+            'all_genes_display': all_genes_display,
             'selected_genes':     selected_genes,
             'loci_type':          loci_type,
             'show_heatmap':       show_heatmap,
@@ -283,8 +324,13 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         empty_cols = self._empty_cols
 
         if selected_genes:
+            _dmap = _get_locus_display_map()
             gene_attrs = {
-                f'gene_{gene}': GeneColumn(gene_name=gene, loci_type=loci_type)
+                f'gene_{gene}': GeneColumn(
+                    gene_name=gene,
+                    loci_type=loci_type,
+                    verbose_name=mark_safe(f"{gene} (<em>{_dmap[gene]}</em>)") if gene in _dmap else gene
+                )
                 for gene in selected_genes
             }
             DynamicTable = create_dynamic_table(
