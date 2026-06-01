@@ -119,40 +119,146 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
         var overlay = document.getElementById('loading-overlay');
         var msgEl   = document.getElementById('loading-msg');
         var DEFAULT = 'Loading…';
+        var _pollTimer = null;
+        var _safeTimer = null;
+
+        /* ── Barra de progreso (se inyecta dinámicamente) ── */
+        var progressBar = document.createElement('div');
+        progressBar.style.cssText = [
+            'width:220px','height:6px','background:rgba(255,255,255,0.2)',
+            'border-radius:3px','overflow:hidden','display:none'
+        ].join(';');
+        var progressFill = document.createElement('div');
+        progressFill.style.cssText = 'height:100%;width:0%;background:#a8d8ea;transition:width 0.4s ease;border-radius:3px;';
+        progressBar.appendChild(progressFill);
+        overlay.appendChild(progressBar);
+
+        /* ── Mensaje de error de descarga ── */
+        var errorMsg = document.createElement('div');
+        errorMsg.style.cssText = [
+            'display:none','margin-top:8px','color:#ffb3b3',
+            'font-size:0.82rem','font-family:sans-serif',
+            'text-align:center','max-width:280px','line-height:1.4'
+        ].join(';');
+        errorMsg.textContent = '⚠ The download is taking too long. Check if the file arrived or try again.';
+        overlay.appendChild(errorMsg);
 
         function show(msg) {
             msgEl.textContent = msg || DEFAULT;
             overlay.style.display = 'flex';
             document.body.style.cursor = 'wait';
-        }
-        function hide() {
-            overlay.style.display = 'none';
-            document.body.style.cursor = '';
+            progressBar.style.display = 'none';
+            progressFill.style.width = '0%';
         }
 
-        // Forms
+        function showDownload(msg) {
+            show(msg);
+            /* Anima la barra de progreso de forma indeterminada */
+            progressBar.style.display = 'block';
+            var pct = 0;
+            var step = setInterval(function() {
+                /* Sube rápido hasta 85 %, luego se frena — nunca llega al 100 hasta que
+                   la cookie confirme que el servidor terminó */
+                if (pct < 85) pct += (pct < 40 ? 3 : 1);
+                progressFill.style.width = pct + '%';
+            }, 200);
+            return step;  // devuelve el interval para poder cancelarlo
+        }
+
+        function hide() {
+            clearInterval(_pollTimer);
+            clearTimeout(_safeTimer);
+            _pollTimer = null;
+            overlay.style.display = 'none';
+            document.body.style.cursor = '';
+            progressBar.style.display = 'none';
+            progressFill.style.width = '0%';
+            errorMsg.style.display = 'none';
+        }
+
+        function finishDownload() {
+            /* Completa la barra y cierra el overlay */
+            progressFill.style.width = '100%';
+            setTimeout(hide, 500);
+        }
+
+        function getCookie(name) {
+            var m = document.cookie.match('(?:^|;)\\s*' + name + '=([^;]*)');
+            return m ? decodeURIComponent(m[1]) : null;
+        }
+
+        function deleteCookie(name) {
+            document.cookie = name + '=;max-age=0;path=/';
+        }
+
+        function pollDownloadCookie(token) {
+            var cookieName = 'download_done_' + token;
+            _pollTimer = setInterval(function() {
+                if (getCookie(cookieName)) {
+                    deleteCookie(cookieName);
+                    finishDownload();
+                }
+            }, 400);
+            /* Seguro: si en 60 s no llega la cookie, mostrar aviso y ocultar tras 4 s */
+            _safeTimer = setTimeout(function() {
+                clearInterval(_pollTimer);
+                _pollTimer = null;
+                progressBar.style.display = 'none';
+                errorMsg.style.display = 'block';
+                msgEl.textContent = 'Download timeout';
+                document.body.style.cursor = '';
+                setTimeout(hide, 4000);
+            }, 60000);
+        }
+
+        /* ── Formularios ── */
         document.addEventListener('submit', function(e) {
-            var msg = e.target.dataset.loadingMsg || 'Applying filters…';
+            var submitter = e.submitter;
+            var msg = e.target.dataset.loadingMsg
+                   || (submitter && submitter.dataset.loadingMsg)
+                   || 'Applying filters…';
             show(msg);
         });
 
-        // Links (excluye anclas, javascript:, y target=_blank)
-        document.addEventListener('click', function(e) {
-            var a = e.target.closest('a[href]');
-            if (!a) return;
-            var href = a.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
-            show(a.dataset.loadingMsg || DEFAULT);
-        });
+        /* ── Links ── */
+            document.addEventListener('click', function(e) {
+                var a = e.target.closest('a[href]');
+                if (!a) return;
+                var href = a.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
 
-        // AJAX (jQuery) — oculta cuando termina
-        if (window.jQuery) {
-            $(document).ajaxStart(function() { show('Fetching data…'); });
-            $(document).ajaxStop(hide);
-        }
+                var isDownload = a.hasAttribute('download')
+                              || href.includes('_export=')
+                              || /\.(csv|xlsx|xls|json|zip|pdf|txt)(\?|$)/i.test(href);
 
-        // Ocultar si el navegador restaura la página desde bfcache
-        window.addEventListener('pageshow', hide);
+                if (isDownload) {
+                    e.preventDefault();  // evita que el navegador use la URL original
+
+                    var token = Date.now().toString(36);
+                    var sep = href.includes('?') ? '&' : '?';
+                    var finalUrl = href + sep + 'download_token=' + token;
+
+                    showDownload(a.dataset.loadingMsg || 'Preparing download…');
+                    pollDownloadCookie(token);
+
+                    window.location.href = finalUrl;  // navega con el token ya incluido
+                    return;
+                }
+
+                show(a.dataset.loadingMsg || DEFAULT);
+            });
+
+            /* ── AJAX ── */
+            if (window.jQuery) {
+                $(document).ajaxStart(function() { show('Fetching data…'); });
+                $(document).ajaxStop(hide);
+            }
+
+            /* ── Bfcache (botón atrás) — solo oculta si NO hay descarga en curso ── */
+            window.addEventListener('pageshow', function() {
+                if (!_pollTimer) hide();
+            });
+
     })();
     </script>
 

@@ -40,6 +40,154 @@ class GeneColumn(tables.Column):
         except Exception as e:
             return f'ERR:{e}'
 
+# def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
+#     attrs = {}
+#     all_column_names = []
+#
+#     for model in models:
+#         for field in model._meta.get_fields():
+#             if isinstance(field, Field):
+#                 if isinstance(field, JSONField):
+#                     continue
+#                 if model._meta.model_name == 'metadatageneral':
+#                     column_name = f'{field.name}'
+#                     attrs[column_name] = tables.Column(accessor=f'{field.name}')
+#                     all_column_names.append(column_name)
+#                 else:
+#                     if '_id' in field.name:
+#                         pass
+#                     else:
+#                         accessor = f'{model._meta.model_name}.{field.name}'
+#                         column_name = f'{model._meta.model_name}_{field.name}'
+#                         attrs[column_name] = tables.Column(accessor=accessor)
+#                         all_column_names.append(column_name)
+#
+#     # Construir sequence con genes después de project_name
+#     gene_col_names = list(extra_columns.keys()) if extra_columns else []
+#     if extra_columns:
+#         attrs.update(extra_columns)
+#
+#     if gene_col_names and 'project_name' in all_column_names:
+#         idx = all_column_names.index('project_name') + 1
+#         sequence = all_column_names[:idx] + gene_col_names + all_column_names[idx:]
+#     else:
+#         sequence = all_column_names + gene_col_names
+#
+#     attrs['Meta'] = type('Meta', (), {
+#         'template_name': 'django_tables2/bootstrap4.html',
+#         'exclude': ('clinic_id', 'isolate_id','isolate_comments'),
+#         'sequence': tuple(sequence),
+#         'export_formats': ["csv", "xlsx", "txt"],
+#         'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
+#     })
+#
+#     _empty = frozenset(empty_columns or [])
+#
+#     def get_column_default_show(self):
+#         return [c for c in self.sequence if c not in _empty]
+#
+#     attrs['get_column_default_show'] = get_column_default_show
+#
+#     return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
+#
+# CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)
+
+# COLUMN ORDER: metadata > clinic > MIC > ecdc/dtr > typing > acquired > phenotypic > filepath > genes
+_METADATA_GENERAL_COLS = [
+    'isolate_name', 'isolate_project_code', 'species', 'project_name',
+    'isolation_day', 'isolation_month', 'isolation_year', 'isolation_date',
+    'isolate_source',
+]
+_METADATA_CLINIC_COLS = [
+    'metadataclinic_patient_code', 'metadataclinic_sample_type',
+    'metadataclinic_hospital', 'metadataclinic_collection_ward',
+]
+
+_MIC_COLS = [f'mic_{f}' for f in [
+    'tic', 'tic_clinical_category',
+    'pip', 'pip_clinical_category',
+    'pip_tz', 'pip_tz_clinical_category',
+    'caz', 'caz_clinical_category',
+    'caz_avi', 'caz_avi_clinical_category',
+    'tol', 'tol_clinical_category',
+    'ctz', 'ctz_clinical_category',
+    'fep', 'fep_clinical_category',
+    'cfdc', 'cfdc_clinical_category',
+    'fep_tan', 'fep_tan_clinical_category',
+    'fep_zid', 'fep_zid_clinical_category',
+    'fdc_xer', 'fdc_xer_clinical_category',
+    'atm', 'atm_clinical_category',
+    'azt_avi', 'azt_avi_clinical_category',
+    'imi', 'imi_clinical_category',
+    'imi_rel', 'imi_rel_clinical_category',
+    'mer', 'mer_clinical_category',
+    'mer_vab', 'mer_vab_clinical_category',
+    'mer_nac', 'mer_nac_clinical_category',
+    'mer_xer', 'mer_xer_clinical_category',
+    'ami', 'ami_clinical_category',
+    'tob', 'tob_clinical_category',
+    'gen', 'gen_clinical_category',
+    'net', 'net_clinical_category',
+    'cip', 'cip_clinical_category',
+    'lvx', 'lvx_clinical_category',
+    'dlx', 'dlx_clinical_category',
+    'mxl', 'mxl_clinical_category',
+    'col', 'col_clinical_category',
+    'fo', 'fo_clinical_category',
+    'taz', 'taz_clinical_category',
+    'avi', 'avi_clinical_category',
+    'rel', 'rel_clinical_category',
+    'nac', 'nac_clinical_category',
+    'dur', 'dur_clinical_category',
+    'xer', 'xer_clinical_category',
+]]
+
+# Fenotípico: resumen primero, resto después de resistencias adquiridas
+_PHENOTYPIC_OVERVIEW_COLS = [
+    'phenotypicdata_ecdc_resistance_profile',
+    'phenotypicdata_dtr_profile',
+]
+_PHENOTYPIC_OTHER_COLS = [
+    'phenotypicdata_cloxa_test', 'phenotypicdata_mbl_test', 'phenotypicdata_esbl_test',
+    'phenotypicdata_class_a_carbapenemase_test',
+    'phenotypicdata_invitro_serotype',
+    'phenotypicdata_hypermutator_phenotype', 'phenotypicdata_morphotype',
+    'phenotypicdata_virulence', 'phenotypicdata_cevs',
+    'phenotypicdata_atb_susceptibility_method', 'phenotypicdata_atb_susceptibility_method_other',
+    'phenotypicdata_broth_type', 'phenotypicdata_commercial_panel_name',
+    'phenotypicdata_idsa_resistance_profile', 'phenotypicdata_phenotypic_comments',
+]
+
+# Secuencia: tipificación primero, resistencias adquiridas al final
+_SEQUENCE_TYPING_COLS = [
+    'sequenceanalysis_sequence_type', 'sequenceanalysis_clonal_complex',
+    'sequenceanalysis_insilico_serotype',
+    'sequenceanalysis_oprd_reference', 'sequenceanalysis_pdc_variant',
+    'sequenceanalysis_piu_reference',
+]
+_SEQUENCE_ACQUIRED_COLS = [
+    'sequenceanalysis_ame_loci', 'sequenceanalysis_beta_lactamase_loci',
+    'sequenceanalysis_fluoroquinolones_loci', 'sequenceanalysis_other_acq_loci',
+]
+
+_FILEPATH_COLS = [
+    'filepath_fastq_path', 'filepath_denovo_assembly_path',
+    'filepath_denovo_assembly_ena_url', 'filepath_ena_accession',
+]
+
+# Orden final: metadata → MIC → ecdc/dtr → tipificación → resistencias adquiridas
+#              → resto fenotípico → filepath  (genes se añaden dinámicamente)
+_BASE_SEQUENCE = (
+    _METADATA_GENERAL_COLS
+    + _METADATA_CLINIC_COLS
+    + _MIC_COLS
+    + _PHENOTYPIC_OVERVIEW_COLS
+    + _SEQUENCE_TYPING_COLS
+    + _SEQUENCE_ACQUIRED_COLS
+    + _PHENOTYPIC_OTHER_COLS
+    + _FILEPATH_COLS
+)
+
 def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
     attrs = {}
     all_column_names = []
@@ -62,20 +210,19 @@ def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
                         attrs[column_name] = tables.Column(accessor=accessor)
                         all_column_names.append(column_name)
 
-    # Construir sequence con genes después de project_name
     gene_col_names = list(extra_columns.keys()) if extra_columns else []
     if extra_columns:
         attrs.update(extra_columns)
 
-    if gene_col_names and 'project_name' in all_column_names:
-        idx = all_column_names.index('project_name') + 1
-        sequence = all_column_names[:idx] + gene_col_names + all_column_names[idx:]
-    else:
-        sequence = all_column_names + gene_col_names
+    # Secuencia explícita; columnas no listadas van al final, genes al final del todo
+    known = set(_BASE_SEQUENCE)
+    all_attrs = set(all_column_names + gene_col_names)
+    extra_generated = [c for c in all_column_names if c not in known]
+    sequence = [c for c in _BASE_SEQUENCE if c in all_attrs] + extra_generated + gene_col_names
 
     attrs['Meta'] = type('Meta', (), {
         'template_name': 'django_tables2/bootstrap4.html',
-        'exclude': ('clinic_id', 'isolate_id',),
+        'exclude': ('clinic_id', 'isolate_id', 'isolate_comments'),
         'sequence': tuple(sequence),
         'export_formats': ["csv", "xlsx", "txt"],
         'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
@@ -140,7 +287,7 @@ class MicTable(tables.Table):
         attrs = {'class': 'table table-dark table-striped table-hover table-responsive results'}
 
 
-def create_mic_table(label1="BP Version 1", label2="BP Version 2"):
+def create_mic_table(label1="BP Version 1", label2="BP Version 2", empty_columns=None):
     """
     Returns a MicTable class with two computed clinical-category
     columns per antibiotic (cc1 and cc2), labelled with the names of the two
@@ -183,6 +330,11 @@ def create_mic_table(label1="BP Version 1", label2="BP Version 2"):
             'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'},
             'export_formats': ["csv", "xlsx", "txt"],
         })
+
+    _empty = frozenset(empty_columns or [])
+    def get_column_default_show(self):
+        return [c for c in self.sequence if c not in _empty]
+    attrs['get_column_default_show'] = get_column_default_show
 
     return type('DynamicMicTable', (ColumnShiftTableBootstrap4, tables.Table), attrs)
 

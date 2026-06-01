@@ -161,32 +161,46 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
         return exporter
 
+    def get(self, request, *args, **kwargs):
+        """Intercepta la respuesta de exportación para añadir la cookie de progreso."""
+        response = super().get(request, *args, **kwargs)
+        token = request.GET.get('download_token', '')
+        # Solo añadir cookie si es una exportación (Content-Disposition: attachment)
+        if token and 'attachment' in response.get('Content-Disposition', ''):
+            response.set_cookie(
+                f'download_done_{token}', '1',
+                max_age=60, path='/', samesite='Lax'
+            )
+        return response
+
     def get_context_data(self, **kwargs):
         verbose_used = self.request.session.get('verbose_used', {})
         context = super().get_context_data(**kwargs)
 
         filtered_ids = self.object_list.values_list('isolate_id', flat=True)
-        qs_mic = list(Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids))
-        context['qs_mic'] = qs_mic
 
         selected_table_1 = self.request.GET.get('breakpoint_table_1') or None
         selected_table_2 = self.request.GET.get('breakpoint_table_2') or None
-
         alias_1 = self.request.GET.get('alias_1') or 'SIRv1'
         alias_2 = self.request.GET.get('alias_2') or 'SIRv2'
+
+        qs_mic_qs = Mic.objects.select_related("isolate_id").filter(isolate_id__in=filtered_ids)
+        mic_empty_cols = self._compute_mic_empty_columns(qs_mic_qs, selected_table_1, selected_table_2)
 
         if selected_table_1 or selected_table_2:
             bp_dict_1 = self._get_bp_dict(selected_table_1)
             bp_dict_2 = self._get_bp_dict(selected_table_2)
+            qs_mic = list(qs_mic_qs)
             self._apply_clinical_categories(qs_mic, bp_dict_1, bp_dict_2)
             DynamicMicTable = create_mic_table(
-                label1=alias_1,
-                label2=alias_2,
+                label1=alias_1, label2=alias_2, empty_columns=mic_empty_cols,
             )
-            context['mic_table'] = DynamicMicTable(data=qs_mic)
         else:
-            context['mic_table'] = create_mic_table()(data=qs_mic)
+            qs_mic = list(qs_mic_qs)
+            DynamicMicTable = create_mic_table(empty_columns=mic_empty_cols)
 
+        context['qs_mic'] = qs_mic
+        context['mic_table'] = DynamicMicTable(data=qs_mic)
         RequestConfig(self.request).configure(context['mic_table'])
 
         context['selected_table_1'] = selected_table_1
@@ -310,7 +324,9 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         })
 
         context['per_page_options'] = [10, 25, 50, 100, 250]
-        context['empty_cols_json'] = json.dumps(list(getattr(self, '_empty_cols', [])))
+        context['empty_cols_json'] = json.dumps(
+            list(getattr(self, '_empty_cols', [])) + list(mic_empty_cols)
+        )
 
         return context
 
@@ -584,6 +600,41 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
         # En caso intermedio, se puede asignar "IE" u otro valor según tu criterio
         return "No se ha podido asignar valor S/I/R"
+
+    def _compute_mic_empty_columns(self, qs_mic, selected_table_1, selected_table_2):
+        """
+        Returns the set of MIC table column names to hide by default:
+        - ab + ab_cc1 + ab_cc2  when the antibiotic field is entirely null.
+        - all *_cc1              when no breakpoint table 1 is selected.
+        - all *_cc2              when no breakpoint table 2 is selected.
+        """
+        from django.db.models import Max
+        from .tables import MIC_ANTIBIOTICS
+
+        empty = set()
+        mic_field_names = {f.name for f in Mic._meta.get_fields()}
+
+        if qs_mic.exists():
+            try:
+                valid_abs = [ab for ab in MIC_ANTIBIOTICS if ab in mic_field_names]
+                agg = qs_mic.aggregate(**{ab: Max(ab) for ab in valid_abs})
+                for ab in valid_abs:
+                    if agg.get(ab) in (None, '', '-'):
+                        empty.update([ab, f'{ab}_cc1', f'{ab}_cc2'])
+            except Exception:
+                pass
+        else:
+            for ab in MIC_ANTIBIOTICS:
+                empty.update([ab, f'{ab}_cc1', f'{ab}_cc2'])
+
+        if not selected_table_1:
+            for ab in MIC_ANTIBIOTICS:
+                empty.add(f'{ab}_cc1')
+        if not selected_table_2:
+            for ab in MIC_ANTIBIOTICS:
+                empty.add(f'{ab}_cc2')
+
+        return empty
 
     def post(self, request, *args, **kwargs):
         self.update_parameters(request)

@@ -455,7 +455,7 @@ class FenotipoForm(ModelForm):
 
 class SequenceAnalysisForm(ModelForm):
     sequence_type = ModelChoiceField(
-        queryset=SequenceAnalysis.objects.values_list('sequence_type', flat=True).distinct(),
+        queryset=SequenceAnalysis.objects.values_list('sequence_type', flat=True).distinct().order_by('sequence_type'),
         label='Sequence type', empty_label='Select a Sequence type', required=False)
     insilico_serotype = ModelChoiceField(
         queryset=InvitroSerotype.objects.values_list('invitro_value', flat=True).distinct(),

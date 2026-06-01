@@ -117,23 +117,44 @@ function createDualListbox(selectName, leftLabel, rightLabel) {
         });
     });
 
-    function setSelected(values) {
-        // Mover todo de right a left
-        $right.find('.item-row').each(function() {
-            $(this).find('input').prop('checked', false);
-            $(this).removeClass('checked');
-            $left.append($(this));
-        });
-        // Mover los seleccionados a right
+    function getSelectedValues() {
+        return $right.find('.item-row').map(function() {
+            return $(this).attr('data-value');
+        }).get();
+    }
+
+    function addSelected(values) {
         $left.find('.item-row').filter(function() {
             return values.indexOf($(this).attr('data-value')) !== -1;
         }).each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
             $right.append($(this));
         });
         syncSelect();
     }
 
-    return { setSelected: setSelected };
+    function removeSelected(values) {
+        $right.find('.item-row').filter(function() {
+            return values.indexOf($(this).attr('data-value')) !== -1;
+        }).each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        syncSelect();
+    }
+
+    function setSelected(values) {
+        $right.find('.item-row').each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        addSelected(values);
+    }
+
+    return { setSelected, getSelectedValues, addSelected, removeSelected };
 }
 
 $(document).ready(function() {
@@ -156,12 +177,7 @@ $(document).ready(function() {
 
     var genesListbox = createDualListbox('genes', 'Available genes', 'Selected genes');
 
-    $('#wgs_select_all').on('click', function() {
-        var allVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
-        genesListbox.setSelected(allVals);
-    });
-
-    function selectGenesBySubset(subset) {
+    function getSubsetVals(subset) {
         var vals = [];
         $('#wgs_genes_select option').each(function() {
             var gene  = $(this).val();
@@ -170,10 +186,27 @@ $(document).ready(function() {
             var subsets = genesSubsetMap[locus] || [];
             if (subsets.indexOf(subset) !== -1) vals.push(gene);
         });
-        genesListbox.setSelected(vals);
+        return vals;
     }
 
-    $('#wgs_select_basic').on('click', function() { selectGenesBySubset('BASIC'); });
-    $('#wgs_select_cr').on('click',    function() { selectGenesBySubset('CR');    });
-    $('#wgs_select_hyp').on('click',   function() { selectGenesBySubset('HYP');   });
+    function toggleSubset($btn, vals) {
+        var current = genesListbox.getSelectedValues();
+        var allPresent = vals.every(function(v) { return current.indexOf(v) !== -1; });
+        if (allPresent) {
+            genesListbox.removeSelected(vals);
+            $btn.removeClass('active');
+        } else {
+            genesListbox.addSelected(vals);
+            $btn.addClass('active');
+        }
+    }
+
+    $('#wgs_select_all').on('click', function() {
+        var allVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
+        toggleSubset($(this), allVals);
+    });
+
+    $('#wgs_select_basic').on('click', function() { toggleSubset($(this), getSubsetVals('BASIC')); });
+    $('#wgs_select_cr').on('click',    function() { toggleSubset($(this), getSubsetVals('CR'));    });
+    $('#wgs_select_hyp').on('click',   function() { toggleSubset($(this), getSubsetVals('HYP'));   });
 });

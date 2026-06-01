@@ -152,6 +152,15 @@ select[name="hospital"] {
     overflow-y: auto;
 }
 
+#wgs_select_all.active,
+#wgs_select_basic.active,
+#wgs_select_cr.active,
+#wgs_select_hyp.active {
+    background-color: #00334c;
+    color: #fff;
+    border-color: #00334c;
+}
+
 /* ── Dual listbox: ensure readable text on both list panels ── */
 /* project_name and isolate_name use bootstrap-duallistbox */
 .bootstrap-duallistbox-container select.form-control {
