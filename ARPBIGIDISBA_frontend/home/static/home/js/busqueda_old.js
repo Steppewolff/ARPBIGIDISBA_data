@@ -166,11 +166,11 @@ $(document).ready(function() {
     var genesListbox = createDualListbox('genes', 'Available genes', 'Selected genes');
 
     var subsetDefs = [
-        { id: 'wgs_select_all',   subset: null,    label: 'Extended' },
-        { id: 'wgs_select_basic', subset: 'BASIC', label: 'Basic'    },
-        { id: 'wgs_select_cr',    subset: 'CR',    label: 'CR'       },
-        { id: 'wgs_select_hyp',   subset: 'HYP',   label: 'HYP'      },
-        { id: 'wgs_select_mlst',  subset: 'MLST',  label: 'MLST'     },
+        { id: 'wgs_select_all',   subset: null,    label: 'Extended'  },
+        { id: 'wgs_select_basic', subset: 'BASIC', label: 'Basic'     },
+        { id: 'wgs_select_cr',    subset: 'CR',    label: 'CR'        },
+        { id: 'wgs_select_hyp',   subset: 'HYP',   label: 'HYP'       },
+        { id: 'wgs_select_mlst',  subset: 'MLST',  label: 'MLST'      },
     ];
 
     var allGeneVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
@@ -188,10 +188,12 @@ $(document).ready(function() {
         return vals;
     }
 
+    // Precalcular vals por subset
     subsetDefs.forEach(function(def) {
         def.vals = getSubsetVals(def.subset);
     });
 
+    // Tooltips
     subsetDefs.forEach(function(def) {
         var label = def.vals.length > 0 ? def.vals.length + ' genes' : 'No genes in current dataset';
         $('#' + def.id)

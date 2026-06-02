@@ -485,20 +485,14 @@
                                 <option value="{{ locus }}">{{ label }}</option>
                             {% endfor %}
                             </select>
-                              <div class="mt-1" style="display:flex; flex-wrap:wrap; gap:4px;">
-                                <button type="button" id="wgs_select_all" class="btn btn-outline-secondary btn-sm">
-                                  Extended resistome
-                                </button>
-                                <button type="button" id="wgs_select_basic" class="btn btn-outline-secondary btn-sm">
-                                  Basic resistome
-                                </button>
-                                <button type="button" id="wgs_select_cr" class="btn btn-outline-secondary btn-sm">
-                                  Cefiderocol resistome
-                                </button>
-                                <button type="button" id="wgs_select_hyp" class="btn btn-outline-secondary btn-sm">
-                                  Hypermutation
-                                </button>
-                              </div>
+                                <div class="mt-1" style="display:flex; flex-wrap:wrap; gap:4px;">
+                                  <button type="button" id="wgs_select_all"   class="btn btn-outline-secondary btn-sm">Extended resistome</button>
+                                  <button type="button" id="wgs_select_basic" class="btn btn-outline-secondary btn-sm">Basic resistome</button>
+                                  <button type="button" id="wgs_select_cr"    class="btn btn-outline-secondary btn-sm">Cefiderocol resistome</button>
+                                  <button type="button" id="wgs_select_hyp"   class="btn btn-outline-secondary btn-sm">Hypermutation</button>
+                                  <button type="button" id="wgs_select_mlst"  class="btn btn-outline-secondary btn-sm">MLST genes</button>
+                                  <button type="button" id="wgs_clear_all"    class="btn btn-outline-danger btn-sm">✕ Clear all</button>
+                                </div>
                           </div>
                           <p class="text-muted" style="font-size:0.75rem; margin-top:4px;">
                             &#9432; Gene columns and heatmap can be adjusted further in the <em>Resistome</em> panel on the results page.
