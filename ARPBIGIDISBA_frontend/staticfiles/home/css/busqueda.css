@@ -1,0 +1,281 @@
+.dual-listbox .card-header {
+    padding: 8px 12px;
+    font-weight: 600;
+    background: #f8f9fa;
+}
+.dual-listbox .item-row {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+}
+.dual-listbox .item-row:hover { background: #e8f4ff; }
+.dual-listbox .item-row.checked { background: #e8f4ff; }
+.dual-listbox .item-row input[type=checkbox] { margin-right: 8px; }
+.dual-listbox .items-container {
+    max-height: 220px;
+    overflow-y: auto;
+}
+.dual-listbox .count-badge {
+    font-size: 0.75rem;
+    color: #6c757d;
+    padding: 4px 10px;
+    border-top: 1px solid #dee2e6;
+}
+
+#id_hospital,
+select[name="hospital"] {
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Accordion header ── */
+.filter-accordion .card-header {
+    background: linear-gradient(135deg, #00334c 0%, #005073 100%);
+    border: none;
+    padding: 0;
+}
+.filter-accordion .select2-header {
+    background: linear-gradient(135deg, #e9e9ed 0%, #e9e9ed 100%);
+    border: 2px solid #c8d8e0;
+    padding: 2px;
+}
+.filter-accordion .card-header .btn-link {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.02rem;
+    text-decoration: none;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.02em;
+}
+.filter-accordion .card-header .btn-link:hover,
+.filter-accordion .card-header .btn-link:focus {
+    color: #a8d8ea;
+    text-decoration: none;
+    box-shadow: none;
+}
+.filter-accordion .card-header .btn-link .acc-chevron {
+    margin-left: auto;
+    font-size: 0.65rem;
+    transition: transform 0.25s ease;
+    opacity: 0.8;
+}
+.filter-accordion .card-header .btn-link:not(.collapsed) .acc-chevron {
+    transform: rotate(180deg);
+}
+.filter-accordion .card {
+    border: 1px solid #c8d8e0;
+    margin-bottom: 4px;
+    border-radius: 5px !important;
+    overflow: hidden;
+}
+.acc-badge {
+    background: rgba(255,255,255,0.18);
+    color: #d0eaf5;
+    font-size: 0.68rem;
+    font-weight: 400;
+    padding: 2px 9px;
+    border-radius: 10px;
+    letter-spacing: 0.03em;
+}
+
+
+/* ── Subgroup panels ── */
+.filter-subgroup {
+    border-left: 4px solid #00334c;
+    border-radius: 0 5px 5px 0;
+    padding: 12px 14px 10px;
+    margin-bottom: 10px;
+    background: #f7fafc;
+}
+.filter-subgroup-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #00334c;
+    margin-bottom: 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Colour variants */
+.filter-subgroup.sg-traceability  { border-left-color: #0077b6; background: #f0f7ff; }
+.filter-subgroup.sg-traceability .filter-subgroup-header { color: #005a8a; }
+.filter-subgroup.sg-obtention     { border-left-color: #2a9d8f; background: #f0faf8; }
+.filter-subgroup.sg-obtention .filter-subgroup-header    { color: #1e7268; }
+.filter-subgroup.sg-geographical  { border-left-color: #e76f51; background: #fff5f2; }
+.filter-subgroup.sg-geographical .filter-subgroup-header { color: #b5502f; }
+.filter-subgroup.sg-resistance    { border-left-color: #6a0572; background: #fdf0ff; }
+.filter-subgroup.sg-resistance .filter-subgroup-header   { color: #52035a; }
+.filter-subgroup.sg-enzymatic     { border-left-color: #c6852a; background: #fffbf0; }
+.filter-subgroup.sg-enzymatic .filter-subgroup-header    { color: #9a6318; }
+.filter-subgroup.sg-serotype      { border-left-color: #457b9d; background: #f0f6fc; }
+.filter-subgroup.sg-serotype .filter-subgroup-header     { color: #2e5f7a; }
+.filter-subgroup.sg-molecular     { border-left-color: #2d6a4f; background: #f0faf5; }
+.filter-subgroup.sg-molecular .filter-subgroup-header    { color: #1e4d38; }
+.filter-subgroup.sg-wgs           { border-left-color: #6a0572; background: #fdf0ff; }
+.filter-subgroup.sg-wgs .filter-subgroup-header          { color: #52035a; }
+
+
+/* ── Info tooltip icon ── */
+.sg-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    background: #8aacbc;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.58rem;
+    font-weight: 800;
+    cursor: help;
+    margin-left: 2px;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* genes selection */
+#wgs_genes_select + .select2-container .select2-selection--multiple {
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+#wgs_select_all.active,
+#wgs_select_basic.active,
+#wgs_select_cr.active,
+#wgs_select_hyp.active {
+    background-color: #00334c;
+    color: #fff;
+    border-color: #00334c;
+}
+
+/* ── Dual listbox: ensure readable text on both list panels ── */
+/* project_name and isolate_name use bootstrap-duallistbox */
+.bootstrap-duallistbox-container select.form-control {
+    background-color: #f0f7ff !important;
+    color: #1a1a2e !important;
+}
+.bootstrap-duallistbox-container select.form-control option {
+    background-color: #ffffff;
+    color: #1a1a2e;
+}
+.bootstrap-duallistbox-container select.form-control option:checked,
+.bootstrap-duallistbox-container select.form-control option:hover {
+    background-color: #cce4f7;
+    color: #00334c;
+}
+
+
+/* ── SIR antibiotic class cards ── */
+.sir-class-card {
+    background: #fff;
+    border: 1px solid #dde6ec;
+    border-top: 3px solid #00334c;
+    border-radius: 5px;
+    padding: 10px 10px 6px;
+    height: 100%;
+}
+.sir-class-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+    cursor: default;
+}
+.sir-class-card.sir-carboxy    { border-top-color: #1d3557; }
+.sir-class-card.sir-carboxy    .sir-class-title { color: #1d3557; }
+.sir-class-card.sir-penicillin { border-top-color: #457b9d; }
+.sir-class-card.sir-penicillin .sir-class-title { color: #2e5f7a; }
+.sir-class-card.sir-cephalo    { border-top-color: #2a9d8f; }
+.sir-class-card.sir-cephalo    .sir-class-title { color: #1e7268; }
+.sir-class-card.sir-mono       { border-top-color: #c6852a; }
+.sir-class-card.sir-mono       .sir-class-title { color: #9a6318; }
+.sir-class-card.sir-carbapenem { border-top-color: #e76f51; }
+.sir-class-card.sir-carbapenem .sir-class-title { color: #b5502f; }
+.sir-class-card.sir-aminogly   { border-top-color: #6a0572; }
+.sir-class-card.sir-aminogly   .sir-class-title { color: #52035a; }
+.sir-class-card.sir-fluoroqui  { border-top-color: #0077b6; }
+.sir-class-card.sir-fluoroqui  .sir-class-title { color: #005a8a; }
+.sir-class-card.sir-polymyxin  { border-top-color: #2d6a4f; }
+.sir-class-card.sir-polymyxin  .sir-class-title { color: #1e4d38; }
+.sir-class-card.sir-fosfonic_acid_derivatives  { border-top-color: #bf3b51; }
+.sir-class-card.sir-fosfonic_acid_derivatives  .sir-class-title { color: #bf3b51; }
+
+/* SIR intro note */
+.sir-intro-note {
+    font-size: 0.8rem;
+    color: #6c757d;
+    background: #f8f9fa;
+    border-left: 3px solid #adb5bd;
+    padding: 7px 12px;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 14px;
+}
+
+/* ── SIR card: force label-above-select vertical layout ── */
+/* Overrides crispy horizontal form rendering inside sir-class-card */
+.sir-class-card .form-group,
+.sir-class-card .form-group.row {
+    display: block;
+    margin-bottom: 8px;
+    margin-left: 0;
+    margin-right: 0;
+}
+/* Antibiotic name label */
+.sir-class-card .form-group label,
+.sir-class-card .form-group .col-form-label {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #495057;
+    padding: 0 0 3px 0;
+    margin-bottom: 2px;
+    white-space: normal;
+}
+/* Unwrap col-* wrappers that crispy may add around the select */
+.sir-class-card .form-group [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+}
+/* The select itself: full width, height managed by Select2 */
+.sir-class-card select.form-control {
+    width: 100%;
+    font-size: 0.76rem;
+    height: auto;
+    padding: 2px 4px;
+}
+.sir-class-card select.form-control option {
+    font-size: 0.74rem;
+}
+/* Select2 pill container inside SIR cards */
+.sir-class-card .select2-container {
+    width: 100% !important;
+}
+.sir-class-card .select2-container--default .select2-selection--multiple {
+    min-height: 30px;
+    font-size: 0.76rem;
+}
+.sir-class-card .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    font-size: 0.72rem;
+    padding: 1px 6px;
+    margin-top: 3px;
+}

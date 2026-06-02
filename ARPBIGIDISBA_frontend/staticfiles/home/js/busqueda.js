@@ -1,0 +1,228 @@
+function createDualListbox(selectName, leftLabel, rightLabel) {
+    const $select = $('select[name="' + selectName + '"]').hide();
+    const options = $select.find('option').map(function() {
+        return { value: $(this).val(), text: $(this).text() };
+    }).get().filter(o => o.value);
+
+    const html = `
+        <div class="dual-listbox row no-gutters border rounded" style="overflow:hidden">
+            <div class="col-5">
+                <div class="select2-header">${leftLabel}</div>
+                <div class="p-2 border-bottom">
+                    <input type="text" class="form-control form-control-sm search-left" placeholder="Search...">
+                </div>
+                <div class="items-container left-items"></div>
+                <div class="count-badge left-count">0 items</div>
+            </div>
+            <div class="col-2 d-flex flex-column align-items-center justify-content-center border-left border-right" style="gap:8px;padding:10px">
+                <button type="button" class="btn btn-primary btn-sm btn-right" style="width:36px">&#8250;</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm btn-left" style="width:36px">&#8249;</button>
+            </div>
+            <div class="col-5">
+                <div class="select2-header">${rightLabel}</div>
+                <div class="p-2 border-bottom">
+                    <input type="text" class="form-control form-control-sm search-right" placeholder="Search...">
+                </div>
+                <div class="items-container right-items"></div>
+                <div class="count-badge right-count">0 items</div>
+            </div>
+        </div>`;
+
+    const $box = $(html);
+    $select.after($box);
+
+    const $left  = $box.find('.left-items');
+    const $right = $box.find('.right-items');
+
+    function makeRow(opt) {
+        return $(`<div class="item-row" data-value="${opt.value}">
+                    <input type="checkbox"> ${opt.text}
+                  </div>`);
+    }
+
+    function updateCounts() {
+        $box.find('.left-count').text($left.find('.item-row').length + ' items');
+        $box.find('.right-count').text($right.find('.item-row').length + ' items');
+    }
+
+    var _onSyncCallback = null;
+
+    function syncSelect() {
+        $select.find('option').prop('selected', false);
+        $right.find('.item-row').each(function() {
+            $select.find('option[value="' + $(this).data('value') + '"]').prop('selected', true);
+        });
+        updateCounts();
+        if (_onSyncCallback) _onSyncCallback();
+    }
+
+    options.forEach(opt => $left.append(makeRow(opt)));
+    updateCounts();
+    let lastChecked = null;
+
+    $box.on('click', '.item-row', function(e) {
+        const $rows = $(this).closest('.items-container').find('.item-row:visible');
+        const $checkbox = $(this).find('input');
+
+        if (!$(e.target).is('input')) {
+            $checkbox.prop('checked', !$checkbox.prop('checked'));
+        }
+
+        if (e.shiftKey && lastChecked) {
+            const $lastRow = $(lastChecked);
+            const lastIndex = $rows.index($lastRow);
+            const currentIndex = $rows.index($(this));
+            const from = Math.min(lastIndex, currentIndex);
+            const to   = Math.max(lastIndex, currentIndex);
+            const checked = $checkbox.prop('checked');
+            $rows.slice(from, to + 1).each(function() {
+                $(this).find('input').prop('checked', checked);
+                $(this).toggleClass('checked', checked);
+            });
+        }
+
+        $(this).toggleClass('checked', $checkbox.prop('checked'));
+        lastChecked = this;
+    });
+
+    $box.find('.btn-right').on('click', function() {
+        $left.find('.item-row input:checked').closest('.item-row').each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $right.append($(this));
+        });
+        syncSelect();
+    });
+
+    $box.find('.btn-left').on('click', function() {
+        $right.find('.item-row input:checked').closest('.item-row').each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        syncSelect();
+    });
+
+    $box.find('.search-left').on('input', function() {
+        const t = $(this).val().toLowerCase();
+        $left.find('.item-row').each(function() {
+            $(this).toggle($(this).text().toLowerCase().includes(t));
+        });
+    });
+
+    $box.find('.search-right').on('input', function() {
+        const t = $(this).val().toLowerCase();
+        $right.find('.item-row').each(function() {
+            $(this).toggle($(this).text().toLowerCase().includes(t));
+        });
+    });
+
+    function getSelectedValues() {
+        return $right.find('.item-row').map(function() {
+            return $(this).attr('data-value');
+        }).get();
+    }
+
+    function addSelected(values) {
+        $left.find('.item-row').filter(function() {
+            return values.indexOf($(this).attr('data-value')) !== -1;
+        }).each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $right.append($(this));
+        });
+        syncSelect();
+    }
+
+    function removeSelected(values) {
+        $right.find('.item-row').filter(function() {
+            return values.indexOf($(this).attr('data-value')) !== -1;
+        }).each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        syncSelect();
+    }
+
+    function setSelected(values) {
+        $right.find('.item-row').each(function() {
+            $(this).find('input').prop('checked', false);
+            $(this).removeClass('checked');
+            $left.append($(this));
+        });
+        addSelected(values);
+    }
+
+    function onSync(cb) { _onSyncCallback = cb; }
+
+    return { setSelected, getSelectedValues, addSelected, removeSelected, onSync };
+}
+
+$(document).ready(function() {
+    createDualListbox('isolate_name', 'Available isolates', 'Selected isolates');
+    createDualListbox('project_name', 'Available projects', 'Selected projects');
+
+    var genesListbox = createDualListbox('genes', 'Available genes', 'Selected genes');
+
+    var subsetDefs = [
+        { id: 'wgs_select_all',   subset: null,    label: 'Extended' },
+        { id: 'wgs_select_basic', subset: 'BASIC', label: 'Basic'    },
+        { id: 'wgs_select_cr',    subset: 'CR',    label: 'CR'       },
+        { id: 'wgs_select_hyp',   subset: 'HYP',   label: 'HYP'      },
+        { id: 'wgs_select_mlst',  subset: 'MLST',  label: 'MLST'     },
+    ];
+
+    var allGeneVals = $('#wgs_genes_select option').map(function() { return $(this).val(); }).get();
+
+    function getSubsetVals(subset) {
+        if (subset === null) return allGeneVals;
+        var vals = [];
+        $('#wgs_genes_select option').each(function() {
+            var gene = $(this).val();
+            var locus = gene.split('_')[0];
+            if (!locusRegex.test(locus)) return;
+            var subsets = genesSubsetMap[locus] || [];
+            if (subsets.indexOf(subset) !== -1) vals.push(gene);
+        });
+        return vals;
+    }
+
+    subsetDefs.forEach(function(def) {
+        def.vals = getSubsetVals(def.subset);
+    });
+
+    subsetDefs.forEach(function(def) {
+        var label = def.vals.length > 0 ? def.vals.length + ' genes' : 'No genes in current dataset';
+        $('#' + def.id)
+            .attr({ title: label, 'data-toggle': 'tooltip', 'data-placement': 'top' })
+            .tooltip({ trigger: 'hover focus' });
+    });
+
+    function refreshButtonStates() {
+        var current = genesListbox.getSelectedValues();
+        subsetDefs.forEach(function(def) {
+            var active = def.vals.length > 0 && def.vals.every(function(v) {
+                return current.indexOf(v) !== -1;
+            });
+            $('#' + def.id).toggleClass('active', active);
+        });
+    }
+
+    genesListbox.onSync(refreshButtonStates);
+
+    subsetDefs.forEach(function(def) {
+        $('#' + def.id).on('click', function() {
+            if (def.vals.length === 0) return;
+            if ($(this).hasClass('active')) {
+                genesListbox.removeSelected(def.vals);
+            } else {
+                genesListbox.addSelected(def.vals);
+            }
+        });
+    });
+
+    $('#wgs_clear_all').on('click', function() {
+        genesListbox.setSelected([]);
+    });
+});
