@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+PROJECT_ROOT = BASE_DIR.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -244,6 +244,7 @@ STATICFILES_FINDERS = [
     'django_plotly_dash.finders.DashAppDirectoryFinder',
 ]
 
+## Jazzmin Configuration
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
     "site_title": "ARPBIG DB",
@@ -378,4 +379,36 @@ JAZZMIN_UI_TWEAKS = {
         "danger": "btn-danger",
         "success": "btn-success"
     }
+}
+
+## Logging Configuration
+LOGS_DIR = BASE_DIR.parent / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)  # Crea el directorio si no existe
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'access_denied': {
+            'format': '%(asctime)s %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'access_denied_file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': str(LOGS_DIR / 'access_denied.log'),
+            'when': 'midnight',       # Rota cada día a medianoche
+            'backupCount': 30,        # Conserva 30 días de histórico
+            'formatter': 'access_denied',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'home.middleware': {
+            'handlers': ['access_denied_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
 }

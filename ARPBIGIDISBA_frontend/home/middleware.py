@@ -1,8 +1,11 @@
+import logging
+
 from django.conf import settings
 from django.shortcuts import redirect
 from django.http import HttpResponseForbidden
 from django.template.loader import render_to_string
 
+logger = logging.getLogger('home.middleware')
 
 class LoginRequiredMiddleware:
     """
@@ -33,10 +36,20 @@ class LoginRequiredMiddleware:
         # 3. Ruta restringida a Editor/Administrador
         if any(path.startswith(p) for p in self.editor_paths):
             if not self._is_editor_or_admin(request.user):
+                ip = (request.META.get('HTTP_X_FORWARDED_FOR', '')
+                      .split(',')[0].strip()
+                      or request.META.get('REMOTE_ADDR', 'unknown'))
+                role = (request.user.groups.values_list('name', flat=True)
+                        .first() or 'sin grupo')
+                logger.warning(
+                    "ACCESS DENIED | user=%s | role=%s | method=%s | path=%s | ip=%s",
+                    request.user.username, role,
+                    request.method, path, ip,
+                )
                 html = render_to_string(
                     '403.html',
                     {'user': request.user,
-                     'required_role': 'reviewer or administraTor'},
+                     'required_role': 'Editor o Administrador'},
                     request=request,
                 )
                 return HttpResponseForbidden(html)
