@@ -94,6 +94,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'home.context_processors.user_role', # Context processor personalizado para roles de usuario
             ],
         },
     },
@@ -184,6 +185,18 @@ LOGIN_NOT_REQUIRED_URLNAMES = [
 LOGIN_NOT_REQUIRED_PATHS = [
     '/accounts/login/',
     '/accounts/logout/',
+]
+
+# Rutas que requieren rol Editor o Administrador (escritura en BD)
+EDITOR_REQUIRED_PATHS = [
+    '/cargadatos',
+    '/upload_summary',
+    '/upload_confirm',
+    '/upload_modal',
+    '/fk_save',
+    '/descargar_manual_bdd',
+    '/strain_bank/edit/',
+    '/strain_bank/delete/',
 ]
 
 # Internationalization

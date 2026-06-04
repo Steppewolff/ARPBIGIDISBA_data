@@ -66,10 +66,23 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
 
       <div class="user-box">
       {% if user.is_authenticated %}
-          <p>Welcome, {{ user.username }}!</p>
+          <p>Welcome, <strong>{{ user.username }}</strong>!</p>
+          {% if user_role %}
+          <p style="margin:0 0 6px 0;">
+            <span style="
+              display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.78em;
+              font-weight:bold; letter-spacing:.04em;
+              background:{% if user_role == 'administrator' %}#00334c{% elif user_role == 'reviewer' %}#485866{% else %}#808080{% endif %};
+              color:#fff;">
+              {{ user_role }}
+            </span>
+          </p>
+          {% endif %}
           <div class="button-row">
             <a href="{% url 'logout' %}"><button class="btn btn-danger btn-sm">Log out</button></a>
+            {% if user_role == 'Administrador' %}
             <a href="/admin"><button class="btn btn-light text-danger border-danger btn-sm">Go to DB Admin</button></a>
+            {% endif %}
           </div>
       {% else %}
           <p>You must be logged in to navigate the platform</p>
@@ -88,7 +101,9 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
         <a href="/dashboard" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Dashboard</a>
         <a href="/aplicaciones" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Applications</a>
         <a href="/documentacion" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Documentation</a>
+        {% if user_role == 'administrator' or user_role == 'reviewer' %}
         <a href="/cargadatos" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Data upload</a>
+        {% endif %}
         <a href="/strain_bank" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Strain bank</a>
 
 <!--        <a href="/contacto" onclick="w3_close()" class="w3-bar-item w3-button w3-hover-white">Contacto</a>-->

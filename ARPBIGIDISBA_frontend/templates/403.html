@@ -1,0 +1,28 @@
+{% extends "home_template.html" %}
+{% load static %}
+
+{% block title %}
+<header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
+  <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
+  <span>ARPBIG database</span>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="w3-main" style="margin-left:340px; margin-right:40px; margin-top:80px;">
+  <div class="w3-container">
+    <h1 class="w3-jumbo" style="color:#00334c;"><b>403</b></h1>
+    <h2 style="color:#00334c;">Acceso no permitido</h2>
+    <hr style="width:60px; border:5px solid #00334c;" class="w3-round">
+    <p class="w3-xlarge">
+      Tu cuenta (<strong>{{ user.username }}</strong>) tiene el perfil
+      <strong>{{ user_role }}</strong>, que no tiene acceso a esta sección.
+    </p>
+    <p>Esta área requiere el perfil <strong>{{ required_role }}</strong>.</p>
+    <p>Si crees que deberías tener acceso, contacta con el administrador del sistema.</p>
+    <a href="/" class="btn btn-primary" style="margin-top:1rem;">
+      ← Volver al inicio
+    </a>
+  </div>
+</div>
+{% endblock %}
