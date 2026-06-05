@@ -80,7 +80,7 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
           {% endif %}
           <div class="button-row">
             <a href="{% url 'logout' %}"><button class="btn btn-danger btn-sm">Log out</button></a>
-            {% if user_role == 'Administrador' %}
+            {% if user_role == 'administrator' %}
             <a href="/admin"><button class="btn btn-light text-danger border-danger btn-sm">Go to DB Admin</button></a>
             {% endif %}
           </div>
