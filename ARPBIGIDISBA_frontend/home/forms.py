@@ -77,8 +77,6 @@ class HospitalForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(HospitalForm, self).__init__(*args, **kwargs)
-        # self.fields["hospital"].label_from_instance = lambda obj: obj.hospital_id
-
 
 class MicForm(ModelForm):
     class Meta:

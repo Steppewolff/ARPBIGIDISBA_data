@@ -550,31 +550,13 @@ $(document).ready(function() {
         });
     });
 
-<!--    // Dual listbox para isolate_name-->
-<!--    $('select[name="isolate_name"]').bootstrapDualListbox({-->
-<!--        nonSelectedListLabel: 'Available isolates',-->
-<!--        selectedListLabel: 'Selected isolates',-->
-<!--        preserveSelectionOnMove: 'moved',-->
-<!--        moveOnSelect: false,-->
-<!--        filterPlaceHolder: 'Search...',-->
-<!--    });-->
-
-<!--    // Dual listbox para project_name-->
-<!--    $('select[name="project_name"]').bootstrapDualListbox({-->
-<!--        nonSelectedListLabel: 'Available projects',-->
-<!--        selectedListLabel: 'Selected projects',-->
-<!--        preserveSelectionOnMove: 'moved',-->
-<!--        moveOnSelect: false,-->
-<!--        filterPlaceHolder: 'Search...',-->
-<!--    });-->
-
-        // Re-inicializar al abrir acordeón (sólo si el plugin está cargado)
-        $('#accordion_form').on('shown.bs.collapse', function () {
-            if ($.fn.bootstrapDualListbox) {
-                $('select[name="isolate_name"]').bootstrapDualListbox('refresh');
-                $('select[name="project_name"]').bootstrapDualListbox('refresh');
-            }
-        });
+    // Re-inicializar al abrir acordeón (sólo si el plugin está cargado)
+    $('#accordion_form').on('shown.bs.collapse', function () {
+        if ($.fn.bootstrapDualListbox) {
+            $('select[name="isolate_name"]').bootstrapDualListbox('refresh');
+            $('select[name="project_name"]').bootstrapDualListbox('refresh');
+        }
+    });
 
 });
 </script>

@@ -12,6 +12,4 @@ urlpatterns = [
     path('accounts/login/', MyLoginView.as_view(), name='login'),
     path('accounts/logout/', LogoutView.as_view(), name='logout'),
     path('heatmap_all/', views.heatmap_all_view, name='heatmap_all'),
-    # path('contacto', views.contacto, name='contacto'),
-    # path('aplicaciones', views.aplicaciones, name='aplicaciones'),
 ]

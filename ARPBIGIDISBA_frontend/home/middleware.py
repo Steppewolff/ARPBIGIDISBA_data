@@ -13,8 +13,8 @@ class LoginRequiredMiddleware:
 
     Roles definidos mediante grupos Django:
       - administrator : is_superuser=True o is_staff=True  (acceso total)
-      - reviewer        : grupo 'reviewer'  (todas las vistas, incluidas las de escritura)
-      - guest      : grupo 'guest' (solo vistas de consulta)
+      - reviewer : grupo 'reviewer'  (todas las vistas, incluidas las de escritura)
+      - guest : grupo 'guest' (solo vistas de consulta)
     """
 
     def __init__(self, get_response):
@@ -25,15 +25,15 @@ class LoginRequiredMiddleware:
     def __call__(self, request):
         path = request.path_info
 
-        # 1. Rutas siempre públicas (login, logout, static…)
+        # Rutas siempre públicas (login, logout, static…)
         if any(path.startswith(p) for p in self.public_paths):
             return self.get_response(request)
 
-        # 2. Usuario no autenticado → redirigir a login
+        # Usuario no autenticado → redirigir a login
         if not request.user.is_authenticated:
             return redirect(f"{settings.LOGIN_URL}?next={path}")
 
-        # 3. Ruta restringida a Editor/Administrador
+        # Ruta restringida a Editor/Administrador
         if any(path.startswith(p) for p in self.editor_paths):
             if not self._is_editor_or_admin(request.user):
                 ip = (request.META.get('HTTP_X_FORWARDED_FOR', '')

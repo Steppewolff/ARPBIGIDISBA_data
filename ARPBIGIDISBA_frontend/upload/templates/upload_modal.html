@@ -47,17 +47,6 @@
             </div>
         {% endif %}
 
-<!--        {% if difference_hospitals %}-->
-<!--            <div class="alert alert-warning" role="alert">-->
-<!--                <p>Name hospitales no aparecen en la BDD, comprobar si están correctamente escritos:</p>-->
-<!--                <ul>-->
-<!--                    {% for value in difference_hospitals %}-->
-<!--                        <li>{{ value }}</li>-->
-<!--                    {% endfor %}-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        {% endif %}-->
-
         </div>
         <div class="modal-footer">
             {% if mandatory_fields.isolate_name == 0 or mandatory_fields.project_name == 0 %}

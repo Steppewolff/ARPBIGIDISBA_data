@@ -13,7 +13,7 @@ from .models import AcquiredResistome, Assembler, FilePath, FlowcellKit, Hospita
 
 class ModeloRelacionadoMetadataClinic(admin.TabularInline):  # o StackedInline
     model = MetadataClinic  # Modelo relacionado
-    extra = 0  # Opcional: número de formularios vacíos
+    extra = 0  # número de formularios vacíos
 
 class ModeloRelacionadPhenotypicData(admin.TabularInline):  # o StackedInline
     model = PhenotypicData  # Modelo relacionado
@@ -21,15 +21,15 @@ class ModeloRelacionadPhenotypicData(admin.TabularInline):  # o StackedInline
 
 class ModeloRelacionadSequenceAnalysis(admin.TabularInline):  # o StackedInline
     model = SequenceAnalysis  # Modelo relacionado
-    extra = 0  # Opcional: número de formularios vacíos
+    extra = 0  # número de formularios vacíos
 
 class ModeloRelacionadMic(admin.TabularInline):  # o StackedInline
     model = Mic  # Modelo relacionado
-    extra = 0  # Opcional: número de formularios vacíos
+    extra = 0  # número de formularios vacíos
 
 class ModeloRelacionadFilePath(admin.TabularInline):  # o StackedInline
     model = FilePath  # Modelo relacionado
-    extra = 0  # Opcional: número de formularios vacíos
+    extra = 0  # número de formularios vacíos
 
 @admin.register(MetadataGeneral)
 class ModeloPrincipalAdmin(admin.ModelAdmin):
@@ -134,7 +134,7 @@ class MetadataClinicAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            'js/admin_js.js',  # project static folder
+            'js/admin_js.js',
         )
 
 
@@ -143,7 +143,7 @@ class MetadataGeneralAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            'js/admin_js.js',  # project static folder
+            'js/admin_js.js',
         )
 
 
@@ -152,7 +152,7 @@ class MicAdmin(admin.ModelAdmin):
     exclude = ('mic_id', 'dlx', 'dlx_clinical_category', 'lvx', 'lvx_clinical_category', 'mxl', 'mxl_clinical_category', 'net', 'net_clinical_category', 'caz_cloxa', 'imi_cloxa')
     class Media:
         js = (
-            'js/admin_js.js',  # project static folder
+            'js/admin_js.js',
         )
 
 
@@ -178,7 +178,6 @@ class SequenceAnalysisAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            # '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',  # jquery
             'js/admin_js.js',  # project static folder
         )
 
@@ -239,26 +238,3 @@ admin.site.register(SequencingTechnology, SequencingTechnologyAdmin)
 admin.site.register(VirulenceGene, VirulenceGeneAdmin)
 # admin.site.register(Mic, MicAdmin)
 admin.site.register(Mic, MicAdminFilter)
-
-# Register your models here using custom_admin.py
-# custom_admin_site.register(AcquiredResistome, AcquiredResistomeAdmin)
-# custom_admin_site.register(Assembler, AssemblerAdmin)
-# custom_admin_site.register(FilePath, FilePathAdmin)
-# custom_admin_site.register(FlowcellKit, FlowcellKitAdmin)
-# custom_admin_site.register(Hospital, HospitalAdmin)
-# custom_admin_site.register(HypermutationGene, HypermutationGeneAdmin)
-# custom_admin_site.register(InvitroSerotype, InvitroSerotypeAdmin)
-# custom_admin_site.register(LocusMlst, LocusMlstAdmin)
-# custom_admin_site.register(MetadataClinic, MetadataClinicAdmin)
-# # custom_admin_site.register(MetadataGeneral, MetadataGeneralAdmin)
-# custom_admin_site.register(MutationalResistome, MutationalResistomeAdmin)
-# custom_admin_site.register(PhenotypicData, PhenotypicDataAdmin)
-# custom_admin_site.register(SampleType, SampleTypeAdmin)
-# custom_admin_site.register(SequenceAnalysis, SequenceAnalysisAdmin)
-# custom_admin_site.register(SequencingInfo, SequencingInfoAdmin)
-# custom_admin_site.register(SequencingLibrary, SequencingLibraryAdmin)
-# custom_admin_site.register(SequencingPlatform, SequencingPlatformAdmin)
-# custom_admin_site.register(SequencingTechnology, SequencingTechnologyAdmin)
-# custom_admin_site.register(VirulenceGene, VirulenceGeneAdmin)
-# # custom_admin_site.register(Mic, MicAdmin)
-# custom_admin_site.register(Mic, MicAdminFilter)

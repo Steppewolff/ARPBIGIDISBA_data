@@ -1,19 +1,3 @@
-/*
- * @name DoubleScroll
- * @desc displays scroll bar on top and on the bottom of the div
- * @requires jQuery
- *
- * @author Pawel Suwala - http://suwala.eu/
- * @author Antoine Vianey - http://www.astek.fr/
- * @version 0.5 (11-11-2015)
- *
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
- *
- * Usage:
- * https://github.com/avianey/jqDoubleScroll
- */
  (function( $ ) {
 
     jQuery.fn.doubleScroll = function(userOptions) {
@@ -139,11 +123,6 @@
 
 }( jQuery ));
 
-//$(document).ready(function($) {
-//   $('.results').doubleScroll({resetOnWindowResize: true});
-//});
-
-// --- robust initialization for DoubleScroll function ---
 (function($){
 
   function refreshDoubleScrollOnce($el) {
@@ -161,7 +140,7 @@
     refreshDoubleScrollOnce($results);
   }
 
-  // 1) Inicializar cuando la página terminó de cargar completamente
+  // Inicializar cuando la página terminó de cargar completamente
   $(window).on('load', function(){
     refreshDoubleScroll();
 
@@ -170,21 +149,21 @@
     setTimeout(refreshDoubleScroll, 100);
   });
 
-  // 2) Si .results está dentro de un collapse de Bootstrap
+  // Si .results está dentro de un collapse de Bootstrap
   $(document).on('shown.bs.collapse', function() {
     $('.results:visible').each(function(){
       refreshDoubleScrollOnce($(this));
     });
   });
 
-  // 3) Si .results está dentro de tabs de Bootstrap
+  // Si .results está dentro de tabs de Bootstrap
   $(document).on('shown.bs.tab', function() {
     $('.results:visible').each(function(){
       refreshDoubleScrollOnce($(this));
     });
   });
 
-  // 4) Observar cambios dinámicos dentro de .results (ej. django_tables2_column_shifter)
+  // Observar cambios dinámicos dentro de .results (ej. django_tables2_column_shifter)
   var resultsNode = document.querySelector('.results');
   if (resultsNode) {
     var mo = new MutationObserver(function(){
@@ -227,14 +206,6 @@ function closeDialog() {
   dialog.close();
 }
 
-//$(document).ready(function() {
-//    $('.select2').select2({
-//        placeholder: "Selecciona mutaciones",
-//        allowClear: true,
-//        width: '100%'
-//    });
-//});
-
 $(document).ready(function() {
     $('.select2').select2({
         placeholder: "Selecciona mutaciones",
@@ -258,21 +229,3 @@ $(document).ready(function() {
         console.log('Opciones seleccionadas:', selectedOptions);
     });
 });
-
-//$(document).ready(function() {
-//    $('#myMultiSelect1, #myMultiSelect2').multiselect({
-//      enableFiltering: true,           // Activa la barra de búsqueda
-//      includeSelectAllOption: true,
-//      enableCaseInsensitiveFiltering: true,
-//      buttonWidth: '300px',           // Ajusta el ancho del botón
-//      buttonClass: 'btn btn-light',
-//      maxHeight: 300,                 // Altura máx. del desplegable
-//      nonSelectedText: 'Selecciona valores',
-//      allSelectedText: 'Todos seleccionados',
-//      nSelectedText: 'seleccionados',
-//      buttonContainer: '<div class="btn-group w-100" />', // Hace que use el ancho completo
-//      templates: {
-//        button: '<button type="button" class="multiselect dropdown-toggle btn btn-light w-100" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
-//        li: '<li><a tabindex="0"><label class="checkbox"></label></a></li>'
-//    });
-//});

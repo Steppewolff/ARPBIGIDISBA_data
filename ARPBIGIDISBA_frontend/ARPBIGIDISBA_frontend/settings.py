@@ -16,9 +16,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-_m-1mo5%058umv#@eyi28m5p%(k^z&-#w7gz&&m53i$55sqogs'
 
@@ -52,7 +49,7 @@ INSTALLED_APPS = [
     'django_tables2_column_shifter',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'channels',
-    'import_export',# Necesario para que Dash funcione con Django
+    'import_export', # Necesario para que Dash funcione con Django
 
     # Project Apps
     'home',
@@ -118,40 +115,16 @@ DATABASES = {
     #     "connect_timeout": 180,
     # }
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
-    #     'USER': 'fernando',  # 'root',
-    #     'PASSWORD': 'password',  # 'Orgullovalor',
-    #     # 'USER': 'root',
-    #     # 'PASSWORD': 'Orgullovalor',
-    #     'HOST': 'arpbig_psdb',
-    #     'PORT': '',
-    # }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'psdb_json',  # 'NAME': BASE_DIR / 'db.sqlite3',
-    #     'USER': 'fernando',
-    #     'PASSWORD': 'Orgullovalor',
-    #     # 'USER': 'root',
-    #     # 'PASSWORD': 'Orgullovalor',
-    #     'HOST': '127.0.0.1',  # 'db','127.0.0.1', arpbig_ps, os.environ.get('DB_HOST')
-    #     "connect_timeout": 180,
-    #     'PORT': '3306', # 3306
-    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'psdb_pre',  # 'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': 'remote_user', # 'fernando'
-        'PASSWORD': '@rpB1Gserver', #'Orgullovalor',
-        # 'USER': 'root',
-        # 'PASSWORD': 'Orgullovalor',
-        'HOST': '165.22.89.54',  # 'db',, arpbig_ps, os.environ.get('DB_HOST'), 127.0.0.1,
+        'NAME': 'psdb_pre',
+        'USER': 'remote_user',
+        'PASSWORD': '@rpB1Gserver',
+        'HOST': '165.22.89.54',  # 'db', arpbig_ps, os.environ.get('DB_HOST'), 127.0.0.1,
         "connect_timeout": 180,
-        'PORT': '3306',  # 3306
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -233,7 +206,6 @@ CHANNEL_LAYERS = {
 }
 
 ## PlotlyDash Configuration
-# STATICFILES_FINDERS = ['django_plotly_dash.finders.DashComponentFinder']
 STATICFILES_FINDERS = [
 
     'django.contrib.staticfiles.finders.FileSystemFinder',

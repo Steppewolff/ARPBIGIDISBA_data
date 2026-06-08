@@ -40,58 +40,6 @@ class GeneColumn(tables.Column):
         except Exception as e:
             return f'ERR:{e}'
 
-# def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
-#     attrs = {}
-#     all_column_names = []
-#
-#     for model in models:
-#         for field in model._meta.get_fields():
-#             if isinstance(field, Field):
-#                 if isinstance(field, JSONField):
-#                     continue
-#                 if model._meta.model_name == 'metadatageneral':
-#                     column_name = f'{field.name}'
-#                     attrs[column_name] = tables.Column(accessor=f'{field.name}')
-#                     all_column_names.append(column_name)
-#                 else:
-#                     if '_id' in field.name:
-#                         pass
-#                     else:
-#                         accessor = f'{model._meta.model_name}.{field.name}'
-#                         column_name = f'{model._meta.model_name}_{field.name}'
-#                         attrs[column_name] = tables.Column(accessor=accessor)
-#                         all_column_names.append(column_name)
-#
-#     # Construir sequence con genes después de project_name
-#     gene_col_names = list(extra_columns.keys()) if extra_columns else []
-#     if extra_columns:
-#         attrs.update(extra_columns)
-#
-#     if gene_col_names and 'project_name' in all_column_names:
-#         idx = all_column_names.index('project_name') + 1
-#         sequence = all_column_names[:idx] + gene_col_names + all_column_names[idx:]
-#     else:
-#         sequence = all_column_names + gene_col_names
-#
-#     attrs['Meta'] = type('Meta', (), {
-#         'template_name': 'django_tables2/bootstrap4.html',
-#         'exclude': ('clinic_id', 'isolate_id','isolate_comments'),
-#         'sequence': tuple(sequence),
-#         'export_formats': ["csv", "xlsx", "txt"],
-#         'attrs': {'class': 'table table-dark table-striped table-hover table-responsive results'}
-#     })
-#
-#     _empty = frozenset(empty_columns or [])
-#
-#     def get_column_default_show(self):
-#         return [c for c in self.sequence if c not in _empty]
-#
-#     attrs['get_column_default_show'] = get_column_default_show
-#
-#     return type('CombinedTable', (ColumnShiftTableBootstrap4, ColumnShiftTable, tables.Table), attrs)
-#
-# CombinedTable = create_dynamic_table(MetadataGeneral, MetadataClinic, Mic, PhenotypicData, SequenceAnalysis, FilePath)
-
 # COLUMN ORDER: metadata > clinic > MIC > ecdc/dtr > typing > acquired > phenotypic > filepath > genes
 _METADATA_GENERAL_COLS = [
     'isolate_name', 'isolate_project_code', 'species', 'project_name',

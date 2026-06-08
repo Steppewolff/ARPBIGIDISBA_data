@@ -48,7 +48,6 @@ class MyLoginView(LoginView):
     template_name = 'login.html'
 
 # Create your views here.
-# @login_required
 def home(request):
     return render(request, 'home.html')
 
@@ -256,7 +255,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         context['verbose_used'] = verbose_used
         context['breakpoints_tables'] = BreakpointTable.objects.all().values_list('table_version_name', flat=True)
 
-        # --- Resistome context ---
+        # Resistome context
         loci_type     = self.request.GET.get('loci_type', '')
         selected_genes = [g for g in self.request.GET.getlist('genes') if g]
         show_heatmap  = self.request.GET.get('show_heatmap', 'no')
@@ -500,7 +499,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 if value is None:
                     continue
 
-                # ---- Breakpoint table 1 ----
+                # Breakpoint table 1
                 if ab in bp_dict_1:
                     bp = bp_dict_1[ab]
                     if bp and (None in bp.values() or "-" in bp.values()):
@@ -510,7 +509,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                             record, f"{ab}_clinical_category_1",
                             self.compute_clinical_category(value, bp))
 
-                # ---- Breakpoint table 2 ----
+                # Breakpoint table 2
                 if ab in bp_dict_2:
                     bp = bp_dict_2[ab]
                     if bp and (None in bp.values() or "-" in bp.values()):
@@ -605,8 +604,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         """
         Returns the set of MIC table column names to hide by default:
         - ab + ab_cc1 + ab_cc2  when the antibiotic field is entirely null.
-        - all *_cc1              when no breakpoint table 1 is selected.
-        - all *_cc2              when no breakpoint table 2 is selected.
+        - all *_cc1 when no breakpoint table 1 is selected.
+        - all *_cc2 when no breakpoint table 2 is selected.
         """
         from django.db.models import Max
         from .tables import MIC_ANTIBIOTICS
@@ -644,8 +643,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
     def update_parameters(self, request, *args, **kwargs):
         parameters = request.POST.copy()
-        parameters_used = {}  # ← empezar vacío siempre
-        verbose_used = {}  # ← empezar vacío siempre
+        parameters_used = {}  # empezar vacío siempre
+        verbose_used = {}  # empezar vacío siempre
 
         for parameter, value in parameters.items():
             if parameter == 'csrfmiddlewaretoken' or value in ('', 'none'):

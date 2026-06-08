@@ -28,7 +28,7 @@ def freezer_view(request):
         'all_racks': queryset.values_list('rack', flat=True).distinct().order_by('rack'),
         'all_boxes': queryset.values_list('box', flat=True).distinct().order_by('box'),
     }
-    return render(request, 'strain_bank2.html', context)
+    return render(request, 'strain_bank.html', context)
 
 
 @require_POST

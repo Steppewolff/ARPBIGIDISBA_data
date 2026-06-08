@@ -30,7 +30,6 @@
               <h4>Select input file with information to be uploaded:</h4>
                   <form action="{% url 'cargadatos' %}" method="POST" enctype="multipart/form-data"  id="upload_file">
                       {% csrf_token %}
-    <!--                  <label for="fileselect" style="width: 100%;">Seleccione el archivo con la información:</label>-->
                       <input type="file" id="fileselect" name="fileselect" accept=".xlsx, .xls, .csv" style="width: 100%;" required>
                       <label for="loci">Obtain resistome loci from input file?</label>
                         <select id="loci" name="loci" required>

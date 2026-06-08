@@ -79,31 +79,6 @@ app3.layout = html.Div([
     )
 ])
 
-
-# Datos para el mapa
-# hospitals = list(MetadataClinic.objects.values_list('hospital_id__hospital_name'))
-# hospitals = list(MetadataClinic.objects.values_list('hospital__hospital_name'))
-# hospitals = [x[0] for x in hospitals]
-# hospital_freq = Counter(hospitals)
-# hospitals = list(hospital_freq.keys())
-# # latitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_latitude').distinct())
-# latitudes = list(MetadataClinic.objects.values_list('hospital__geo_latitude').distinct())
-# latitudes = [x[0] for x in latitudes]
-# # longitudes = list(MetadataClinic.objects.values_list('hospital_id__geo_longitude').distinct())
-# longitudes = list(MetadataClinic.objects.values_list('hospital__geo_longitude').distinct())
-# longitudes = [x[0] for x in longitudes]
-# frequencies = list(hospital_freq.values())
-#
-# # cnt_clonal_complex = Counter(df_sequenceAnalysis['clonal_complex'])
-#
-# df_map = pd.DataFrame({
-#     'Hospital': hospitals,
-#     'Latitud': latitudes,
-#     'Longitud': longitudes,
-#     'Total aislados': frequencies,
-#     'Color': hospitals
-# })
-
 # Obtener nombre, lat y lon juntos y alineados por hospital
 hospital_data = (
     MetadataClinic.objects

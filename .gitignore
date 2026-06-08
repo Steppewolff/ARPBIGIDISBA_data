@@ -258,6 +258,7 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+.claude
 
 # Sphinx documentation
 docs/_build/

@@ -66,7 +66,6 @@ class GroupedSelect(forms.Select):
 class MultiFilter(filters.FilterSet):
     # OPCIONES_FILTRO = obtener_opciones_filtro()
 
-    # isolate_name = filters.ModelChoiceFilter(field_name='isolate_name', queryset=MetadataGeneral.objects.values_list('isolate_name', flat=True).distinct(), to_field_name='isolate_name', label='Isolate name')
     isolate_name = filters.MultipleChoiceFilter(
         field_name='isolate_name',
         choices=[],
@@ -74,7 +73,6 @@ class MultiFilter(filters.FilterSet):
         label='Isolate name'
     )
     species = filters.ModelChoiceFilter(field_name='species', queryset=MetadataGeneral.objects.values_list('species', flat=True).distinct(), to_field_name='species', label='Species')
-    # project_name = filters.ModelChoiceFilter(field_name='project_name', queryset=MetadataGeneral.objects.values_list('project_name', flat=True).distinct(), to_field_name='project_name', label='Project')
     project_name = filters.MultipleChoiceFilter(
         field_name='project_name',
         choices=[],
@@ -89,23 +87,16 @@ class MultiFilter(filters.FilterSet):
 
     incluir = filters.MultipleChoiceFilter(
         choices=[],
-        # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect1'}),
         method='filtrar_incluir',
         label="Present mutations"
     )
     excluir = filters.MultipleChoiceFilter(
         choices=[],
-        # widget=GroupedSelect(choices=OPCIONES_FILTRO),
         widget=forms.SelectMultiple(attrs={'class': 'form-control select2', 'id': 'myMultiSelect2'}),
         method='filtrar_excluir',
         label="Absent mutations"
     )
-
-    # def filtrar_isolate_name(self, queryset, name, value):
-    #     if value:
-    #         return queryset.filter(isolate_name__in=value)
-    #     return queryset
 
     def filtrar_incluir(self, queryset, name, value):
         """Filtra registros donde una clave específica tenga un valor concreto."""

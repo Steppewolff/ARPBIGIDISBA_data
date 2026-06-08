@@ -254,25 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal(deleteModal);
   }
 
-//  document.addEventListener('click', (e) => {
-//    const editBtn = e.target.closest('.js-edit-sample');
-//    const deleteBtn = e.target.closest('.js-delete-sample');
-//
-//    if (editBtn) {
-//      const id = editBtn.dataset.id;
-//      const sample = samples.find(s => String(s.id) === String(id));
-//      if (sample) openEditModal(sample);
-//    }
-//
-//    if (deleteBtn) {
-//      const id = deleteBtn.dataset.id;
-//      const sample = samples.find(s => String(s.id) === String(id));
-//      if (sample) openDeleteModal(sample);
-//    }
-//  });
-
-//    const table = document.getElementById('sample-table');
-
         if (table) {
           table.addEventListener('click', (e) => {
             const editBtn = e.target.closest('.js-edit-sample');

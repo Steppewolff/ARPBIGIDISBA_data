@@ -7,47 +7,143 @@
 {% block head %}
 <script src="/static/js/admin_js.js"></script>
 <script src="{% static 'bank/js/freezer.js' %}" defer></script>
-{{ table.data|json_script:"samples-data" }}
+{{ samples|json_script:"samples-data" }}
 
-    <style>
-    .container_strain {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 40px; /* más espacio entre columnas */
-    }
-    .schema-container { margin: 20px 0; }
-    .schema {
-      margin: 20px 0;
-      overflow-x: auto;
-      min-height: 150px;
-    }
-    .schema-cell,
-    .schema-header {
-      width: 30px;
-      height: 30px;
-      border: 1px solid #999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.75em;
-    }
-    .schema-header {
-      font-weight: bold;
-      background-color: #eee;
-    }
-    .schema-grid {
-      display: grid;
-      gap: 2px;
-    }
-    .info-text { white-space: pre-wrap; background:#f0f0f0; padding:5px; border:1px solid #ccc; }
-    .highlight {
-        background-color: yellow;
-    }
-    </style>
+<style>
+.container_strain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-start;
+}
+.schema-container {
+    margin: 20px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.schema {
+  margin: 20px 0;
+  overflow-x: auto;
+  min-height: 150px;
+}
+.schema-cell,
+.schema-header {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75em;
+  border-radius: 4px;
+}
+.schema-cell {
+  background-color: #fff;
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.schema-cell:hover {
+  background-color: #e9f3ff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+  transform: scale(1.03);
+}
+.schema-cell.selected {
+  background-color: #ffc107 !important;
+  color: #212529;
+  font-weight: bold;
+  box-shadow: 0 0 0 2px #cc9a06;
+}
+.schema-cell.occupied {
+  background-color: #f8f9fa;
+}
+.schema-cell.empty {
+  color: #bbb;
+}
+.schema-header {
+  font-weight: bold;
+  background-color: #eee;
+  cursor: default;
+}
+.schema-grid {
+  display: grid;
+  gap: 2px;
+}
+.info-text {
+  white-space: pre-wrap;
+  background: #f8f9fa;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 300px;
+  min-height: 80px;
+}
+.modal-backdrop-custom {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 9998;
+}
+.modal-box {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  width: min(900px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+.modal-box h3 {
+  margin-top: 0;
+}
+.modal-row {
+  margin-bottom: 12px;
+}
+.modal-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.modal-row input,
+.modal-row textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+.modal-row input:disabled,
+.modal-row textarea:disabled {
+  background: #e9ecef;
+  color: #666;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+.row-actions button {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+</style>
 {% endblock %}
 
 {% block title %}
-<!-- Top menu on small screens -->
 <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
   <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
   <span>ARPBIG strain bank</span>
@@ -55,58 +151,128 @@
 {% endblock %}
 
 {% block content %}
-
-<!-- !PAGE CONTENT! -->
 <div class="w3-main" style="margin-left:340px;margin-right:40px">
+  <div class="w3-container" style="margin-top:10px" id="showcase">
+    <h1 class="w3-jumbo"><b>Strain bank</b></h1>
+    <h4 class=""><b>Store information of the strain bank at ARPBIG IdISBa research group</b></h4>
+    <hr style="width:50px;border:5px solid #00334c" class="w3-round">
+  </div>
 
-      <!-- Header -->
-      <div class="w3-container" style="margin-top:10px" id="showcase">
-        <h1 class="w3-jumbo"><b>Strain bank</b></h1>
-        <h4 class=""><b>Store information of the strain bank at ARPBIG IdISBa research group</b></h4>
-        <hr style="width:50px;border:5px solid #00334c" class="w3-round">
-      </div>
-
-
-    <!-- !PAGE CONTENT! -->
-    <div class="w3-padding"> <!--container_strain-->
-        <!-- Tabla con filtros -->
-        <div class="w3-container">
-            <form method="get" class="filter-form">
-                {% csrf_token %}
-                {% for field in filter.form %}
-                    <div class="fieldWrapper">
-                        {{ field.errors }}
-                        {{ field.label_tag }} {{ field }}
-                    </div>
-                {% endfor %}
-                <button type="submit">Filtrar</button>
-                <a href="{% url 'strain_bank' %}">Limpiar filtros</a>
-            </form>
-          {% render_table table %}
+  <div class="w3-padding">
+    <div class="w3-container left">
+      <form method="get" class="filter-form">
+        {% csrf_token %}
+        {% for field in filter.form %}
+        <div class="fieldWrapper">
+          {{ field.errors }}
+          {{ field.label_tag }} {{ field }}
         </div>
+        {% endfor %}
+        <button type="submit">Filtrar</button>
+        <a href="{% url 'strain_bank' %}">Limpiar filtros</a>
+      </form>
 
-        <!-- Selects, esquemas y texto -->
+      {% render_table table %}
+    </div>
 
-      <div class="schema-container">
-        <label for="rack-select">Selecciona Rack:</label>
-        <select id="rack-select">
-          <option value="">Todos</option>
-          {% for rack in all_racks %}<option value="{{ rack }}">{{ rack }}</option>{% endfor %}
-        </select>
+    <div class="schema-container">
+      <div class="schema-title">Vista de rack</div>
+      <div class="schema-hint">Haz clic en una posición para ver qué caja contiene.</div>
+      <label for="rack-select">Selecciona Rack:</label>
+      <select id="rack-select">
+        <option value="">Todos</option>
+        {% for rack in all_racks %}
+          <option value="{{ rack }}">{{ rack }}</option>
+        {% endfor %}
+      </select>
+      <div class="container_strain">
         <div id="rack-schema" class="schema"></div>
-        <div id="rack-info" class="info-text"></div>
-      </div>
-
-      <div class="schema-container">
-        <label for="box-select">Selecciona Caja:</label>
-        <select id="box-select">
-          <option value="">Todos</option>
-          {% for box in all_boxes %}<option value="{{ box }}">{{ box }}</option>{% endfor %}
-        </select>
-        <div id="all_boxes">{{ all_boxes }}</div>
-        <div id="box-schema" class="schema"></div>
-        <div id="box-info" class="info-text"></div>
+        <div id="rack-info" class="info-text" style="min-width: 300px;"></div>
       </div>
     </div>
+
+    <div class="schema-container">
+      <div class="schema-title">Vista de caja</div>
+      <div class="schema-hint">Haz clic en una muestra para ver sus datos.</div>
+      <label for="box-select">Selecciona Caja:</label>
+      <select id="box-select">
+        <option value="">Todos</option>
+        {% for box in all_boxes %}
+          <option value="{{ box }}">{{ box }}</option>
+        {% endfor %}
+      </select>
+      <div class="container_strain">
+        <div id="box-schema" class="schema"></div>
+        <div id="box-info" class="info-text" style="min-width: 300px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-backdrop" class="modal-backdrop-custom"></div>
+
+<div id="edit-modal" class="modal-box">
+  <h3>Editar muestra</h3>
+  <form id="edit-form" method="post" action="">
+    {% csrf_token %}
+    <input type="hidden" id="edit-pk" name="pk">
+
+    <div class="modal-row">
+      <label for="edit-name">Name</label>
+      <input type="text" id="edit-name" name="name">
+    </div>
+    <div class="modal-row">
+      <label for="edit-strain">Strain</label>
+      <input type="text" id="edit-strain" name="strain">
+    </div>
+    <div class="modal-row">
+      <label for="edit-species">Species</label>
+      <input type="text" id="edit-species" name="species">
+    </div>
+    <div class="modal-row">
+      <label for="edit-clone">Clone</label>
+      <input type="text" id="edit-clone" name="clone">
+    </div>
+    <div class="modal-row">
+      <label for="edit-box">Box</label>
+      <input type="text" id="edit-box" name="box">
+    </div>
+    <div class="modal-row">
+      <label for="edit-rack-row">Rack row</label>
+      <input type="text" id="edit-rack-row" name="rack_row" disabled>
+    </div>
+    <div class="modal-row">
+      <label for="edit-rack-col">Rack col</label>
+      <input type="text" id="edit-rack-col" name="rack_col" disabled>
+    </div>
+    <div class="modal-row">
+      <label for="edit-box-row">Box row</label>
+      <input type="text" id="edit-box-row" name="box_row" disabled>
+    </div>
+    <div class="modal-row">
+      <label for="edit-box-col">Box col</label>
+      <input type="text" id="edit-box-col" name="box_col" disabled>
+    </div>
+    <div class="modal-row">
+      <label for="edit-description">Description</label>
+      <textarea id="edit-description" name="description" rows="4"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button type="button" id="edit-close-btn">Cerrar</button>
+      <button type="submit">Guardar</button>
+    </div>
+  </form>
+</div>
+
+<div id="delete-modal" class="modal-box">
+  <h3>Confirmar borrado</h3>
+  <p id="delete-message">¿Seguro que quieres borrar este registro?</p>
+  <form id="delete-form" method="post">
+    {% csrf_token %}
+    <div class="modal-actions">
+      <button type="button" id="delete-close-btn">Cerrar</button>
+      <button type="submit">Borrar</button>
+    </div>
+  </form>
 </div>
 {% endblock %}

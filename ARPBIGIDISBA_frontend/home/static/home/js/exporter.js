@@ -3,7 +3,6 @@
   'use strict';
 
   // Selector para detectar enlaces de export.
-  // Si prefieres una clase concreta, cámbialo por '.export-btn' o similar.
   var EXPORT_LINK_SELECTOR = 'a[href*="_export"], a[data-export]';
 
   function onDomReady(fn) {
@@ -47,13 +46,9 @@
     var links = document.querySelectorAll(EXPORT_LINK_SELECTOR);
 
     if (!links || links.length === 0) {
-      // No hay enlaces de export en esta página; nada que hacer.
       return;
     }
 
-    // Ajuste: si tienes múltiples tablas y quieres targetear una concreta,
-    // pon en la tabla un atributo data-table-index="0" (0-based).
-    // Si no hay data-table-index, el plugin sin parámetro devuelve la primera tabla.
     links.forEach(function (link) {
       link.addEventListener('click', function (e) {
         // Interceptamos la navegación para añadir excluded_columns

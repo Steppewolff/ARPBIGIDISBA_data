@@ -139,7 +139,6 @@ def upload(request):
 
         df_columns = df.columns.tolist()
         amr_loci = []
-        # locus_pattern = r"PA(?:LES)? ?\d{4}"
         locus_pattern = r"^(?:PA(?:LES|14)?\d{4,5})(?!\d)"
 
         if loci_ext in ('muts', 'pols'):
@@ -244,7 +243,7 @@ def summary(request):
         all_fields = [field for field in all_fields if field[1] != 'Do NOT write this in DB']
         dict_fields = {field[1]: field[0] for field in all_fields}
 
-        # --- Detección de FK fields activos ---
+        # Detección de FK fields activos
         fk_label_to_key = {v['label']: k for k, v in FK_FIELDS_CONFIG.items()}
         active_fk = {}
         for label, excel_col in dict_fields.items():
@@ -317,7 +316,6 @@ def summary(request):
             amr_columns = amr_loci.copy()
             amr_columns.insert(0, 'Isolate_name')
 
-        # return render(request, 'upload_summary.html', {'all_fields': all_fields, 'amr_columns': amr_columns, 'amr_mutations': amr_mutations, 'mandatory_fields': mandatory_fields})
         return render(request, 'upload_summary.html', {
             'all_fields': all_fields,
             'amr_columns': amr_columns,
@@ -371,7 +369,6 @@ def modal(request):
         all_fields = {}
         db_columns = []
 
-    # mandatory_fields = request.session['mandatory_fields']
     amr_columns = request.session['amr_columns']
     amr_mutations = request.session['amr_mutations']
 
@@ -392,7 +389,6 @@ def modal(request):
     else:
         isolates_db_list = MetadataGeneral.objects.values_list('isolate_name', flat=True)
         isolates_project_list = MetadataGeneral.objects.values_list('isolate_project_code', flat=True)
-        # isolates_excel_list = pd.read_json(StringIO(request.session['df']), orient='split')[dict(tuple(reversed(t)) for t in all_fields)['isolate_name']].tolist()
         difference_hospitals = []
         if 'hospital_name' in dict(tuple(reversed(t)) for t in all_fields):
             hospitals_db_list = Hospital.objects.values_list('hospital_name', flat=True)
@@ -401,13 +397,11 @@ def modal(request):
 
         mandatory_fields = eval_mandatory(request, all_fields)
 
-        # common_isolates = set(isolates_db_list).intersection(isolates_excel_list)
         common_isolates = []
         count_dict = Counter(dict(all_fields).values())
         duplicates = [key for key, value in count_dict.items()
                       if count_dict[key] > 1 and key != 'Do NOT write this in DB']
 
-        # return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields})
         upload_id = request.GET.get('uid') or request.session.get('upload_id', '')
         return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields, 'upload_id': upload_id})
 
@@ -448,8 +442,6 @@ def confirm(request):
     all_fields = request.session['all_fields']
     df = pd.read_json(StringIO(request.session['df']), orient='split')
 
-    # input_fields = [field for field in all_fields]
-    # input_fields = {field[1] : field[0] for field in all_fields}
     db_columns_dbname = request.session.get('db_columns_dbname', {})
     input_fields = {
         db_columns_dbname.get(field[1], field[1]): field[0]
