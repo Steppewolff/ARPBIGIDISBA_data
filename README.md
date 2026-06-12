@@ -1,5 +1,7 @@
 # ARPBIG IdISBa — Antimicrobial Resistance Database
 
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20664237-1682D4)](https://doi.org/10.5281/zenodo.20664237)
 [![License](https://img.shields.io/badge/license-Apache%202.0-D22128?logo=apache&logoColor=white)](LICENSE)
 
