@@ -427,7 +427,7 @@ class MicSearchForm(Form):
 class FenotipoForm(ModelForm):
     ecdc_resistance_profile = ModelChoiceField(
         queryset=PhenotypicData.objects.values_list('ecdc_resistance_profile', flat=True).distinct(),
-        label='ECDC profile', empty_label='Select a ECDC profile', required=False)
+        label='ECDC profile', empty_label='Select an ECDC profile', required=False)
     dtr_profile = ModelChoiceField(
         queryset=PhenotypicData.objects.values_list('dtr_profile', flat=True).distinct(),
         label='DTR profile', empty_label='Select a DTR profile', required=False)
