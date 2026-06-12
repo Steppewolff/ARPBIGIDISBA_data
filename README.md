@@ -30,7 +30,6 @@ resistome heatmap.
 - [Project structure](#project-structure)
 - [Deployment](#deployment)
 - [Documentation](#documentation)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
