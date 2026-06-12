@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'home/css/busqueda.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <!-- JS (debe ir después de jQuery) -->
+    <!-- JS (must be loaded after jQuery) -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     {% endblock %}
 
@@ -550,7 +550,7 @@ $(document).ready(function() {
         });
     });
 
-    // Re-inicializar al abrir acordeón (sólo si el plugin está cargado)
+    // Re-initialise when accordion opens (only if the plugin is loaded)
     $('#accordion_form').on('shown.bs.collapse', function () {
         if ($.fn.bootstrapDualListbox) {
             $('select[name="isolate_name"]').bootstrapDualListbox('refresh');

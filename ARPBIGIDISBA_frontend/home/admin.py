@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .custom_admin import custom_admin_site  # Importamos el Admin personalizado
+from .custom_admin import custom_admin_site  # Import custom admin site
 from advanced_filters.admin import AdminAdvancedFiltersMixin
 from django import forms
 try:
@@ -11,25 +11,25 @@ from .models import AcquiredResistome, Assembler, FilePath, FlowcellKit, Hospita
     LocusMlst, MetadataClinic, MetadataGeneral, Mic, MutationalResistome, PhenotypicData, SampleType, SequenceAnalysis, \
     SequencingInfo, SequencingLibrary, SequencingPlatform, SequencingTechnology, VirulenceGene
 
-class ModeloRelacionadoMetadataClinic(admin.TabularInline):  # o StackedInline
-    model = MetadataClinic  # Modelo relacionado
-    extra = 0  # número de formularios vacíos
+class ModeloRelacionadoMetadataClinic(admin.TabularInline):  # or StackedInline
+    model = MetadataClinic  # related model
+    extra = 0  # number of empty forms
 
-class ModeloRelacionadPhenotypicData(admin.TabularInline):  # o StackedInline
-    model = PhenotypicData  # Modelo relacionado
-    extra = 0  # Opcional: número de formularios vacíos
+class ModeloRelacionadPhenotypicData(admin.TabularInline):  # or StackedInline
+    model = PhenotypicData  # related model
+    extra = 0  # optional: number of empty forms
 
-class ModeloRelacionadSequenceAnalysis(admin.TabularInline):  # o StackedInline
-    model = SequenceAnalysis  # Modelo relacionado
-    extra = 0  # número de formularios vacíos
+class ModeloRelacionadSequenceAnalysis(admin.TabularInline):  # or StackedInline
+    model = SequenceAnalysis  # related model
+    extra = 0  # number of empty forms
 
-class ModeloRelacionadMic(admin.TabularInline):  # o StackedInline
-    model = Mic  # Modelo relacionado
-    extra = 0  # número de formularios vacíos
+class ModeloRelacionadMic(admin.TabularInline):  # or StackedInline
+    model = Mic  # related model
+    extra = 0  # number of empty forms
 
-class ModeloRelacionadFilePath(admin.TabularInline):  # o StackedInline
-    model = FilePath  # Modelo relacionado
-    extra = 0  # número de formularios vacíos
+class ModeloRelacionadFilePath(admin.TabularInline):  # or StackedInline
+    model = FilePath  # related model
+    extra = 0  # number of empty forms
 
 @admin.register(MetadataGeneral)
 class ModeloPrincipalAdmin(admin.ModelAdmin):
@@ -37,15 +37,15 @@ class ModeloPrincipalAdmin(admin.ModelAdmin):
 
 
 class AcquiredResistomeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in AcquiredResistome._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in AcquiredResistome._meta.fields]  # display all fields
 
 
 class AssemblerAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Assembler._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in Assembler._meta.fields]  # display all fields
 
 
 class FilePathAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in FilePath._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in FilePath._meta.fields]  # display all fields
 
 # This dictionary maps subset codes to their descriptions in InterestGenesAdmin, it is necessary for displaying the subset field in a human-readable format due to it is a multiselect field, different from the others.
 SUBSET_MAP = {
@@ -58,23 +58,23 @@ SUBSET_MAP = {
 
 @admin.register(InterestGenes)
 class InterestGenesAdmin(admin.ModelAdmin):
-    # Construimos dinámicamente list_display colocando display_subset en la posición deseada.
+    # Dynamically build list_display placing display_subset at the desired position.
     def _build_list_display(self):
-        # Todos los campos del modelo (nombre)
+        # All model field names
         fields = [f.name for f in InterestGenes._meta.fields]
-        # Si el campo 'subset' existe en fields, lo quitamos (no queremos mostrar raw subset)
+        # If 'subset' is present, remove it (we don't want to show the raw subset value)
         if 'subset' in fields:
             fields.remove('subset')
 
-        # Determinar índices objetivo
+        # Determine target insertion indices
         func_idx = None
         poly_idx = None
         if 'function' in fields:
-            func_idx = fields.index('function') + 1  # queremos después de 'function'
+            func_idx = fields.index('function') + 1  # we want after 'function'
         if 'polymorphisms' in fields:
-            poly_idx = fields.index('polymorphisms')  # queremos antes de 'polymorphisms'
+            poly_idx = fields.index('polymorphisms')  # we want before 'polymorphisms'
 
-        # Calcular lugar de inserción
+        # Calculate insertion point
         if func_idx is not None and poly_idx is not None:
             insert_at = min(func_idx, poly_idx)
         elif func_idx is not None:
@@ -82,16 +82,16 @@ class InterestGenesAdmin(admin.ModelAdmin):
         elif poly_idx is not None:
             insert_at = poly_idx
         else:
-            insert_at = len(fields)  # al final si ninguno existe
+            insert_at = len(fields)  # append at the end if neither exists
 
-        # Insertar la columna de display en la posición calculada
+        # Insert the display column at the calculated position
         fields.insert(insert_at, 'display_subset')
         return fields
 
-    list_display = property(_build_list_display)  # se evalúa al cargar la clase/admin
+    list_display = property(_build_list_display)  # evaluated when the class/admin loads
 
     def display_subset(self, obj):
-        """Muestra las etiquetas legibles del multiselect en el listado."""
+        """Returns human-readable labels for the multiselect field in the list view."""
         val = getattr(obj, 'subset', None)
         if not val:
             return '-'
@@ -109,28 +109,28 @@ class InterestGenesAdmin(admin.ModelAdmin):
 
 
 class FlowcellKitAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in FlowcellKit._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in FlowcellKit._meta.fields]  # display all fields
 
 
 class HospitalAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Hospital._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in Hospital._meta.fields]  # display all fields
     list_filter = ["country", "region", "town"]
 
 
 class HypermutationGeneAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in HypermutationGene._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in HypermutationGene._meta.fields]  # display all fields
 
 
 class InvitroSerotypeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in InvitroSerotype._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in InvitroSerotype._meta.fields]  # display all fields
 
 
 class LocusMlstAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in LocusMlst._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in LocusMlst._meta.fields]  # display all fields
 
 
 class MetadataClinicAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in MetadataClinic._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in MetadataClinic._meta.fields]  # display all fields
 
     class Media:
         js = (
@@ -139,7 +139,7 @@ class MetadataClinicAdmin(admin.ModelAdmin):
 
 
 class MetadataGeneralAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in MetadataGeneral._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in MetadataGeneral._meta.fields]  # display all fields
 
     class Media:
         js = (
@@ -148,7 +148,7 @@ class MetadataGeneralAdmin(admin.ModelAdmin):
 
 
 class MicAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Mic._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in Mic._meta.fields]  # display all fields
     exclude = ('mic_id', 'dlx', 'dlx_clinical_category', 'lvx', 'lvx_clinical_category', 'mxl', 'mxl_clinical_category', 'net', 'net_clinical_category', 'caz_cloxa', 'imi_cloxa')
     class Media:
         js = (
@@ -157,11 +157,11 @@ class MicAdmin(admin.ModelAdmin):
 
 
 class MutationalResistomeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in MutationalResistome._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in MutationalResistome._meta.fields]  # display all fields
 
 
 class PhenotypicDataAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in PhenotypicData._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in PhenotypicData._meta.fields]  # display all fields
 
     class Media:
         js = (
@@ -170,11 +170,11 @@ class PhenotypicDataAdmin(admin.ModelAdmin):
 
 
 class SampleTypeAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SampleType._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SampleType._meta.fields]  # display all fields
 
 
 class SequenceAnalysisAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SequenceAnalysis._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SequenceAnalysis._meta.fields]  # display all fields
 
     class Media:
         js = (
@@ -183,27 +183,27 @@ class SequenceAnalysisAdmin(admin.ModelAdmin):
 
 
 class SequencingInfoAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SequencingInfo._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SequencingInfo._meta.fields]  # display all fields
 
 
 class SequencingLibraryAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SequencingLibrary._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SequencingLibrary._meta.fields]  # display all fields
 
 
 class SequencingPlatformAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SequencingPlatform._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SequencingPlatform._meta.fields]  # display all fields
 
 
 class SequencingTechnologyAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in SequencingTechnology._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in SequencingTechnology._meta.fields]  # display all fields
 
 
 class VirulenceGeneAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in VirulenceGene._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in VirulenceGene._meta.fields]  # display all fields
 
 
 class MicAdminFilter(AdminAdvancedFiltersMixin, admin.ModelAdmin):
-    list_display = [field.name for field in Mic._meta.fields]  # Mostrar todos los campos
+    list_display = [field.name for field in Mic._meta.fields]  # display all fields
     list_filter = [field.name for field in Mic._meta.fields if
                    field.name not in ['mic_id', 'mic_comments', 'isolate']]  # simple list filters
 

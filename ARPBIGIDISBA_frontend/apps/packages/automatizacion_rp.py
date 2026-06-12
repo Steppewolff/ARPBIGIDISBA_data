@@ -3,20 +3,20 @@ import json
 
 
 def effect_multiplier(effect):
-    """Convierte el signo de efecto a un multiplicador (+ -> 1, - -> -1)."""
+    """Converts the effect sign to a multiplier (+ -> 1, - -> -1)."""
     return 1 if effect == "+" else -1
 
 
 def evaluate_LOF(record):
     """
-    Para condiciones LOF:
-    Se comprueba si en la columna 5 (índice 4) aparece la cadena 'stop'
-    (en minúsculas para comparación).
+    For LOF conditions:
+    Checks whether the string 'stop' appears in column 5 (index 4)
+    (lowercased for comparison).
     """
     if "stop" in record[4].lower() or "indel" in record[4].lower():
         return 'LOF'
 ####
-## Faltan por añadir los condicionales para INDELS, estos son solo para SNPs ******************************************************************************************
+## Missing: conditionals for INDELs — these only handle SNPs ******************************************************************************************
 ####
 
     elif 'missense_variant' in record[4].lower():
@@ -27,16 +27,16 @@ def evaluate_LOF(record):
 
 def evaluate_GOF(record, alleles):
     """
-    Para condiciones GOF/GOFO:
-    - Se verifica que en la columna 5 (índice 4) aparezca 'missense_variant'.
-    - Se extrae el valor numérico de la columna 13 (índice 12) y se compara con las claves
-      de 'alleles' (convertidas a entero).
-    - Si hay coincidencia, se compara el valor esperado (cadena de 3 caracteres) con las
-      3 últimas letras de la anotación proteica (se asume en la columna 10, índice 9).
-    Devuelve:
-      - "double" si se cumple la condición de coincidencia de alelo.
-      - "simple" si se cumple la condición de variante missense pero no coincide el alelo.
-      - None si no se cumple.
+    For GOF/GOFO conditions:
+    - Checks that 'missense_variant' appears in column 5 (index 4).
+    - Extracts the numeric value from column 13 (index 12) and compares it against the keys
+      in 'alleles' (converted to int).
+    - If a match is found, compares the expected value (3-character string) against the
+      last 3 letters of the protein annotation (assumed to be in column 10, index 9).
+    Returns:
+      - "double" if the allele match condition is met.
+      - "simple" if a missense variant is found but the allele does not match.
+      - None if no condition is met.
     """
     if "missense_variant" not in record[4].lower():
         return None
@@ -45,48 +45,48 @@ def evaluate_GOF(record, alleles):
     except ValueError:
         return None
 
-    # Se tiene en cuenta el caso en el que no se especifican aminoácidos concretos que deban ser producto de la mutación ni la mutación es un indel o un codón STOP
+    # Handles the case where no specific amino acids are required and the mutation is neither an indel nor a STOP codon
     if not bool(alleles) and "stop" not in record[4].lower() and "indel" not in record[4].lower():
-        return "double"  # Coincidencia: vale cualquier mutación
+        return "double"  # Match: any mutation is accepted
 
-    # Se recorren las claves (como cadena) y se comparan como enteros, si alleles está vacío el programa no entra en el bucle
+    # Iterate over keys (as strings) and compare as integers; if alleles is empty, the loop is skipped
     for key, aa in alleles.items():
         try:
             ####
-            ## Si lo que se registra en el Json para enumerar alelos es un rango de aminoácidos, p.ej. "80-93" : "Xxx", simplemente se comprueba si el aminoácido mutado cae dentro de ese rango, el valor Xxx no se utiliza pero se mantiene para mantener el formato del Json
+            ## If the JSON key is an amino acid range, e.g. "80-93" : "Xxx", check whether the mutated amino acid falls within that range; Xxx is unused but kept to preserve JSON format
             ####
             if '-' in key:
                 keys = key.split('-')
                 if int(keys[0]) <= allele_num <= int(keys[1]):
-                    return "double"  # Coincidencia: se usará el valor doble
+                    return "double"  # Match: the double value will be used
             elif int(key) == allele_num:
                 values = aa if isinstance(aa, list) else [aa]
                 for value in values:
                 ####
-                ## Hay que revisar si los casos del siguiente condicional leen las columnas que tienen que leer y son suficientes para
-                ## identificar correctamente los casos que aparecen en las condiciones de Scores ******************************************************************************************
+                ## Check whether the following conditional reads the correct columns and is sufficient to
+                ## correctly identify the cases that appear in the Scores conditions ******************************************************************************************
                 ####
-                    # Se compara el alelo esperado con las 3 últimas letras de la anotación proteica
+                    # Compare the expected allele against the last 3 letters of the protein annotation
                     if value == 'Xxx' and "stop" not in record[4].lower() and "indel" not in record[4].lower():
-                        return "double"  # Coincidencia: vale cualquier mutación
+                        return "double"  # Match: any mutation is accepted
                     elif record[9][-3:] == value:
-                        return "double"  # Coincidencia: se usará el valor doble
+                        return "double"  # Match: the double value will be used
 
                 return "simple"
         except ValueError:
             continue
 
     ####
-    ## ¿Duplicado con el anterior return "simple" si pasa por uno podría pasar por el otro?
+    ## Duplicate with the previous return "simple"? If one is reached, could the other also be reached?
     ####
     # return "simple"
 
 
 def evaluate_condition(record, condition):
     """
-    Evalúa la condición (sin considerar reguladores) para un registro dado.
-    Devuelve el score (con signo) a sumar para ese registro según la condición.
-    Si no se cumple, devuelve 0.
+    Evaluates the condition (without considering regulators) for a given record.
+    Returns the score (with sign) to add for that record according to the condition.
+    Returns 0 if the condition is not met.
     """
     mut_type = condition["mutation_type"]
     eff = effect_multiplier(condition["effect"])
@@ -107,7 +107,7 @@ def evaluate_condition(record, condition):
         if evaluate_LOF == 'LOF':
             reg_result['reg_eval'] = 0
             reg_result['value'] = 0
-        ## Si es un SNP en los genes de bomba de mex_s, se puede considerar directamente que está activa? o hay que evaluar algo más?  ******************************************************************************************
+        ## If it is a SNP in the mex_s pump genes, can it be directly considered active? Or does something else need to be evaluated? ******************************************************************************************
         elif evaluate_LOF == 'SNP':
             reg_result['reg_eval'] = 1
             reg_result['value'] = eff * condition["simple_value"]
@@ -124,8 +124,8 @@ def evaluate_condition(record, condition):
             reg_result['reg_eval'] = 1
             reg_result['value'] = eff * condition["doble_value"]
         else:
-            # Para GOF se suma simple_value si no coincide el alelo;
-            # Para GOFO, si no hay coincidencia, no se suma nada.
+            # For GOF, simple_value is added if the allele does not match;
+            # for GOFO, nothing is added if there is no match.
             if mut_type == "GOF":
                 reg_result['reg_eval'] = 1
                 reg_result['value'] = eff * condition["simple_value"]
@@ -140,31 +140,30 @@ def evaluate_condition(record, condition):
 
 def evaluate_regulators(gene, condition, records):
     """
-    Evalúa la condición cuando 'regulators' es "YES".
-    Se consideran dos niveles:
-      1. Nivel de los reguladores (sub-loci): se revisa si existe al menos un registro
-         cuyo locus (columna 8) coincide con alguna clave en 'loci' y que cumpla la condición
-         del sublocus.
-      2. Nivel superior: se evalúa la condición principal en los registros donde el locus (columna 8)
-         coincide con el gen.
-    La combinación de ambos niveles se implementa (de forma simplificada) de la siguiente manera:
-      - Si existe un registro en algún sublocus que cumpla la condición (regulator_pass)
-        y además se cumple la condición principal (main_score ≠ 0), se suma:
-             main_score + (bonus de doble_value de la condición principal)
-      - Si no se cumple el primer nivel, se suma el main_score (o el simple_value de la condición principal).
-      - Si se cumple el nivel de reguladores pero no la condición principal, se suma el simple_value.
-    (La lógica puede ajustarse según la interpretación de los requisitos.)
+    Evaluates the condition when 'regulators' is "YES".
+    Two levels are considered:
+      1. Regulator level (sub-loci): checks whether at least one record exists
+         whose locus (column 8) matches a key in 'loci' and satisfies the sub-locus condition.
+      2. Main level: evaluates the main condition on records where the locus (column 8)
+         matches the gene.
+    The combination of both levels is implemented (in a simplified form) as follows:
+      - If a record in any sub-locus meets the condition (regulator_pass)
+        and the main condition is also met (main_score ≠ 0), the following is added:
+             main_score + (bonus from doble_value of the main condition)
+      - If the first level is not met, main_score is added (or simple_value of the main condition).
+      - If the regulator level is met but the main condition is not, simple_value is added.
+    (The logic can be adjusted according to the interpretation of the requirements.)
     """
-    # Registros correspondientes al gen principal
+    # Records corresponding to the main gene
     main_records = [r for r in records if r[7] == gene]
-    # Se obtienen las claves de los sub-loci
+    # Retrieve sub-loci keys
     subloci = condition.get("loci", {})
-    # Se recopilan todos los registros que pertenezcan a alguno de los sub-loci
+    # Collect all records belonging to any of the sub-loci
     sub_records = []
     for sub in subloci:
         sub_records.extend([r for r in records if r[7] == sub])
 
-    # Evaluar los sub-loci: verificar si existe al menos un registro que cumpla la condición del sublocus y sumar su valor si se cumplen las condiciones
+    # Evaluate sub-loci: check whether at least one record meets the sub-locus condition and add its value if conditions are met
     regulator_pass = False
     regulator_value = 0
     for sub in sub_records:
@@ -175,7 +174,7 @@ def evaluate_regulators(gene, condition, records):
         sub_recs = [r for r in records if r[7] == sub[7]]
         for rec in sub_recs:
 ####
-## En la siguiente condición solamente se tiene en cuenta el primer regulador cuyo efecto es diferente de 0, si hay 2 con efecto deberían sumarse los 2?? ************************************************************
+## The following condition only considers the first regulator whose effect is non-zero; if two have an effect, should both be summed? ************************************************************
 ####
             regulator_condition = evaluate_condition(rec, sub_cond)
             if regulator_condition['reg_eval'] != 0:
@@ -184,28 +183,28 @@ def evaluate_regulators(gene, condition, records):
 
                 break
 
-    # Evaluar la condición principal en los registros del gen
+    # Evaluate the main condition on the gene's records
     main_score = 0
 
 ###
-# En un locus concreto, si hay más de una mutación ¿como se evalúa? Puede haber una con un efecto y otra con otro, ¿se suman ambas? ¿Se escoge la más fuerte?
+# If there is more than one mutation at a given locus, how should it be evaluated? There may be one with one effect and another with a different one — should both be summed? Or the strongest selected?
 ###
     for rec in main_records:
         main_score += evaluate_condition(rec, condition)['value']
 
-    # Aplicar una lógica combinada (según la descripción)
+    # Apply combined logic (as described)
     # if regulator_pass and main_score != 0:
     if regulator_pass:
-        # Se suma tanto el score del nivel principal como un "bonus" (usando el valor doble)
+        # Add both the main-level score and a "bonus" (using the double value)
         # return main_score + effect_multiplier(condition["effect"]) * condition["doble_value"]
         return main_score + regulator_value
     elif not regulator_pass:
-        # Si no se cumple el nivel regulador, se suma el score principal
+        # If the regulator level is not met, add the main score
         # return main_score if main_score != 0 else effect_multiplier(condition["effect"]) * condition["simple_value"]
         return main_score
 
     ###
-    # Este caso es necesario?*************************************************************************************************
+    # Is this case needed? *************************************************************************************************
     ###
     elif regulator_pass and main_score == 0:
         return effect_multiplier(condition["effect"]) * condition["simple_value"]
@@ -214,12 +213,12 @@ def evaluate_regulators(gene, condition, records):
 
 
 def main(scores_json, records):
-    # # Cargar condiciones desde el JSON
+    # # Load conditions from the JSON file
     # scores_json = load_scores("FuentesInformacion/SCORES_100WT.json")
-    # # Cargar registros del CSV (se asume que el archivo tiene 14 columnas separadas por comas)
+    # # Load CSV records (the file is assumed to have 14 comma-separated columns)
     # records = load_csv("FuentesInformacion/PA001.snps.withoutcommon.curated")
 
-    # Inicializar diccionario de scores para cada antibiótico
+    # Initialise score dictionary for each antibiotic
     antibiotics = ["CIP", "CAZ", "MER", "C/T", "TOB"]
     final_scores = {ab: 0 for ab in antibiotics}
     final_score_eval = {ab: [] for ab in antibiotics}
@@ -227,16 +226,16 @@ def main(scores_json, records):
     gene_records = [r for r in records if r[7] in scores_json]
     gene_list = [r[7] for r in gene_records]
 
-    # Recorrer cada gen (locus) definido en el JSON
+    # Iterate over each gene (locus) defined in the JSON
     for gene, conditions in scores_json.items():
-        # Caso en el que son varios genes principales, no los reguladores los que determinan si se suma score o no
+        # Case where multiple main genes determine whether a score is added, not regulators
         if ',' in gene:
             genes = gene.split(',')
             gene_records_test = [r for r in records if r[7] in genes]
             gene_active = True
             score = 0
 
-            # Siempre van a tener reguladores
+            # These will always have regulators
             for gene_record in gene_records_test:
                 if evaluate_LOF(gene_record) == 'LOF':
                     gene_active = False
@@ -249,26 +248,26 @@ def main(scores_json, records):
                         final_scores[ab] += score
                         final_score_eval[ab].append({sub_gene: score})
 
-        # Para cada antibiótico (condición) en el gen
+        # For each antibiotic (condition) in the gene
         if gene in gene_list:
             mutations = [r for r in gene_records if r[7] == gene]
             for ab, cond in conditions.items():
-                # Se verifica el tipo de evaluación según el campo "regulators"
+                # Determine the evaluation type based on the "regulators" field
                 if cond.get("regulators") == "NO":
-                    # Se filtran los registros cuya columna 8 (índice 7) coincide con el gen
+                    # Filter records whose column 8 (index 7) matches the gene
                     for mutation in mutations:
                         score = evaluate_condition(mutation, cond)['value']
                         final_scores[ab] += score
                         final_score_eval[ab].append({gene: score})
 
                 elif cond.get("regulators") == "YES":
-                    # Para condiciones con reguladores, se evalúa con la función especializada
+                    # For conditions with regulators, evaluate using the specialised function
                     score = evaluate_regulators(gene, cond, records)
                     final_scores[ab] += score
                     final_score_eval[ab].append({gene: score})
 
 
-    # Mostrar el score final por antibiótico
+    # Display the final score by antibiotic
     print("Total scores by ATB:")
     score_results = {}
     for ab, score in final_scores.items():
@@ -283,5 +282,5 @@ def main(scores_json, records):
         score_results[ab] = [score, phenotype]
         print(f"{ab}: {score}")
 
-    # Devolver el score final por antibiótico
+    # Return the final score by antibiotic
     return score_results, final_score_eval

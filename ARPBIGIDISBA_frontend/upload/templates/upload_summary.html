@@ -8,15 +8,15 @@
         function abrir_modal(url, uid) {
             var fullUrl = uid ? url + '?uid=' + uid : url;
 
-            console.log("1. Botón pulsado, URL:", url);
+            console.log("1. Button clicked, URL:", url);
             console.log("2. jQuery:", typeof $ !== 'undefined');
             console.log("3. Bootstrap modal:", typeof $.fn.modal !== 'undefined');
 
             var $div = $('#upload_modal');
-            console.log("4. Div encontrado:", $div.length);
+            console.log("4. Div found:", $div.length);
 
             $div.load(url, function(response, status, xhr) {
-                console.log("5. Callback load ejecutado, status:", status, xhr.status);
+                console.log("5. Load callback executed, status:", status, xhr.status);
                 if (status === "error") {
                     console.error("Error HTTP:", xhr.status, xhr.statusText);
                     return;
@@ -25,7 +25,7 @@
                 try {
                     $(this).modal({ backdrop: 'static', keyboard: false });
                     $(this).modal('show');
-                    console.log("7. modal('show') llamado");
+                    console.log("7. modal('show') called");
                 } catch(e) {
                     console.error("Error Bootstrap modal:", e);
                 }
@@ -54,7 +54,7 @@
             .then(function(data) {
                 var status = document.getElementById('fk_save_status');
                 if (data.status === 'ok') {
-                    status.textContent = '✓ Guardado';
+                    status.textContent = '✓ Saved';
                     status.style.color = 'green';
                 } else {
                     status.textContent = '✗ Error: ' + data.message;
@@ -130,7 +130,7 @@
                 </thead>
                 <tbody>
                     {% for field in all_fields %}
-                    {% if field.1 != 'No escribir en BDD' %}
+                    {% if field.1 != 'Do NOT write this in DB' %}
                         <tr>
                             <td>{{ field.0 }}</td>
                             <td> </td>

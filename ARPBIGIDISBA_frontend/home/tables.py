@@ -19,7 +19,7 @@ class GeneColumn(tables.Column):
         self.loci_type = loci_type
         kwargs.setdefault('verbose_name', gene_name)
         kwargs.setdefault('orderable', False)
-        kwargs.setdefault('accessor', 'isolate_name')  # accessor válido que siempre resuelve
+        kwargs.setdefault('accessor', 'isolate_name')  # valid accessor that always resolves
         super().__init__(**kwargs)
 
     def render(self, value, record):
@@ -31,7 +31,7 @@ class GeneColumn(tables.Column):
             json_data = getattr(sa, field, None) or getattr(sa, 'mutational_resistome_muts', None)
             if json_data is None:
                 return ''
-            # Exact match primero, luego por locus prefix
+            # Exact match first, then by locus prefix
             if self.gene_name in json_data:
                 val = json_data[self.gene_name]
             else:
@@ -90,7 +90,7 @@ _MIC_COLS = [f'mic_{f}' for f in [
     'xer', 'xer_clinical_category',
 ]]
 
-# Fenotípico: resumen primero, resto después de resistencias adquiridas
+# Phenotypic: overview first, remainder after acquired resistances
 _PHENOTYPIC_OVERVIEW_COLS = [
     'phenotypicdata_ecdc_resistance_profile',
     'phenotypicdata_dtr_profile',
@@ -106,7 +106,7 @@ _PHENOTYPIC_OTHER_COLS = [
     'phenotypicdata_idsa_resistance_profile', 'phenotypicdata_phenotypic_comments',
 ]
 
-# Secuencia: tipificación primero, resistencias adquiridas al final
+# Sequence: typing first, acquired resistances last
 _SEQUENCE_TYPING_COLS = [
     'sequenceanalysis_sequence_type', 'sequenceanalysis_clonal_complex',
     'sequenceanalysis_insilico_serotype',
@@ -123,8 +123,8 @@ _FILEPATH_COLS = [
     'filepath_denovo_assembly_ena_url', 'filepath_ena_accession',
 ]
 
-# Orden final: metadata → MIC → ecdc/dtr → tipificación → resistencias adquiridas
-#              → resto fenotípico → filepath  (genes se añaden dinámicamente)
+# Final order: metadata → MIC → ecdc/dtr → typing → acquired resistances
+#              → remaining phenotypic → filepath  (genes added dynamically)
 _BASE_SEQUENCE = (
     _METADATA_GENERAL_COLS
     + _METADATA_CLINIC_COLS
@@ -162,7 +162,7 @@ def create_dynamic_table(*models, extra_columns=None, empty_columns=None):
     if extra_columns:
         attrs.update(extra_columns)
 
-    # Secuencia explícita; columnas no listadas van al final, genes al final del todo
+    # Explicit sequence; unlisted columns go at the end, genes last of all
     known = set(_BASE_SEQUENCE)
     all_attrs = set(all_column_names + gene_col_names)
     extra_generated = [c for c in all_column_names if c not in known]

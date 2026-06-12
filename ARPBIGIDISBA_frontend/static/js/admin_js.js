@@ -127,11 +127,11 @@
 
   function refreshDoubleScrollOnce($el) {
     if (!$el || $el.length === 0) return;
-    // eliminar wrapper previo si existe
+    // remove previous wrapper if it exists
     $el.prev('.doubleScroll-scroll-wrapper').remove();
-    // quitar handlers antiguos
+    // remove old handlers
     $el.off('scroll.doubleScroll');
-    // re-inicializar
+    // re-initialise
     $el.doubleScroll({ resetOnWindowResize: true });
   }
 
@@ -140,30 +140,30 @@
     refreshDoubleScrollOnce($results);
   }
 
-  // Inicializar cuando la página terminó de cargar completamente
+  // Initialise when the page has fully loaded
   $(window).on('load', function(){
     refreshDoubleScroll();
 
-    // Reintento rápido (por si el DOM cambia justo después del load)
+    // Quick retry (in case the DOM changes right after load)
     window.requestAnimationFrame(refreshDoubleScroll);
     setTimeout(refreshDoubleScroll, 100);
   });
 
-  // Si .results está dentro de un collapse de Bootstrap
+  // If .results is inside a Bootstrap collapse
   $(document).on('shown.bs.collapse', function() {
     $('.results:visible').each(function(){
       refreshDoubleScrollOnce($(this));
     });
   });
 
-  // Si .results está dentro de tabs de Bootstrap
+  // If .results is inside Bootstrap tabs
   $(document).on('shown.bs.tab', function() {
     $('.results:visible').each(function(){
       refreshDoubleScrollOnce($(this));
     });
   });
 
-  // Observar cambios dinámicos dentro de .results (ej. django_tables2_column_shifter)
+  // Observe dynamic changes inside .results (e.g. django_tables2_column_shifter)
   var resultsNode = document.querySelector('.results');
   if (resultsNode) {
     var mo = new MutationObserver(function(){
@@ -208,7 +208,7 @@ function closeDialog() {
 
 $(document).ready(function() {
     $('.select2').select2({
-        placeholder: "Selecciona mutaciones",
+        placeholder: "Select mutations",
         allowClear: true,
         width: '100%',
         closeOnSelect: false,
@@ -221,11 +221,11 @@ $(document).ready(function() {
         }
     });
 
-    // Agregar interactividad: marcar checkbox con un clic
+    // Add interactivity: check the checkbox on click
     $('.select2').on('select2:select select2:unselect', function (e) {
         let selectedOptions = $(this).find(':selected').map(function() {
             return $(this).text();
         }).get().join(', ');
-        console.log('Opciones seleccionadas:', selectedOptions);
+        console.log('Selected options:', selectedOptions);
     });
 });

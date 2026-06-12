@@ -1,14 +1,14 @@
 {% extends "modal_template.html" %}
 
     {% block head %}
-    <title>Base de datos ARPBIGIDISBA</title>
+    <title>ARPBIGIDISBA Database</title>
     {% endblock %}
 
     {% block body %}
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>Valores de AMR de las cepas filtradas:</h4>
+                <h4>AMR values of the filtered strains:</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -16,7 +16,7 @@
             <div class="modal-body">
                 <form action="{% url 'amr_clas_modal' %}" method="POST" id="amr_clas_results">
                     {% csrf_token %}
-                    <h5>Seleccione la versión de puntos de corte para calcular R/I/S: </h5>
+                    <h5>Select the breakpoint table version to calculate R/I/S: </h5>
 
                     <select name="breakpoint_table" id="breakpoint_table">
                     {% for table in breakpoints_tables %}:
@@ -29,8 +29,8 @@
                     </select>
 
                     <input type="hidden" id="amr_clas_modal" name="amr_clas_modal">
-                    <input type="submit" value="Seleccionar versión de puntos de corte" class="btn btn-primary">
-                <button type="button" class="btn btn-success" onclick="showDialog()">Revisar asignación de variables</button>
+                    <input type="submit" value="Select breakpoint table version" class="btn btn-primary">
+                <button type="button" class="btn btn-success" onclick="showDialog()">Review variable assignment</button>
 
                 </form>
             </div>
@@ -40,20 +40,20 @@
                 {{ ab }}
                 {% endfor %}
                 {% else %}
-                <p>Seleccione una versión de puntos de corte para ver la clasificación clinica</p>
+                <p>Select a breakpoint table version to view the clinical classification</p>
                 {% endif %}
             </div>
 
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
                 <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
-                    <p>Esta es la información del div que se puede mostrar u ocultar.</p>
+                    <p>This is the content of the div that can be shown or hidden.</p>
                 </div>
                 <dialog id="myDialog" style="position: fixed; top: 10px; overflow: auto; max-height: calc(100vh - 20px)">
-                    <p>Verifica los siguientes aspectos encontrados al evaluar la carga de variables propuesta:</p>
+                    <p>Please review the following issues found when evaluating the proposed variable mapping:</p>
                     <form action="{% url 'upload_modal' %}" method="POST" id="upload_matches">
-                        <h4>Seleccione campo en la BDD para cada columna: </h4>
+                        <h4>Select the database field for each column: </h4>
                         {% csrf_token %}
                         {% for field in all_fields %}
                             <label for="{{ field.0 }}" style="text-align: left;">{{ field.0 }}</label>
@@ -69,10 +69,10 @@
                             <br>
                         {% endfor %}
                         <input type="hidden" id="db_var_modal" name="db_var_modal">
-                        <input type="submit" value="Modificar asignación" class="btn btn-primary">
+                        <input type="submit" value="Update assignment" class="btn btn-primary">
                     </form>
 
-                    <button onclick="closeDialog()">Volver</button>
+                    <button onclick="closeDialog()">Back</button>
                 </dialog>
             </div>
         </div>

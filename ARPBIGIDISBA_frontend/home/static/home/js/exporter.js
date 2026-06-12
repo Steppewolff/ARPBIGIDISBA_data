@@ -51,12 +51,12 @@
 
     links.forEach(function (link) {
       link.addEventListener('click', function (e) {
-        // Interceptamos la navegación para añadir excluded_columns
+        // Intercept navigation to add excluded_columns
         e.preventDefault();
 
         var href = link.getAttribute('href') || '';
 
-        // Si el enlace tiene data-table-index, usamos ese índice
+        // If the link has data-table-index, use that index
         var tableIndexAttr = link.getAttribute('data-table-index');
         var tableIndex = null;
         if (tableIndexAttr !== null) {
@@ -69,7 +69,7 @@
         if (tableIndex !== null) {
           hidden = getHiddenColumnsForTableIndex(tableIndex);
         } else {
-          hidden = getHiddenColumnsForTableIndex(); // sin parámetro -> primera tabla
+          hidden = getHiddenColumnsForTableIndex(); // no parameter -> first table
         }
 
         // Si no hay columnas ocultas, redirigimos tal cual

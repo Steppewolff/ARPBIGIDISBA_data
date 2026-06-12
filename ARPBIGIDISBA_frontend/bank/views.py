@@ -42,7 +42,7 @@ def sample_update_view(request, pk):
     sample.description = request.POST.get('description', sample.description)
     sample.save()
 
-    # volver a la misma URL con los mismos filtros
+    # return to the same URL with the same filters
     return redirect(request.META.get('HTTP_REFERER') or 'strain_bank')
 
 
@@ -50,5 +50,5 @@ def sample_update_view(request, pk):
 def sample_delete_view(request, pk):
     sample = get_object_or_404(Sample, pk=pk)
     sample.delete()
-    # volver a la misma URL con los mismos filtros
+    # return to the same URL with the same filters
     return redirect(request.META.get('HTTP_REFERER') or 'strain_bank')

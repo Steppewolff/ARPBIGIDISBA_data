@@ -12,9 +12,9 @@ from crispy_forms.layout import Layout, Row, Column, Submit
 
 
 def obtener_opciones_filtro():
-    """Extrae todas las claves únicas y sus valores únicos en la base de datos."""
+    """Extracts all unique keys and their unique values from the database."""
     with connection.cursor() as cursor:
-        # Obtener todas las claves y valores únicos, separando valores múltiples
+        # Fetch all unique keys and their unique values, splitting multi-value entries
         cursor.execute(
             """
                 SELECT 
@@ -31,7 +31,7 @@ def obtener_opciones_filtro():
         opciones = {}
         for clave, valor in cursor.fetchall():
             if clave and valor:
-                valores_separados = [v.strip() for v in valor.split(";") if v.strip()]  # Separar valores múltiples
+                valores_separados = [v.strip() for v in valor.split(";") if v.strip()]  # split multiple values
                 if clave in opciones:
                     opciones[clave].update(valores_separados)
                 else:
@@ -44,20 +44,20 @@ def obtener_opciones_filtro():
         return grupos
 
 class GroupedSelect(forms.Select):
-    """Widget para mostrar valores anidados bajo cada clave."""
+    """Widget to display values nested under each key."""
     def __init__(self, choices, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.choices = choices
 
     def render(self, name, value, attrs=None, renderer=None):
-        """Renderiza el select anidando valores dentro de claves."""
+        """Renders the select nesting values under each key."""
         output = ['<select name="{}" class="form-control">'.format(name)]
         current_group = None
         for val, label, group in self.choices:
             if group != current_group:
                 if current_group is not None:
-                    output.append('</optgroup>')  # Cerrar grupo anterior
-                output.append('<optgroup label="{}">'.format(group))  # Abrir nuevo grupo
+                    output.append('</optgroup>')  # close previous group
+                output.append('<optgroup label="{}">'.format(group))  # open new group
                 current_group = group
             output.append('<option value="{}">{}</option>'.format(val, label))
         output.append('</optgroup></select>')
@@ -99,7 +99,7 @@ class MultiFilter(filters.FilterSet):
     )
 
     def filtrar_incluir(self, queryset, name, value):
-        """Filtra registros donde una clave específica tenga un valor concreto."""
+        """Filters records where a specific key has a given value."""
         if value:
             filtros = []
             for valor in value:
@@ -108,7 +108,7 @@ class MultiFilter(filters.FilterSet):
         return queryset
 
     def filtrar_excluir(self, queryset, name, value):
-        """Excluye registros donde una clave específica tenga un valor concreto."""
+        """Excludes records where a specific key has a given value."""
         if value:
             filtros = []
             for valor in value:
@@ -154,7 +154,7 @@ class MultiFilter(filters.FilterSet):
                 Column('excluir', css_class='form-group col-md-6 mb-0'),
                 css_class='form-row'
             ),
-            Submit('submit', 'Filtrar', css_class='btn btn-primary mt-3')
+            Submit('submit', 'Filter', css_class='btn btn-primary mt-3')
         )
 
     class Meta:

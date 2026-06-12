@@ -176,9 +176,9 @@
     </div>
 
     <div class="schema-container">
-      <div class="schema-title">Vista de rack</div>
-      <div class="schema-hint">Haz clic en una posición para ver qué caja contiene.</div>
-      <label for="rack-select">Selecciona Rack:</label>
+      <div class="schema-title">Rack view</div>
+      <div class="schema-hint">Click on a position to see which box it contains.</div>
+      <label for="rack-select">Select Rack:</label>
       <select id="rack-select">
         <option value="">Todos</option>
         {% for rack in all_racks %}
@@ -192,9 +192,9 @@
     </div>
 
     <div class="schema-container">
-      <div class="schema-title">Vista de caja</div>
-      <div class="schema-hint">Haz clic en una muestra para ver sus datos.</div>
-      <label for="box-select">Selecciona Caja:</label>
+      <div class="schema-title">Box view</div>
+      <div class="schema-hint">Click on a sample to view its data.</div>
+      <label for="box-select">Select Box:</label>
       <select id="box-select">
         <option value="">Todos</option>
         {% for box in all_boxes %}
@@ -265,8 +265,8 @@
 </div>
 
 <div id="delete-modal" class="modal-box">
-  <h3>Confirmar borrado</h3>
-  <p id="delete-message">¿Seguro que quieres borrar este registro?</p>
+  <h3>Confirm deletion</h3>
+  <p id="delete-message">Are you sure you want to delete this record?</p>
   <form id="delete-form" method="post">
     {% csrf_token %}
     <div class="modal-actions">

@@ -125,7 +125,7 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
     {% endblock %}
 
 
-    <!-- Créditos y filiación -->
+    <!-- Credits and affiliation -->
     <div class="w3-light-grey w3-container w3-padding-32" style="position: fixed; bottom: 0; left: 340px; text-align: right; padding-right: 20px !important; width: 82%; z-index: 1000; box-sizing: border-box;"><p class="w3-right">Developed by <a href="https://arpbigidisba.com" title="ARPBIG" target="_blank" class="w3-hover-opacity">ARPBIG</a></p></div>
 
     <script>
@@ -136,7 +136,7 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
         var _pollTimer = null;
         var _safeTimer = null;
 
-        /* ── Barra de progreso (se inyecta dinámicamente) ── */
+        /* ── Progress bar (injected dynamically) ── */
         var progressBar = document.createElement('div');
         progressBar.style.cssText = [
             'width:220px','height:6px','background:rgba(255,255,255,0.2)',
@@ -171,8 +171,8 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
             progressBar.style.display = 'block';
             var pct = 0;
             var step = setInterval(function() {
-                /* Sube rápido hasta 85 %, luego se frena — nunca llega al 100 hasta que
-                   la cookie confirme que el servidor terminó */
+                /* Rises quickly to 85 %, then slows down — never reaches 100 until
+                   the cookie confirms the server has finished */
                 if (pct < 85) pct += (pct < 40 ? 3 : 1);
                 progressFill.style.width = pct + '%';
             }, 200);
@@ -268,7 +268,7 @@ function w3_close() { document.getElementById('mySidebar').style.display = 'none
                 $(document).ajaxStop(hide);
             }
 
-            /* ── Bfcache (botón atrás) — solo oculta si NO hay descarga en curso ── */
+            /* ── Bfcache (back button) — only hides if NO download is in progress ── */
             window.addEventListener('pageshow', function() {
                 if (!_pollTimer) hide();
             });

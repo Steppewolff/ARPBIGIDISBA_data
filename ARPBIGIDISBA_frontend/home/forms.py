@@ -157,11 +157,9 @@ class MicForm(ModelForm):
 
 
 class MicSearchForm(Form):
-    """
-    Formulario de búsqueda MIC con multiselect para categorías clínicas
-    """
+    """MIC search form with multiselect for clinical categories."""
 
-    # Campos MIC numéricos (texto libre)
+    # Numeric MIC fields (free text)
     tic = CharField(max_length=10, required=False)
     pip = CharField(max_length=10, required=False)
     pip_tz = CharField(max_length=10, required=False)
@@ -201,12 +199,12 @@ class MicSearchForm(Form):
     caz_cloxa = CharField(max_length=10, required=False)
     imi_cloxa = CharField(max_length=10, required=False)
 
-    # Campos de categorías clínicas como MULTISELECT
+    # Clinical category fields as multiselect
     tic_clinical_category = MultipleChoiceField(
         choices=SIR_OPTIONS,
         required=False,
         widget=SelectMultiple,
-        # label="Categoría clínica TIC",
+        # label="TIC clinical category",
         label=Mic._meta.get_field('tic_clinical_category').verbose_name,
     )
     pip_clinical_category = MultipleChoiceField(
@@ -422,7 +420,7 @@ class MicSearchForm(Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.fields['tic_clinical_category'].label = "Categoría clínica TIC init"
+        # self.fields['tic_clinical_category'].label = "TIC clinical category (init)"
         self.helper = FormHelper()
         self.helper.form_method = 'get'
 

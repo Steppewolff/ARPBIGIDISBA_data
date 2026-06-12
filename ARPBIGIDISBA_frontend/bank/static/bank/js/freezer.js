@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.dataset.row = r;
         cell.setAttribute('role', 'button');
         cell.setAttribute('tabindex', '0');
-        cell.setAttribute('aria-label', `${type === 'rack' ? 'Rack' : 'Caja'} posición ${cell.dataset.col}${cell.dataset.row}`);
+        cell.setAttribute('aria-label', `${type === 'rack' ? 'Rack' : 'Box'} position ${cell.dataset.col}${cell.dataset.row}`);
         cell.addEventListener('click', () => handleCellClick(cell, type));
         cell.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function drawRackSchema(rackId) {
     const grid = createGrid(rackSchemaC, 4, 4, 'rack');
-    rackInfo.textContent = rackId ? `Rack seleccionado: ${rackId}\nHaz clic en una posición para ver su caja.` : 'Selecciona un rack para mostrar su contenido.';
+    rackInfo.textContent = rackId ? `Selected rack: ${rackId}\nClick on a position to see its box.` : 'Select a rack to display its contents.';
     if (!rackId) return;
 
     const map = {};
@@ -126,13 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const key = cell.dataset.col + cell.dataset.row;
       cell.classList.remove('occupied', 'empty');
       if (map[key]) {
-        cell.textContent = `Caja ${map[key]}`;
-        cell.title = `Caja ${map[key]}`;
+        cell.textContent = `Box ${map[key]}`;
+        cell.title = `Box ${map[key]}`;
         cell.dataset.box = map[key];
         cell.classList.add('occupied');
       } else {
         cell.textContent = '';
-        cell.title = 'Posición vacía';
+        cell.title = 'Empty position';
         cell.dataset.box = '';
         cell.classList.add('empty');
       }
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function drawBoxSchema(boxId) {
     const grid = createGrid(boxSchemaC, 9, 9, 'box');
-    boxInfo.textContent = boxId ? `Caja seleccionada: ${boxId}\nHaz clic en una muestra para ver sus datos.` : 'Selecciona una caja para mostrar su contenido.';
+    boxInfo.textContent = boxId ? `Selected box: ${boxId}\nClick on a sample to view its data.` : 'Select a box to display its contents.';
     if (!boxId) return;
 
     const idMap = {}, tipMap = {}, infoMap = {};
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.classList.add('occupied');
       } else {
         cell.textContent = '';
-        cell.title = 'Posición vacía';
+        cell.title = 'Empty position';
         delete cell.dataset.info;
         cell.classList.add('empty');
       }
@@ -199,8 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const box = cell.dataset.box || '';
 
       rackInfo.textContent = box
-        ? `Rack: ${selectedRack}\nCaja seleccionada: ${box}`
-        : `Rack: ${selectedRack}\n(posición vacía)`;
+        ? `Rack: ${selectedRack}\nSelected box: ${box}`
+        : `Rack: ${selectedRack}\n(empty position)`;
 
       selectedBox = box;
 
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function openDeleteModal(sample) {
     currentDeleteId = sample.id;
     deleteForm.action = `/sample/${sample.id}/delete/`;
-    deleteMessage.textContent = `¿Seguro que quieres borrar el registro "${sample.name || sample.strain || sample.id}"?`;
+    deleteMessage.textContent = `Are you sure you want to delete the record "${sample.name || sample.strain || sample.id}"?`;
     openModal(deleteModal);
   }
 

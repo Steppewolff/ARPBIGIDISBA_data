@@ -67,28 +67,28 @@ def manual_file(db_columns_helpers):
     pdf_file = 'explicacion_variables_bdd.pdf'
     pdf_path = os.path.join(settings.BASE_DIR, folder, pdf_file)
 
-# Comprobar si el archivo existe
+# Check if the file exists
     if not os.path.exists(pdf_path):
-        # Crear el directorio si no existe
+        # Create the directory if it does not exist
         # os.makedirs(folder, exist_ok=True)
 
-        # Crear un objeto canvas para el PDF
+        # Create a canvas object for the PDF
         c = canvas.Canvas(pdf_path, pagesize=letter)
         width, height = letter
 
-        # Configurar posición inicial y espaciado
+        # Set initial position and spacing
         x = 50
         y = height - 50
         row_height = 20
 
-        # Escribir las cabeceras
-        c.drawString(x, y, "Campo BDD")
-        c.drawString(x + 200, y, "Explicación del campo")
+        # Write headers
+        c.drawString(x, y, "DB field")
+        c.drawString(x + 200, y, "Field description")
         y -= row_height
 
-        # Escribir los datos del diccionario
+        # Write dictionary data
         for key, value in db_columns_helpers.items():
-            # Si se llega al final de la página, crea una nueva
+            # If end of page reached, start a new one
             if y < 50:
                 c.showPage()
                 y = height - 50
@@ -97,20 +97,20 @@ def manual_file(db_columns_helpers):
             c.drawString(x + 200, y, str(value))
             y -= row_height
 
-        # Guardar el PDF
+        # Save the PDF
         c.save()
-        print(f"Archivo PDF creado: {pdf_path}")
+        print(f"PDF file created: {pdf_path}")
     else:
-        print("El archivo PDF ya existe.")
+        print("PDF file already exists.")
 
 def descargar_manual_bdd(request):
-    # Ruta completa del archivo PDF (asegúrate que la carpeta 'xls' esté en la raíz del proyecto o ajusta la ruta)
+    # Full path to the PDF file (ensure the 'pdf' folder exists under the project root or adjust the path)
     pdf_path = os.path.join(settings.BASE_DIR, 'static/pdf', 'explicacion_variables_bdd.pdf')
 
     if os.path.exists(pdf_path):
         return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
     else:
-        raise Http404("El archivo PDF no existe.")
+        raise Http404("PDF file not found.")
 
 # Create your views here.
 def upload(request):
@@ -131,7 +131,7 @@ def upload(request):
         elif file.name.endswith ('.csv'):
             df = pd.read_csv(file)
         else:
-            return JsonResponse({'error': 'Formato de archivo no soportado'}, status=400)
+            return JsonResponse({'error': 'Unsupported file format'}, status=400)
 
         request.session['file'] = file.name
         request.session['df'] = df.to_json(orient='split')
@@ -184,10 +184,10 @@ def upload(request):
                         db_columns_helpers[field.verbose_name] = field.db_comment
                         db_columns_dbname[field.verbose_name] = field.name
 
-        # Añadir FK fields al listado de columnas disponibles
+        # Add FK fields to the list of available columns
         for fk_key, config in FK_FIELDS_CONFIG.items():
             db_columns.append(config['label'])
-            db_columns_helpers[config['label']] = f"Campo FK: {fk_key}"
+            db_columns_helpers[config['label']] = f"FK field: {fk_key}"
             db_columns_dbname[config['label']] = fk_key
 
         db_columns = sorted(db_columns)
@@ -207,11 +207,11 @@ def upload(request):
 
 def summary(request):
     if request.method == 'POST' and 'db_var_input' in request.POST:
-        # Validar que el upload_id del formulario coincide con el de la sesión
+        # Validate that the upload_id from the form matches the session
         form_upload_id = request.POST.get('upload_id', '')
         session_upload_id = request.session.get('upload_id', '')
         if not form_upload_id or form_upload_id != session_upload_id:
-            messages.error(request, 'La sesión de carga ha expirado o no es válida. Por favor, vuelve a subir el archivo.')
+            messages.error(request, 'The upload session has expired or is invalid. Please upload the file again.')
             return redirect('cargadatos')
         all_fields = {}
         # List with all the selected options in the db variables form
@@ -243,7 +243,7 @@ def summary(request):
         all_fields = [field for field in all_fields if field[1] != 'Do NOT write this in DB']
         dict_fields = {field[1]: field[0] for field in all_fields}
 
-        # Detección de FK fields activos
+        # Detect active FK fields
         fk_label_to_key = {v['label']: k for k, v in FK_FIELDS_CONFIG.items()}
         active_fk = {}
         for label, excel_col in dict_fields.items():
@@ -269,7 +269,7 @@ def summary(request):
             isolate_col = dict_fields.get('Isolate name') or dict_fields.get('isolate_name')
             active_fk_list = list(active_fk.items())
 
-            # Una entrada por valor único de cada campo FK
+            # One entry per unique value of each FK field
             fk_unique = []
             for fk_key, fk_info in active_fk_list:
                 excel_col = fk_info['excel_col']
@@ -332,35 +332,35 @@ def summary(request):
 def eval_mandatory(request, all_fields):
     mandatory_fields = {}
 
-    # Campo obligatorio: isolate_name
+    # Required field: isolate_name
     if 'Isolate name' not in dict(all_fields).values():
         mandatory_fields['isolate_name'] = 0
         messages.warning(
             request,
-            'No se ha seleccionado un campo para el nombre del aislado (isolate_name)'
+            'No field has been selected for isolate name (isolate_name)'
         )
     else:
         mandatory_fields['isolate_name'] = 1
 
-    # Campo obligatorio: project_name
+    # Required field: project_name
     if 'Project name' not in dict(all_fields).values():
         mandatory_fields['project_name'] = 0
         messages.warning(
             request,
-            'No se ha seleccionado un campo para el ID del proyecto (project_name)'
+            'No field has been selected for project name (project_name)'
         )
     else:
         mandatory_fields['project_name'] = 1
 
-    # Guardar en sesión
+    # Save to session
     request.session['mandatory_fields'] = mandatory_fields
 
     return mandatory_fields
 
 def modal(request):
-    # Comprobar si el nombre del Hospital existe en la tabla o no, para modificarlo si hace falta
-    # Valores de hospitales y tipo de muestra (pensar si hay alguno mas), ¿cómo se busca en los listados para encontrar sus ID? ¿o con el ORM se puede hacer de manera más directa?
-    # Pensar en más comprobaciones
+    # Check whether the Hospital name exists in the table or not, to update it if needed
+    # Hospital and sample type values (consider if there are more): how to look up their IDs in the lists? Or can the ORM handle this more directly?
+    # Consider adding more validation checks
 
     if 'all_fields' in request.session:
         all_fields = request.session['all_fields']
@@ -406,7 +406,7 @@ def modal(request):
         return render(request, 'upload_modal.html', {'all_fields': all_fields, 'db_columns': db_columns, 'common_isolates': common_isolates, 'duplicates': duplicates, 'difference_hospitals': difference_hospitals, 'mandatory_fields': mandatory_fields, 'upload_id': upload_id})
 
 def _sanitize_field_value(val):
-    """Convierte tipos pandas/numpy a tipos Python nativos seguros para el ORM de Django."""
+    """Converts pandas/numpy types to native Python types safe for the Django ORM."""
     import datetime
     import numpy as np
     try:
@@ -422,8 +422,8 @@ def _sanitize_field_value(val):
         return val
     if isinstance(val, np.datetime64):
         return pd.Timestamp(val).date()
-    # Integers grandes son timestamps en ms (round-trip JSON de columnas fecha)
-    # Los campos enteros normales (día, mes, año) son < 10000, nunca > 1e10
+    # Large integers are timestamps in ms (JSON round-trip of date columns)
+    # Normal integer fields (day, month, year) are < 10000, never > 1e10
     if isinstance(val, (int, float, np.integer, np.floating)) and not isinstance(val, bool):
         if abs(val) > 1e10:
             try:
@@ -436,7 +436,7 @@ def confirm(request):
     get_upload_id = request.GET.get('uid', '')
     session_upload_id = request.session.get('upload_id', '')
     if not get_upload_id or get_upload_id != session_upload_id:
-        messages.error(request, 'La sesión de carga ha expirado o no es válida. Por favor, vuelve a subir el archivo.')
+        messages.error(request, 'The upload session has expired or is invalid. Please upload the file again.')
         return redirect('cargadatos')
 
     all_fields = request.session['all_fields']
@@ -464,12 +464,12 @@ def confirm(request):
     fk_mappings = request.session.get('fk_mappings', {})
     active_fk_session = request.session.get('active_fk', {})
 
-    # Averiguar qué modelo tiene cada FK field
+    # Determine which model owns each FK field
     fk_to_model = {}
     for fk_key in active_fk_session:
         for model_name in tables:
             model = apps.get_model('home', model_name)
-            # Buscar por attname (ej. collection_ward_id) o por field name (ej. collection_ward)
+            # Search by attname (e.g. collection_ward_id) or by field name (e.g. collection_ward)
             lookup = fk_key[:-3] if fk_key.endswith('_id') else fk_key
             try:
                 model._meta.get_field(lookup)
@@ -558,7 +558,7 @@ def confirm(request):
                         isolate_id=metadata_general_instance, defaults=model_data)
 
                     if rel_created:
-                        # Registro relacionado nuevo: todos los campos son añadidos
+                        # New related record: all fields are being added
                         display_data = {
                             k: '(JSON)' if isinstance(v, dict) else v
                             for k, v in model_data.items()
@@ -597,7 +597,7 @@ def confirm(request):
                                         'changed_fields': rel_changed,
                                     })
 
-    # Cabeceras dinámicas para tabla de creados
+    # Dynamic headers for the created-records table
     created_field_headers = []
     for record in created_records:
         for f in record.get('fields', {}).keys():

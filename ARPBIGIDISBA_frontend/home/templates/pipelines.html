@@ -4,7 +4,7 @@
     <!-- Top menu on small screens -->
     <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
       <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
-      <span>Base de datos ARPBIG</span>
+      <span>ARPBIG Database</span>
     </header>
 
     {% endblock %}
@@ -17,40 +17,40 @@
       <!-- Header -->
       <div class="w3-container" style="margin-top:10px" id="showcase">
         <h1 class="w3-jumbo"><b>Pipelines</b></h1>
-        <h3 class=""><b>Análisis de datos</b></h3>
+        <h3 class=""><b>Data analysis</b></h3>
         <hr style="width:50px;border:5px solid #00334c" class="w3-round">
       </div>
 
-      <!-- Selector de pipelines -->
+      <!-- Pipeline selector -->
       <div class="w3-container" id="selector_pipelines">
         <form>
             <div class="form-group">
-                <label for="exampleFormControlSelect1">Selecciona un pipeline</label>
+                <label for="exampleFormControlSelect1">Select a pipeline</label>
                 <select class="form-control" id="exampleFormControlSelect1">
                   <option>Variant Calling</option>
                   <option>In vitro</option>
-                  <option>Genealogías</option>
-                  <option>Mutantes</option>
+                  <option>Phylogenies</option>
+                  <option>Mutants</option>
                 </select>
             </div>
-            <h3>Parámetros para el análisis</h3>
+            <h3>Analysis parameters</h3>
             <div class="form-group">
-                <input type="file" class="form-control" id="exampleFormControlInput1" placeholder="Seleccionar archivo">
+                <input type="file" class="form-control" id="exampleFormControlInput1" placeholder="Select file">
                 <input type="checkbox" id="setting1" name="setting1" value="Trimming">
-                <label for="setting1"> Usar trimming</label><br>
-                <input type="checkbox" id="setting2" name="setting2" value="Anotación">
-                <label for="setting1"> Anotar variantes</label><br>
-                <input type="checkbox" id="setting3" name="setting3" value="Tabulado">
-                <label for="setting3"> Tabular resultados</label>
-                <input type="submit" value="Lanzar análisis">
+                <label for="setting1"> Use trimming</label><br>
+                <input type="checkbox" id="setting2" name="setting2" value="Annotation">
+                <label for="setting1"> Annotate variants</label><br>
+                <input type="checkbox" id="setting3" name="setting3" value="Tabulated">
+                <label for="setting3"> Tabulate results</label>
+                <input type="submit" value="Run analysis">
             </div>
             <h3>Output</h3>
             <div class="form-group">
-                <textarea rows="20" cols="50" id="exampleFormControlSelect2" name="exampleFormControlSelect2" placeholder="Aquí saldrá el output del análisis en tiempo real"></textarea>
+                <textarea rows="20" cols="50" id="exampleFormControlSelect2" name="exampleFormControlSelect2" placeholder="Real-time analysis output will appear here"></textarea>
             </div>
-            <h3>Formato de salida</h3>
+            <h3>Output format</h3>
             <div class="form-group">
-                <label for="exampleFormControlSelect3">Selecciona un formato de salida para el resultado:</label>
+                <label for="exampleFormControlSelect3">Select an output format for the result:</label>
                 <select class="form-control" id="exampleFormControlSelect3">
                   <option>*.txt</option>
                   <option>*.csv</option>
@@ -58,7 +58,7 @@
                   <option>*.xlsx</option>
                   <option>*.vcf</option>
                 </select>
-                <input type="submit" value="Obtener archivo de output">
+                <input type="submit" value="Download output file">
             </div>
 
         </form>

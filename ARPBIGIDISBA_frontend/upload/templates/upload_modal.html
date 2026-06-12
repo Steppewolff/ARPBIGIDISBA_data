@@ -1,6 +1,6 @@
 {% block head %}
     <script src="/static/js/upload.js"></script>
-    <script>console.log('Prueba')</script>
+    <script>console.log('Test')</script>
 {% endblock %}
 
 {% block content %}
@@ -58,7 +58,7 @@
             <button type="button" class="btn btn-success" onclick="showDialog()">Review variables assignation</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
             <div id="reasignar" style="display: none; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
-                <p>Esta es la información del div que se puede mostrar u ocultar.</p>
+                <p>This is the content of the div that can be shown or hidden.</p>
             </div>
             <dialog id="myDialog" style="position: fixed; top: 10px; overflow: auto; max-height: calc(100vh - 20px)">
                 <p>Verify the following warnings found evaluating your assignation proposal:</p>
@@ -79,7 +79,7 @@
                         <br>
                     {% endfor %}
                     <input type="hidden" id="db_var_modal" name="db_var_modal">
-                    <input type="submit" value="Modificar asignación" class="btn btn-primary">
+                    <input type="submit" value="Update assignment" class="btn btn-primary">
                 </form>
 
                 <button onclick="closeDialog()">Back</button>

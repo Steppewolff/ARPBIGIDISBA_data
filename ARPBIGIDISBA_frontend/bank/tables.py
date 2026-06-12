@@ -4,12 +4,12 @@ from .models import Sample
 
 class SampleTable(tables.Table):
     actions = tables.TemplateColumn(
-        verbose_name='Acciones',
+        verbose_name='Actions',
         orderable=False,
         template_code='''
             <div class="row-actions">
-              <button type="button" class="js-edit-sample" data-id="{{ record.id }}">Editar</button>
-              <button type="button" class="js-delete-sample" data-id="{{ record.id }}">Borrar</button>
+              <button type="button" class="js-edit-sample" data-id="{{ record.id }}">Edit</button>
+              <button type="button" class="js-delete-sample" data-id="{{ record.id }}">Delete</button>
             </div>
         '''
     )

@@ -12,16 +12,16 @@
 <div class="w3-main" style="margin-left:340px; margin-right:40px; margin-top:80px;">
   <div class="w3-container">
     <h1 class="w3-jumbo" style="color:#00334c;"><b>403</b></h1>
-    <h2 style="color:#00334c;">Acceso no permitido</h2>
+    <h2 style="color:#00334c;">Access denied</h2>
     <hr style="width:60px; border:5px solid #00334c;" class="w3-round">
     <p class="w3-xlarge">
-      Tu cuenta (<strong>{{ user.username }}</strong>) tiene el perfil
-      <strong>{{ user_role }}</strong>, que no tiene acceso a esta sección.
+      Your account (<strong>{{ user.username }}</strong>) has the role
+      <strong>{{ user_role }}</strong>, which does not have access to this section.
     </p>
-    <p>Esta área requiere el perfil <strong>{{ required_role }}</strong>.</p>
-    <p>Si crees que deberías tener acceso, contacta con el administrador del sistema.</p>
+    <p>This area requires the role <strong>{{ required_role }}</strong>.</p>
+    <p>If you believe you should have access, please contact the system administrator.</p>
     <a href="/" class="btn btn-primary" style="margin-top:1rem;">
-      ← Volver al inicio
+      ← Back to home
     </a>
   </div>
 </div>

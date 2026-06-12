@@ -9,10 +9,10 @@ from collections import Counter
 
 from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 
-# Datos de ejemplo para los gráficos y la tabla
+# Sample data for charts and table
 df = pd.DataFrame({
-    'Categoría': ['A', 'B', 'C', 'D'],
-    'Valores': [4, 3, 7, 9]
+    'Category': ['A', 'B', 'C', 'D'],
+    'Values': [4, 3, 7, 9]
 })
 
 df_sequenceAnalysis = pd.DataFrame(list(SequenceAnalysis.objects.all().values()))
@@ -25,9 +25,9 @@ del cnt_clonal_complex[None]
 
 pd_fig1 = pd.DataFrame.from_dict(cnt_clonal_complex, orient='index', columns=['values']).reset_index()
 
-# Gráfico 1: Histograma
+# Chart 1: Histogram
 app1 = DjangoDash('histograma')
-# fig1 = px.bar(pd.DataFrame.from_dict(cnt_clonal_complex, orient='index',columns=['values']).reset_index(), x='values', y='index', title='Gráfico de Barras')
+# fig1 = px.bar(pd.DataFrame.from_dict(cnt_clonal_complex, orient='index',columns=['values']).reset_index(), x='values', y='index', title='Bar chart')
 fig1 = px.bar(pd_fig1, x='index', y='values')
 fig1.update_layout(xaxis_title='Sequence type', yaxis_title='Frequency', title={'xanchor': 'center', 'yanchor': 'top', 'font': {
             'family': "Arial, sans-serif",
@@ -53,14 +53,14 @@ app1.layout = html.Div([dcc.Graph(figure=fig1,
         'responsive': 'True'
     })
 
-# Gráfico 2: Líneas
+# Chart 2: Lines
 app2 = DjangoDash('grafico2')
-fig2 = px.line(df, x='Categoría', y='Valores')
+fig2 = px.line(df, x='Category', y='Values')
 app2.layout = html.Div([dcc.Graph(figure=fig2)])
 
-# Gráfico 3: Dispersión
+# Chart 3: Scatter
 app3 = DjangoDash('dispersion')
-fig3 = px.scatter(df, x='Categoría', y='Valores')
+fig3 = px.scatter(df, x='Category', y='Values')
 app3.layout = html.Div([
     dcc.Dropdown(
         id='my-dropdown',
@@ -79,7 +79,7 @@ app3.layout = html.Div([
     )
 ])
 
-# Obtener nombre, lat y lon juntos y alineados por hospital
+# Retrieve name, lat and lon together, aligned by hospital
 hospital_data = (
     MetadataClinic.objects
     .exclude(hospital=None)
@@ -88,7 +88,7 @@ hospital_data = (
 
 hospital_freq = Counter([x[0] for x in hospital_data])
 
-# Coordenadas únicas por hospital (primera aparición)
+# Unique coordinates per hospital (first occurrence)
 seen = {}
 for name, lat, lon in hospital_data:
     if name not in seen:
@@ -101,32 +101,32 @@ frequencies = [hospital_freq[h] for h in hospitals]
 
 df_map = pd.DataFrame({
     'Hospital': hospitals,
-    'Latitud': latitudes,
-    'Longitud': longitudes,
-    'Total aislados': frequencies,
+    'Latitude': latitudes,
+    'Longitude': longitudes,
+    'Total isolates': frequencies,
     'Color': hospitals
 })
 
-#Gráfico: Mapa
+# Chart: Map
 app4 = DjangoDash('mapa')
 fig4 = px.scatter_mapbox(
-    df_map, lat='Latitud', lon='Longitud', hover_name='Hospital', zoom=3, color='Color', size='Total aislados'
+    df_map, lat='Latitude', lon='Longitude', hover_name='Hospital', zoom=3, color='Color', size='Total isolates'
 )
 fig4.update_layout(mapbox_style="open-street-map")
-fig4.update_layout(title='Mapa con Puntos de Datos', margin={"r":0,"t":0,"l":0,"b":0})
+fig4.update_layout(title='Map with data points', margin={"r":0,"t":0,"l":0,"b":0})
 app4.layout = html.Div([dcc.Graph(figure=fig4)])
 
-# Tabla resumen
+# Summary table
 
-# Datos de la tabla
+# Table data
 st_list = list(cnt_clonal_complex.keys())
 st_freq = list(cnt_clonal_complex.values())
 st_list = [str(x) for x in st_list]
 st_freq = [str(x) for x in st_freq]
 df_tabla = pd.DataFrame({
     'Sequence_type': st_list,
-    'Frecuencia': st_freq,
-    # 'Descripción': ['Descripción 1', 'Descripción 2', 'Descripción 3']
+    'Frequency': st_freq,
+    # 'Description': ['Description 1', 'Description 2', 'Description 3']
 })
 
 app5 = DjangoDash('tabla')
@@ -135,7 +135,7 @@ fig5 = go.Figure(data=[go.Table(
     header=dict(values=list(df_tabla.columns),
                 fill_color='paleturquoise',
                 align='left'),
-    cells=dict(values=[df_tabla.Sequence_type, df_tabla.Frecuencia],
+    cells=dict(values=[df_tabla.Sequence_type, df_tabla.Frequency],
                fill_color='lavender',
                align='left'))
 ])
@@ -154,7 +154,7 @@ df_st['ST'] = ["ST235", "ST111", "ST233", "ST244",
                 "ST654", "ST298"
                 ]
 # **************************************************************************************************************
-# Crear aqui el df para mostrar la frecuencia en piecharts de cada ST con MDR, XDR, MultiS y R ¿R = a PDR?
+# TODO: build df here to show ST frequency per resistance category (MDR, XDR, MultiS, R — is R equivalent to PDR?)
 
 fig6.add_trace(
     go.Pie(

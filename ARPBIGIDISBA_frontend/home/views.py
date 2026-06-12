@@ -31,7 +31,7 @@ def _extract_locus(key):
 
 @lru_cache(maxsize=1)
 def _get_locus_display_map():
-    """Devuelve {locus: nombre} desde InterestGenes. Usa synonym_name si official_name está vacío."""
+    """Returns {locus: name} from InterestGenes. Uses synonym_name if official_name is empty."""
     result = {}
     for ig in InterestGenes.objects.exclude(locus=None).values('locus', 'official_name', 'synonym_name'):
         if not ig['locus']:
@@ -71,7 +71,7 @@ def _get_genes_subset_map():
         if not locus:
             continue
         raw = ig['subset'] or []
-        # MultiSelectField devuelve lista; por si acaso llega string (ej. desde fixture)
+        # MultiSelectField returns a list; guard in case a string arrives (e.g. from a fixture)
         if isinstance(raw, str):
             subsets = [s.strip() for s in raw.split(',') if s.strip()]
         else:
@@ -140,31 +140,31 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         pass
 
     def create_export(self, export_format):
-        # Crear la tabla (con filtros/applicable queryset)
+        # Build the table (with filters / applicable queryset)
         table = self.get_table(**self.get_table_kwargs())
 
-        # Leer excluded_columns desde GET (plugin añade excluded_columns=col1,col2)
+        # Read excluded_columns from GET (plugin appends excluded_columns=col1,col2)
         excluded_param = self.request.GET.get('excluded_columns', '')
         if excluded_param:
             raw = [c.strip() for c in excluded_param.split(',') if c.strip()]
         else:
             raw = []
 
-        # Validar y normalizar contra los nombres reales de columnas de la tabla
+        # Validate and normalise against the real column names of the table
         all_cols = list(table.columns.names())
         exclude = [c for c in raw if c in all_cols]
 
-        # Crear exporter pasando exclude_columns (si exclude está vacío pasar None)
+        # Build exporter passing exclude_columns (pass None when exclude is empty)
         exclude_arg = exclude if exclude else None
         exporter = TableExport(export_format, table=table, exclude_columns=exclude_arg)
 
         return exporter
 
     def get(self, request, *args, **kwargs):
-        """Intercepta la respuesta de exportación para añadir la cookie de progreso."""
+        """Intercepts the export response to set the download-progress cookie."""
         response = super().get(request, *args, **kwargs)
         token = request.GET.get('download_token', '')
-        # Solo añadir cookie si es una exportación (Content-Disposition: attachment)
+        # Only add cookie if this is an export (Content-Disposition: attachment)
         if token and 'attachment' in response.get('Content-Disposition', ''):
             response.set_cookie(
                 f'download_done_{token}', '1',
@@ -213,7 +213,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
         context['filter'] = self.get_filterset(self.get_filterset_class())
         context['verbose_used'] = verbose_used
 
-        # Garantizar que 'table' siempre esté presente
+        # Ensure 'table' is always present in context
         if 'table' not in context or not hasattr(context['table'], 'columns'):
             context['table'] = self.get_table()
 
@@ -225,12 +225,12 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 continue
             if key in ('incluir', 'excluir'):
                 label = 'Include' if key == 'incluir' else 'Exclude'
-                # Construir mapa mutacion -> gen desde OPCIONES_FILTRO
+                # Build mutation -> gene map from OPCIONES_FILTRO
                 gen_map = {}
                 for gen, subchoices in MultiFilter.OPCIONES_FILTRO:
                     for mut, _ in subchoices:
                         gen_map[mut] = gen
-                # Agrupar mutaciones seleccionadas por gen
+                # Group selected mutations by gene
                 gen_groups = {}
                 for mut in values:
                     gen = gen_map.get(mut, 'Unknown')
@@ -396,15 +396,15 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
             self.object_list = filterset.qs
             table = self.get_table()
             # exporter = TableExport(export_format, table)
-            excluded_columns_param = self.request.GET.get('excluded_columns', '')  # cadena vacía si no existe
+            excluded_columns_param = self.request.GET.get('excluded_columns', '')  # empty string if absent
             excluded_columns = excluded_columns_param.split(',') if excluded_columns_param else None
 
             exporter = TableExport(export_format, table, exclude_columns=excluded_columns)
             return exporter.response('arpbig_data_export.{}'.format(export_format))
 
-        # Exporta la tabla de MIC (mic_table)
+        # Export the MIC table (mic_table)
         elif TableExport.is_valid_format(export_mic_format):
-            # Reutilizamos la lógica para obtener el queryset de MIC, igual que en get_context_data
+            # Reuse the same logic to obtain the MIC queryset as in get_context_data
             # Retrieve last-used breakpoint table labels from session so the
             # export column headers match what the user sees on screen.
             t1 = request.session.get('selected_table_1') or 'Breakpoint Version 1'
@@ -471,7 +471,7 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
                 f for f in model._meta.get_fields()
                 if isinstance(f, Field)
                 and not isinstance(f, (DJSONField, ForeignKey))
-                and '_id' not in f.name          # igual que create_dynamic_table
+                and '_id' not in f.name          # mirrors create_dynamic_table exclusion
             ]
             if not rel_fields:
                 continue
@@ -521,24 +521,24 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
     def compute_clinical_category(self, value, bp):
         """
-        value: el valor real (numérico o cadena) obtenido del registro para el antibiótico.
-        bp: un diccionario con al menos las claves "S" y "R". Por ejemplo: {"R": 16, "S": 0.001}
+        value: the actual value (numeric or string) obtained from the record for the antibiotic.
+        bp: a dict with at least the keys "S" and "R". Example: {"R": 16, "S": 0.001}
         """
         comparator = None
 
-        # Si el valor es None (null) o no está definido
+        # If value is None (null) or undefined
         if value is None:
             return "NA"
-        # Si el valor es exactamente el guión (string)
+        # If value is exactly a dash string
         if isinstance(value, str) and value.strip() == "-":
             return "-"
-        # Si el valor es la cadena "IE"
+        # If value is the string "IE"
         if isinstance(value, str) and value.upper() == "IE":
             return "IE"
         try:
             valor = float(value)
         except (TypeError, ValueError):
-            # Expresión regular para detectar comparadores (<, <=, >, >=) y extraer el número
+            # Regex to detect comparators (<, <=, >, >=) and extract the number
             match = re.match(r'^(<|<=|≤|>|>=|≥)?\s*(\d*\.?\d+)$', str(value).strip())
             if match:
                 comparator, number = match.groups()
@@ -554,11 +554,11 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
             else:
                 try:
                     valor = float(value)
-                    comparator = None  # Sin operador
+                    comparator = None  # no comparator
                 except (TypeError, ValueError):
                     return "NA"
 
-        # Se asume que los breakpoints vienen definidos numéricamente (aunque puede ser string en algunos casos)
+        # Breakpoints are expected to be numeric (though they may arrive as strings in some cases)
         s_bp = bp.get("S")
         r_bp = bp.get("R")
 
@@ -597,8 +597,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
             if s_bp is not None and valor > s_bp and r_bp is not None and valor < r_bp:
                 return "I"
 
-        # En caso intermedio, se puede asignar "IE" u otro valor según tu criterio
-        return "No se ha podido asignar valor S/I/R"
+        # Intermediate case — assign "IE" or another value as appropriate
+        return "Could not assign S/I/R value"
 
     def _compute_mic_empty_columns(self, qs_mic, selected_table_1, selected_table_2):
         """
@@ -643,8 +643,8 @@ class ResultadosListView(ExportMixin, SingleTableMixin, FilterView): #LoginRequi
 
     def update_parameters(self, request, *args, **kwargs):
         parameters = request.POST.copy()
-        parameters_used = {}  # empezar vacío siempre
-        verbose_used = {}  # empezar vacío siempre
+        parameters_used = {}  # always start empty
+        verbose_used = {}  # always start empty
 
         for parameter, value in parameters.items():
             if parameter == 'csrfmiddlewaretoken' or value in ('', 'none'):

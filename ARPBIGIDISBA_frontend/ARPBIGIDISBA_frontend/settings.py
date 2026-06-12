@@ -144,17 +144,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_URL = '/accounts/login/'  # URL a donde se redirige si el usuario no está autenticado
-LOGIN_REDIRECT_URL = '/'  # Página a donde se redirige después de iniciar sesión
-LOGOUT_REDIRECT_URL = '/'  # Página tras cerrar sesión
+LOGIN_URL = '/accounts/login/'  # URL to redirect to if the user is not authenticated
+LOGIN_REDIRECT_URL = '/'  # Page to redirect to after logging in
+LOGOUT_REDIRECT_URL = '/'  # Page to redirect to after logging out
 
-# Nombres de vistas públicas para middleware autentication
+# Names of public views for authentication middleware
 LOGIN_NOT_REQUIRED_URLNAMES = [
     'login',
     'logout',
 ]
 
-# paths exactos para vistas públicas para middleware autentication
+# Exact paths for public views for authentication middleware
 LOGIN_NOT_REQUIRED_PATHS = [
     '/accounts/login/',
     '/accounts/logout/',
@@ -370,8 +370,8 @@ LOGGING = {
         'access_denied_file': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': str(LOGS_DIR / 'access_denied.log'),
-            'when': 'midnight',       # Rota cada día a medianoche
-            'backupCount': 30,        # Conserva 30 días de histórico
+            'when': 'midnight',       # Rotates every day at midnight
+            'backupCount': 30,        # Keeps 30 days of log history
             'formatter': 'access_denied',
             'encoding': 'utf-8',
         },

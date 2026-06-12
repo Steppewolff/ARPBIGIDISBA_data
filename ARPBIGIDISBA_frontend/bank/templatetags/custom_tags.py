@@ -4,8 +4,5 @@ register = template.Library()
 
 @register.filter
 def attr(obj, name):
-    """
-    Devuelve getattr(obj, name), para extraer dinámicamente
-    un atributo en un template.
-    """
+    """Returns getattr(obj, name) to dynamically access an attribute in a template."""
     return getattr(obj, name, '')

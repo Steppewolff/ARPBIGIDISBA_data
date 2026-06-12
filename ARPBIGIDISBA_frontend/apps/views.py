@@ -23,7 +23,7 @@ import apps.packages.automatizacion_rp as automatizacion_rp
 from home.models import FilePath, MetadataClinic, MetadataGeneral, Mic, PhenotypicData, SequenceAnalysis, SequencingInfo, Hospital, SampleType
 
 # **********************************************************************************************************************
-# Variables para almacenar nombres de campos y opciones de select
+# Variables for storing field names and select options
 field_names = []
 select_fields = []
 select_options = []
@@ -36,7 +36,7 @@ db_value = ""
 
 # Functions to read and operate data from files
 def read_input_file():
-    # Limpiar listas de campos y opciones de select
+    # Clear field and select option lists
     tables = []
     df_dictionary = []
     field_names.clear()
@@ -50,19 +50,19 @@ def applications(request):
         return render(request, 'aplicaciones.html')
 
 def load_scores(json_file):
-    """Carga el diccionario de condiciones desde el archivo JSON."""
+    """Load the conditions dictionary from the JSON file."""
     with open(json_file, "r") as f:
         scores = json.load(f)
     return scores
 
 def load_csv(uploaded_file):
-    """Carga los registros del archivo CSV en una lista de filas."""
+    """Load CSV records from the uploaded file into a list of rows."""
     records = []
 
-    # Asegurar que la lectura comienza desde el inicio del archivo
+    # Ensure reading starts from the beginning of the file
     uploaded_file.seek(0)
 
-    # Decodificar y leer líneas
+    # Decode and read lines
     reader = csv.reader(uploaded_file.read().decode("utf-8").splitlines())
     for row in reader:
         records.append(row)
@@ -72,10 +72,10 @@ def amr_score_prediction(request):
     if request.method == 'POST' and 'variantCallingFile' in request.FILES:
         vc_file = request.FILES['variantCallingFile']
 
-        # Cargar condiciones desde el JSON
+        # Load conditions from the JSON file
         scores_json = load_scores(os.path.join(settings.BASE_DIR, 'static/json','SCORES_100WT.json'))
 
-        # Cargar registros del CSV (se asume que el archivo tiene 14 columnas separadas por comas)
+        # Load CSV records (the file is assumed to have 14 comma-separated columns)
         records = load_csv(vc_file)
 
         score_results, score_eval_mutacional = automatizacion_rp.main(scores_json, records)
@@ -92,7 +92,7 @@ def amr_score_prediction(request):
             for entry in score_eval_mutacional.get(ab, []):
                 gene = list(entry.keys())[0]
                 if gene in BETALACTAMIC_GENES:
-                    # Renombrar la clave al nombre de display (oprD / PDC)
+                    # Rename the key to the display name (oprD / PDC)
                     betalac_by_ab[ab].append({BETALACTAMIC_GENES[gene]: list(entry.values())[0]})
                 else:
                     mut_by_ab_filtered[ab].append(entry)

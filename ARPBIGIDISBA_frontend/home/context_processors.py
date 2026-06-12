@@ -1,6 +1,6 @@
 def user_role(request):
     """
-    Añade 'user_role' al contexto de todos los templates.
+    Adds 'user_role' to the context of all templates.
     Valores posibles: 'administrator', 'reviewer', 'guest', 'user_nogroup', None
     """
     if not request.user.is_authenticated:
@@ -14,6 +14,6 @@ def user_role(request):
     elif user.groups.filter(name='guest').exists():
         role = 'guest'
     else:
-        role = 'user_nogroup'          # autenticado pero sin grupo asignado
+        role = 'user_nogroup'          # authenticated but not assigned to any group
 
     return {'user_role': role}

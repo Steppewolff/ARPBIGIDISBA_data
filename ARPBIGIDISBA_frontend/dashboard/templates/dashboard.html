@@ -6,7 +6,7 @@
     <!-- Top menu on small screens -->
     <header class="w3-container w3-top w3-hide-large w3-red w3-xlarge w3-padding">
       <a href="javascript:void(0)" class="w3-button w3-red w3-margin-right" onclick="w3_open()">☰</a>
-      <span>Base de datos ARPBIG</span>
+      <span>ARPBIG Database</span>
     </header>
 
     {% endblock %}
@@ -19,12 +19,12 @@
           <!-- Header -->
           <div class="w3-container" style="margin-top:10px;" id="showcase">
             <h1 class="w3-jumbo"><b>Dashboard</b></h1>
-            <h3 class=""><b>Base de datos ARPBIG IdISBa</b></h3>
-            <h4> Bienvenido, {{ user.username }}</h4>
+            <h3 class=""><b>ARPBIG IdISBa Database</b></h3>
+            <h4> Welcome, {{ user.username }}</h4>
             <hr style="width:50px;border:5px solid #00334c" class="w3-round">
           </div>
           <div class="w3-container" style="display: flex; flex-direction: column; height: max-content; box-sizing: border-box; gap: 0;">
-                <!-- Fila superior con 1 elemento -->
+                <!-- Top row with 1 element -->
              <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
                  <div style="flex: 1; padding: 1px; margin: 0">
                      Sequence type distribution
@@ -37,10 +37,10 @@
              </div>
              <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
                  <div style="flex: 1; padding: 1px; margin: 0;">
-                     Distribución geográfica
+                     Geographic distribution
                  </div>
                  <div style="flex: 1; padding: 1px; margin: 0;">
-                     Tabla resumen
+                     Summary table
                  </div>
              </div>
              <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
@@ -52,7 +52,7 @@
                  </div>
              </div>
 
-    <!-- Fila inferior con 2 elementos multiplot -->
+    <!-- Bottom row with 2 multiplot elements -->
              <div class="w3-section" style="display: flex; flex: 1; margin: 0; padding: 0; box-sizing: border-box;">
                  <div style="flex: 1; padding: 1px; margin: 0;">
                      Pie charts

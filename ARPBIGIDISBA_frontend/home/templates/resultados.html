@@ -104,11 +104,11 @@
     </script>
     <script>
         $(document).ready(function() {
-            // Inicializar por clase genérica
+            // Initialise by generic class
             $('.select2').select2({
-                placeholder: "Seleccione una opción",
+                placeholder: "Select an option",
                 allowClear: true,
-                width: '100%' // Importante para que respete el diseño de Bootstrap/Crispy
+                width: '100%' // Important to respect the Bootstrap/Crispy layout
             });
         });
     </script>
@@ -117,7 +117,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             var emptyCols = {{ empty_cols_json|default:"[]"|safe }};
 
-            /* FIX 1: sin condición de estado — forzar hide siempre en columnas vacías */
+            /* FIX 1: no state condition — always force hide on empty columns */
             function applyEmptyColumns() {
                 if (!emptyCols.length) return;
                 $('.btn-shift-column').each(function () {
@@ -154,8 +154,8 @@
 
             if (!loaders.length) { onReady(); return; }
 
-            /* FIX 2: si el column-shifter ya corrió antes que nosotros,
-               los loaders ya están hidden — detectarlo y disparar onReady igualmente */
+            /* FIX 2: if the column-shifter ran before us, loaders are already hidden —
+               detect this and fire onReady anyway */
             var resolved = 0;
             function settle(observer) {
                 if (observer) observer.disconnect();
@@ -164,7 +164,7 @@
 
             loaders.forEach(function (loader) {
                 if (loader.style.display === 'none') {
-                    /* Ya oculto: column-shifter terminó antes de que montáramos el observer */
+                    /* Already hidden: column-shifter finished before we mounted the observer */
                     settle(null);
                     return;
                 }
@@ -180,7 +180,7 @@
 
     <script>
         $(document).ready(function () {
-            /* Selección de filas — delegado para funcionar tras paginación */
+            /* Row selection — delegated to work after pagination */
             $(document).on('click', 'table.results tbody tr', function () {
                 $(this).toggleClass('row-selected');
                 var count = $('table.results tbody tr.row-selected').length;
@@ -217,7 +217,7 @@
           <hr style="width:50px;border:5px solid #00334c" class="w3-round">
         </div>
 
-        <!-- Parámetros búsqueda -->
+        <!-- Search parameters -->
         <h2 title="Summary of search parameters used">Search parameters used</h2>
         <div class="w3-container">
             {% for parameter, value in verbose_used.items %}
@@ -364,7 +364,7 @@
               <form method="GET">
                   <a href='{% export_url "csv" %}' data-loading-msg="Generating CSV file, please wait…" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to CSV format</a>
                   <a href='{% export_url "xlsx" %}' data-loading-msg="Generating Excel file, please wait…" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to XLSX format</a>
-                  <a href='{% export_url "json" %}' data-loading-msg="Generating JSON file, please wait…" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to JSON format</a>                  <!-- Dropdown estilo botón -->
+                  <a href='{% export_url "json" %}' data-loading-msg="Generating JSON file, please wait…" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Export to JSON format</a>                  <!-- Button-style dropdown -->
                   <div class="dropdown d-none d-sm-inline-block">
                     <button class="btn btn-sm btn-secondary shadow-sm dropdown-toggle"
                             type="button"
