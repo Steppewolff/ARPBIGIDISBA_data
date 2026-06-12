@@ -242,21 +242,6 @@ All documents live in the [`Documentation/`](Documentation/) directory.
 
 ---
 
-## Contributing
-
-Contributions are welcome. Please:
-
-1. Fork the repository and create a feature branch
-   (`git checkout -b feature/my-change`).
-2. Follow the existing code style; keep code and comments in English.
-3. Make sure migrations are included when models change.
-4. Open a pull request describing the change and its motivation.
-
-For larger changes, please open an issue first to discuss what you would like
-to change.
-
----
-
 ## License
 
 No license has been specified yet. Until a license is added, this code is
