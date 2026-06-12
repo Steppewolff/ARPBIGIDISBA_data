@@ -1,0 +1,26 @@
+ARPBIG IdISBa
+Copyright 2026 Fernando Gómez Romano and Institut d'Investigació
+Sanitària Illes Balears (IdISBa)
+
+This product is licensed under the Apache License, Version 2.0
+(see the LICENSE file).
+
+If you use this software, please cite it (see CITATION.cff):
+  DOI: 10.5281/zenodo.20664237  (https://doi.org/10.5281/zenodo.20664237)
+
+----------------------------------------------------------------------
+Third-party components
+----------------------------------------------------------------------
+This software is built with, and depends on, third-party open-source
+projects, each distributed under its own license. Notably:
+
+  - Django
+  - django-tables2 / django-tables2-column-shifter
+  - django-filter
+  - django-select2
+  - Bootstrap
+  - python-decouple
+  - Gunicorn
+  - mysqlclient
+
+Their respective copyrights and licenses apply to those components.

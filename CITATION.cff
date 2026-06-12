@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "ARPBIG IdISBa"
+message: "Si utiliza este software, por favor cítelo usando estos metadatos."
+type: software
+authors:
+  - family-names: "Gómez Romano"
+    given-names: "Fernando"
+    orcid: "https://orcid.org/0000-0003-2261-1163"
+    affiliation: "Institut d'Investigació Sanitària Illes Balears (IdISBa)"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20664237"
+    description: "Concept DOI (Zenodo) - apunta siempre a la última versión."
+repository-code: "https://github.com/NOMBRE_ORG/ARPBIGIDISBA_docker"
+abstract: >-
+  Aplicación web Django para la gestión de datos de resistencia
+  antimicrobiana (principalmente Pseudomonas aeruginosa): metadatos de
+  aislados bacterianos, valores MIC, datos fenotípicos, análisis de
+  resistoma y análisis de secuencias.
+keywords:
+  - "antimicrobial resistance"
+  - "Pseudomonas aeruginosa"
+  - "Django"
+  - "bioinformatics"
+license: Apache-2.0
+version: "1.0.0"
+date-released: "2026-06-12"

@@ -1,11 +1,13 @@
 # ARPBIG IdISBa — Antimicrobial Resistance Database
 
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20664237-1682D4)](https://doi.org/10.5281/zenodo.20664237)
+[![License](https://img.shields.io/badge/license-Apache%202.0-D22128?logo=apache&logoColor=white)](LICENSE)
+
 ![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-4.2-092E20?logo=django&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-WSGI-499848?logo=gunicorn&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-reverse--proxy-009639?logo=nginx&logoColor=white)
-![License](https://img.shields.io/badge/license-All%20rights%20reserved-lightgrey)
 
 A Django web application for storing, querying and analysing antimicrobial
 resistance (AMR) data of bacterial isolates — primarily *Pseudomonas

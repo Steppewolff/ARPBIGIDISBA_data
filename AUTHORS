@@ -1,0 +1,15 @@
+# Autores de ARPBIG IdISBa
+
+Este fichero recoge a las personas que han contribuido al desarrollo del
+proyecto. El historial de autoría detallado está disponible en el log de git.
+
+## Autor principal y desarrollador
+
+Fernando Gómez Romano <https://orcid.org/0000-0003-2261-1163>
+Institut d'Investigació Sanitària Illes Balears (IdISBa)
+
+## Contribuciones
+
+Para ver todos los contribuyentes y sus aportaciones:
+
+    git shortlog -sne
